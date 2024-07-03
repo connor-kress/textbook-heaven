@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "Available Textbooks - Textbook Heaven",
+  description: "A list of available textbooks to post and view question answers.",
+};
+
 export default function TextbookList() {
   const textbookNames = [
     "Example math textbook",
