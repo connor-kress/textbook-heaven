@@ -2,17 +2,17 @@ import { Metadata } from "next";
 
 type Props = {
   params: {
-    textbookId: string,
+    textbookName: string,
   },
 };
 
 export function generateMetadata({ params }: Props): Metadata {
   return {
-    title: `${params.textbookId} - Textbook Heaven`,
-    description: `Questions and PDF view from ${params.textbookId}.`,
+    title: `${params.textbookName} - Textbook Heaven`,
+    description: `Questions and PDF view from ${params.textbookName}.`,
   };
 }
 
 export default function Textbook({ params }: Props) {
-  return <h1>Textbook: {params.textbookId}</h1>
+  return <h1>Textbook: {params.textbookName}</h1>
 }
