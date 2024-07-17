@@ -7,16 +7,17 @@ type Props = {
 };
 
 export function generateMetadata({ params }: Props): Metadata {
+  const textbookName = decodeURI(params.textbookName);
   return {
-    title: `${params.textbookName} - Textbook Heaven`,
-    description: `Questions and PDF view from ${params.textbookName}.`,
+    title: `${textbookName} - Textbook Heaven`,
+    description: `Questions and PDF view from ${textbookName}.`,
   };
 }
 
 export default function Textbook({ params }: Props) {
   return (
     <div style={{height: "90vh"}}>
-      <h1>Textbook: {params.textbookName}</h1>
+      <h1>Textbook: {decodeURI(params.textbookName)}</h1>
       <iframe 
         src={`/pdf/${params.textbookName}.pdf`}
         width="50%" 
