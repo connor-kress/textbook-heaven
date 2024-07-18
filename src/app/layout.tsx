@@ -1,3 +1,5 @@
+import "./globals.css";
+
 export const metadata = {
   title: "Textbook Heaven",
   description: "A website to organize textbook questions and answers.",

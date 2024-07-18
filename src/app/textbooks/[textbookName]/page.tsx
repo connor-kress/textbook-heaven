@@ -14,17 +14,28 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function Textbook({ params }: Props) {
+export default function TextbookPage({ params }: Props) {
   return (
-    <div style={{height: "90vh"}}>
-      <h1>Textbook: {decodeURI(params.textbookName)}</h1>
-      <iframe 
-        src={`/pdf/${params.textbookName}.pdf`}
-        width="50%" 
-        height="100%" 
-      >
-        This browser does not support PDFs.
-      </iframe>
+    <div className="flex flex-row">
+      <div style={{height: "90vh", width: "50%"}} className="">
+        <h1 className="text-2xl font-bold">Textbook: {decodeURI(params.textbookName)}</h1>
+        <PDFView name={params.textbookName}/>
+      </div>
+      <div className="">
+        Comments
+      </div>
     </div>
+  );
+}
+
+function PDFView({ name }: { name: string }) {
+  return (
+    <iframe 
+      src={`/pdf/${name}.pdf`}
+      width="100%" 
+      height="100%" 
+    >
+      This browser does not support PDFs.
+    </iframe>
   );
 }
