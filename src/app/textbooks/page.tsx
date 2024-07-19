@@ -1,26 +1,13 @@
-import { promises as fs } from "fs"
-import path from "path"
-import Textbook from '@/types/Textbook';
 import Link from 'next/link'
+import { fetchTextbooks } from '@/lib/utils';
 
 export const metadata = {
   title: "Available Textbooks - Textbook Heaven",
   description: "A list of available textbooks to post and view question answers.",
 };
 
-async function fetchTextbooks() {
-  const pdfDir = path.join(process.cwd(), "public", "pdf");
-  const fileNames = await fs.readdir(pdfDir);
-  return fileNames.map(fn => ({
-    fileName: fn,
-    filePath: `/pdf/${fn}`,
-    uriName: fn.replace(/.pdf$/, ""),
-    name: decodeURI(fn.replace(/.pdf$/, "")),
-  }));
-}
-
 export default async function TextbookListPage() {
-  const textbooks: Textbook[] = await fetchTextbooks();
+  const textbooks = await fetchTextbooks();
   return (
     <>
       <h1>Available Textbooks:</h1>
