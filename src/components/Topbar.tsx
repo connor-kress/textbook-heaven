@@ -17,8 +17,7 @@ function Logo() {
   return (
     <div className="
       flex items-center text-center
-      p-4 h-full max-w-40
-      border-r-2 border-black
+      h-full max-w-36
       text-xl font-bold
       cursor-pointer
       hover:bg-gray-300 dark:hover:bg-neutral-700

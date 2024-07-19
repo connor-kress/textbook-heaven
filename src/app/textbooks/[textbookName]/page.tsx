@@ -22,7 +22,7 @@ export default function TextbookPage({ params }: Props) {
     <div className="flex flex-row">
       <div style={{height: "90vh", width: "50%"}} className="">
         <h1 className="text-2xl font-bold">
-          Textbook: {textbookName}
+          {textbookName}
           <span className="text-sm"> (
             <Link href={pdfPath} target="_blank" className="text-blue-700">
               full screen
@@ -40,12 +40,14 @@ export default function TextbookPage({ params }: Props) {
 
 function PDFView({ path }: { path: string }) {
   return (
-    <iframe 
-      src={path}
-      width="100%" 
-      height="100%" 
-    >
-      This browser does not support PDFs.
-    </iframe>
+    <div className="aspect-[3/4]">
+      <iframe 
+        src={path}
+        width="100%" 
+        height="100%" 
+      >
+        This browser does not support PDFs.
+      </iframe>
+    </div>
   );
 }
