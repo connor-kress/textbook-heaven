@@ -1,3 +1,4 @@
+import Topbar from "@/components/Topbar";
 import "./globals.css";
 
 export const metadata = {
@@ -12,7 +13,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="
+        flex flex-col
+        bg-gray-200 dark:bg-neutral-900
+        text-gray-950 dark:text-neutral-200
+      ">
+        <Topbar />
+        <main className="mt-16 flex-1">{children}</main>
+      </body>
     </html>
   )
 }
