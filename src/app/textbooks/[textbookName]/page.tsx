@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 type Props = {
   params: {
@@ -15,11 +16,20 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function TextbookPage({ params }: Props) {
+  const textbookName = decodeURI(params.textbookName);
+  const pdfPath = `/pdf/${params.textbookName}.pdf`;
   return (
     <div className="flex flex-row">
       <div style={{height: "90vh", width: "50%"}} className="">
-        <h1 className="text-2xl font-bold">Textbook: {decodeURI(params.textbookName)}</h1>
-        <PDFView name={params.textbookName}/>
+        <h1 className="text-2xl font-bold">
+          Textbook: {textbookName}
+          <span className="text-sm"> (
+            <Link href={pdfPath} target="_blank" className="text-blue-700">
+              full screen
+            </Link>)
+          </span>
+        </h1>
+        <PDFView path={pdfPath}/>
       </div>
       <div className="">
         Comments
@@ -28,10 +38,10 @@ export default function TextbookPage({ params }: Props) {
   );
 }
 
-function PDFView({ name }: { name: string }) {
+function PDFView({ path }: { path: string }) {
   return (
     <iframe 
-      src={`/pdf/${name}.pdf`}
+      src={path}
       width="100%" 
       height="100%" 
     >
