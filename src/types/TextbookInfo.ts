@@ -1,8 +1,8 @@
-type Textbook = {
+type TextbookInfo = {
   fileName: string,
   filePath: string,
   uriName: string,
   name: string,
 }
 
-export default Textbook;
+export default TextbookInfo;

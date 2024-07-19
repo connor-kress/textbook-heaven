@@ -1,3 +1,4 @@
+import { fetchTextbookInfo } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -15,21 +16,20 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function TextbookPage({ params }: Props) {
-  const textbookName = decodeURI(params.textbookName);
-  const pdfPath = `/pdf/${params.textbookName}.pdf`;
+export default async function TextbookPage({ params }: Props) {
+  const textbook = await fetchTextbookInfo(params.textbookName);
   return (
     <div className="flex flex-row">
       <div style={{height: "90vh", width: "50%"}} className="">
         <h1 className="text-2xl font-bold">
-          {textbookName}
+          {textbook.name}
           <span className="text-sm"> (
-            <Link href={pdfPath} target="_blank" className="text-blue-700">
+            <Link href={textbook.filePath} target="_blank" className="text-blue-700">
               full screen
             </Link>)
           </span>
         </h1>
-        <PDFView path={pdfPath}/>
+        <PDFView path={textbook.filePath}/>
       </div>
       <div className="">
         Comments
