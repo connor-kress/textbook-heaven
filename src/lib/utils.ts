@@ -13,7 +13,9 @@ export async function fetchTextbookInfoList(): Promise<TextbookInfo[]> {
   }));
 }
 
-export async function fetchTextbookInfo(uriName: string): Promise<TextbookInfo> {
+export async function fetchTextbookInfo(
+  uriName: string
+): Promise<TextbookInfo> {
   return {
     fileName: `${uriName}.pdf`,
     filePath: `/pdf/${uriName}.pdf`,

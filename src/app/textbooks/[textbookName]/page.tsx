@@ -1,4 +1,4 @@
-import { fetchTextbookInfo } from "@/lib/utils";
+import { fetchComments, fetchTextbookInfo } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
 
