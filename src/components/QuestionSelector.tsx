@@ -11,7 +11,7 @@ export default function QuestionSelector() {
     ">
       {
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
-          <ChapterPill chapter={i} />
+          <ChapterPill key={i} chapter={i} />
         ))
       }
     </div>
@@ -21,7 +21,7 @@ export default function QuestionSelector() {
 function ChapterPill({ chapter }: { chapter: number }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div key={chapter} className="flex flex-row items-center">
+    <div className="flex flex-row items-center">
       <button onClick={() => setExpanded(prev => !prev)}
         className={`
         p-4 text-nowrap cursor-pointer shadow-lg
@@ -41,9 +41,9 @@ function ChapterPill({ chapter }: { chapter: number }) {
               text-neutral-900 hover:text-neutral-200
               cursor-pointer font-bold
             ">{i}</div>
-          ))}
-        </div>
-      }
+          ))
+        }
+      </div>}
     </div>
   );
 
