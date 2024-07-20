@@ -1,3 +1,4 @@
+import QuestionSelector from "@/components/QuestionSelector";
 import { fetchComments, fetchTextbookInfo } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -20,19 +21,32 @@ export default async function TextbookPage({ params }: Props) {
   const textbook = await fetchTextbookInfo(params.textbookName);
   return (
     <div className="flex flex-row">
-      <div style={{height: "90vh", width: "50%"}} className="">
+      <div className="w-1/2 h-[90vh] hidden lg:flex flex-col">
         <h1 className="text-2xl font-bold">
           {textbook.name}
           <span className="text-sm"> (
-            <Link href={textbook.filePath} target="_blank" className="text-blue-700">
+            <Link href={textbook.filePath} target="_blank"
+                  className="text-blue-700">
               full screen
             </Link>)
           </span>
         </h1>
         <PDFView path={textbook.filePath}/>
       </div>
-      <div className="">
-        Comments
+      <div className="flex flex-col w-full lg:w-1/2">
+        <QuestionSelector />
+        <QuestionView />
+      </div>
+    </div>
+  );
+}
+
+function QuestionView() {
+  return (
+    <div className="flex flex-col">
+      <div className="flex flex-row items-center w-full">
+        <div className="p-4 bg-blue-600">Like btn</div>
+        <div className="p-4 bg-red-600">Comment body</div>
       </div>
     </div>
   );
