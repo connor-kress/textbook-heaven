@@ -1,25 +1,8 @@
+"use server";
+
 import Question from "@/types/Question";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const questionIdStr = searchParams.get('questionId')
-  if (questionIdStr === null) {
-    return new Response("Missing `questionId` parameter.", {
-      status: 400,
-    });
-  }
-  const questionId = parseInt(questionIdStr);
-  console.log(questionId);
-  if (isNaN(questionId)) {
-    return new Response("Invalid parameter (`parseInt` error).", {
-      status: 400,
-    });
-  }
-  const question = getData(questionId);
-  return Response.json(question);
-}
-
-function getData(questionId: number): Question {
+export async function fetchQuestionData(questionId: number): Promise<Question> {
   return {
     id: questionId,
     text: "Is this a question?",
