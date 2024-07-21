@@ -1,5 +1,5 @@
 import Topbar from "@/components/Topbar";
-import "./globals.css";
+import "@/styles/globals.css";
 
 export const metadata = {
   title: "Textbook Heaven",
