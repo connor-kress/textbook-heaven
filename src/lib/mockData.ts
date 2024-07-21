@@ -28,6 +28,18 @@ export const mockChapterData: ChapterInfo[] = [
         id: 1340,
         num: 2,
       },
+      {
+        id: 1341,
+        num: 6,
+      },
+      {
+        id: 1342,
+        num: 5,
+      },
+      {
+        id: 1343,
+        num: 10,
+      },
     ],
   },
 ];

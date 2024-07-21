@@ -1,4 +1,5 @@
 import QuestionSelector from "@/components/QuestionSelector";
+import QuestionView from "@/components/QuestionView";
 import { fetchComments, fetchTextbookInfo } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -34,19 +35,7 @@ export default async function TextbookPage({ params }: Props) {
         <PDFView path={textbook.filePath}/>
       </div>
       <div className="flex flex-col w-full lg:w-1/2">
-        <QuestionSelector />
         <QuestionView />
-      </div>
-    </div>
-  );
-}
-
-function QuestionView() {
-  return (
-    <div className="flex flex-col">
-      <div className="flex flex-row items-center w-full">
-        <div className="p-4 bg-blue-600">Like btn</div>
-        <div className="p-4 bg-red-600">Comment body</div>
       </div>
     </div>
   );

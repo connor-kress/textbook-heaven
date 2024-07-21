@@ -13,6 +13,8 @@ export type TBComment = Reply & {
 
 export type Question = {
   id: number,
+  chapter: number,
+  num: number,
   text: string,
   comments: TBComment[],
 }

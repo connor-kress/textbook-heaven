@@ -1,8 +1,11 @@
 "use client";
 
+import { ChapterInfo } from "@/types/TextbookInfo";
 import { useState } from "react";
 
-export default function QuestionSelector() {
+export default function QuestionSelector(
+  { chapters }: { chapters: ChapterInfo[] }
+) {
   return (
     <div className="
       flex flex-row items-center p-1.5 gap-2
@@ -10,37 +13,39 @@ export default function QuestionSelector() {
       overflow-scroll no-scrollbar
     ">
       {
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
-          <ChapterPill key={i} chapter={i} />
+        chapters.map((ch, i) => (
+          <ChapterPill key={i} chapter={ch} />
         ))
       }
     </div>
   );
 }
 
-function ChapterPill({ chapter }: { chapter: number }) {
+function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
   const [expanded, setExpanded] = useState(false);
+  chapter.questions.sort((a, b) => a.num - b.num);
   return (
     <div className="flex flex-row items-center">
       <button onClick={() => setExpanded(prev => !prev)}
+        title={chapter.name}
         className={`
         p-4 text-nowrap cursor-pointer shadow-lg
         bg-neutral-900 hover:bg-neutral-700
         ${expanded ? "rounded-l-3xl" : "rounded-3xl"}
       `}>
-        chpt. {chapter}
+        chpt. {chapter.num}
       </button>
       {expanded && <div className="
         flex flex-row p-2 pr-3 gap-2
         bg-cyan-600 rounded-r-3xl shadow-lg
       ">
         {
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
+          chapter.questions.map((q, i) => (
             <div key={i} className="
               p-2 rounded-full
               text-neutral-900 hover:text-neutral-200
               cursor-pointer font-bold
-            ">{i}</div>
+            ">{q.num}</div>
           ))
         }
       </div>}
