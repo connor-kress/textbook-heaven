@@ -1,6 +1,8 @@
 "use client";
 
 import { ChapterInfo } from "@/types/TextbookInfo";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 export default function QuestionSelector(
@@ -23,6 +25,8 @@ export default function QuestionSelector(
 
 function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
   const [expanded, setExpanded] = useState(false);
+  const { textbookName } = useParams<{ textbookName: string }>();
+
   chapter.questions.sort((a, b) => a.num - b.num);
   return (
     <div className="flex flex-row items-center">
@@ -41,11 +45,12 @@ function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
       ">
         {
           chapter.questions.map((q, i) => (
-            <div key={i} className="
+            <Link href={`/textbooks/${textbookName}?questionId=${q.id}`}
+                  key={i} className="
               p-2 rounded-full
               text-neutral-900 hover:text-neutral-200
               cursor-pointer font-bold
-            ">{q.num}</div>
+            ">{q.num}</Link>
           ))
         }
       </div>}
