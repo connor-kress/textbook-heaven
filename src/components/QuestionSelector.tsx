@@ -2,7 +2,7 @@
 
 import { ChapterInfo } from "@/types/TextbookInfo";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function QuestionSelector(
@@ -24,6 +24,8 @@ export default function QuestionSelector(
 }
 
 function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
+  const params = useSearchParams()
+  const questionId = params.get("questionId");
   const [expanded, setExpanded] = useState(false);
   const { textbookName } = useParams<{ textbookName: string }>();
 
@@ -46,11 +48,13 @@ function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
         {
           chapter.questions.map((q, i) => (
             <Link href={`/textbooks/${textbookName}?questionId=${q.id}`}
-                  key={i} className="
+                  key={i} className={`
               p-2 rounded-full
-              text-neutral-900 hover:text-neutral-200
+              ${questionId === q.id.toString()
+                  ? "text-neutral-200 underline"
+                  : "text-neutral-900 hover:text-neutral-200"}
               cursor-pointer font-bold
-            ">{q.num}</Link>
+            `}>{q.num}</Link>
           ))
         }
       </div>}
