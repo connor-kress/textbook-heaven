@@ -44,63 +44,64 @@ export const mockChapterData: ChapterInfo[] = [
   },
 ];
 
-export const mockQuestionData: Question = {
-    id: 123455555,
-    chapter: 3,
-    num: 10,
-    text: "Is this a question?",
-    comments: [
-      {
-        id: 0,
-        author: "Mandar",
-        postDate: new Date(),
-        likes: 4,
-        dislikes: 1,
-        text: "Hello, who is this?",
-        replies: [
-          {
-            id: 1,
-            author: "Minecraft Server",
-            postDate: new Date(),
-            likes: 4,
-            dislikes: 1,
-            text: "I am the SeRVeR.",
-          },
-          {
-            id: 2,
-            author: "Connor",
-            postDate: new Date(),
-            likes: 4,
-            dislikes: 1,
-            text: "Erm... what the sigma?",
-          },
-        ],
-      },
-      {
-        id: 3,
-        author: "Omar",
-        postDate: new Date(),
-        likes: 4,
-        dislikes: 1,
-        text: "I AM A DOCTOR-ENGINEER-POET. ".repeat(10),
-        replies: [
-          {
-            id: 4,
-            author: "Mo",
-            postDate: new Date(),
-            likes: 4,
-            dislikes: 1,
-            text: "Ok Omar, I believe you.",
-          },
-          {
-            id: 5,
-            author: "Pranav",
-            postDate: new Date(),
-            likes: 4,
-            dislikes: 1,
-            text: "Can I smell your toes?",
-          },
-        ],
-      },
-    ],
-  };
+export const mockQuestionData = new Map<number, Question>();
+mockQuestionData.set(1337, {
+  id: 1337,
+  chapter: 3,
+  num: 10,
+  text: "Is this a question?",
+  comments: [
+    {
+      id: 0,
+      author: "Mandar",
+      postDate: new Date(),
+      likes: 4,
+      dislikes: 1,
+      text: "Hello, who is this?",
+      replies: [
+        {
+          id: 1,
+          author: "Minecraft Server",
+          postDate: new Date(),
+          likes: 4,
+          dislikes: 1,
+          text: "I am the SeRVeR.",
+        },
+        {
+          id: 2,
+          author: "Connor",
+          postDate: new Date(),
+          likes: 4,
+          dislikes: 1,
+          text: "Erm... what the sigma?",
+        },
+      ],
+    },
+    {
+      id: 3,
+      author: "Omar",
+      postDate: new Date(),
+      likes: 4,
+      dislikes: 1,
+      text: "I AM A DOCTOR-ENGINEER-POET. ".repeat(10),
+      replies: [
+        {
+          id: 4,
+          author: "Mo",
+          postDate: new Date(),
+          likes: 4,
+          dislikes: 1,
+          text: "Ok Omar, I believe you.",
+        },
+        {
+          id: 5,
+          author: "Pranav",
+          postDate: new Date(),
+          likes: 4,
+          dislikes: 1,
+          text: "Can I smell your toes?",
+        },
+      ],
+    },
+  ],
+});

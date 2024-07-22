@@ -14,14 +14,21 @@ export function QuestionDetails() {
   async function updateQuestion() {
       setLoading(true);
       if (typeof questionId !== "string") {
-        throw new Error("Unexpected type");
+        setQuestion(null);
+        setLoading(false);
+        return;
       }
-      setQuestion(await fetchQuestionData(parseInt(questionId)));
+      try {
+        const id = await fetchQuestionData(parseInt(questionId));
+        setQuestion(id);
+      } catch (e) {
+        // check error
+        setQuestion(null);
+      }
       setLoading(false);
   }
   useEffect(() => {
-    updateQuestion()
-      .catch(console.error);
+    updateQuestion();
   }, [questionId]);
 
   if (typeof questionId !== "string") {
@@ -30,10 +37,16 @@ export function QuestionDetails() {
         No question selected.
       </div>
     );
-  } else if (loading || question === null) {
+  } else if (loading) {
     return (
       <div className="mx-20 lg:ml-10 text-2xl">
         Loading question...
+      </div>
+    );
+  } else if (question === null) {
+    return (
+      <div className="mx-20 lg:ml-10 text-2xl">
+        No question data found.
       </div>
     );
   }
@@ -47,7 +60,7 @@ export function QuestionDetails() {
         <p className="mt-2 text-xl">{question.text}</p>
       </div>
       <h2 className="mb-4">
-      {question.comments.length} Comments:
+        {question.comments.length} Comments:
       </h2>
       <div className="flex flex-col items-start gap-10">
         {question?.comments.map((c, i) => (
