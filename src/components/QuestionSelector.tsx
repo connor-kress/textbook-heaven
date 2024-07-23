@@ -4,10 +4,12 @@ import { ChapterInfo } from "@/types/TextbookInfo";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { BsPlus } from "react-icons/bs";
 
 export default function QuestionSelector(
   { chapters }: { chapters: ChapterInfo[] }
 ) {
+  const { textbookName } = useParams<{ textbookName: string }>();
   return (
     <div className="
       flex flex-row items-center p-1.5 gap-2
@@ -19,6 +21,16 @@ export default function QuestionSelector(
           <ChapterPill key={i} chapter={ch} />
         ))
       }
+      <Link
+        href={`/textbooks/${textbookName}?newQuestion`}
+        className="
+        rounded-full p-2 cursor-pointer
+        text-neutral-500 hover:text-neutral-200
+        bg-neutral-700
+        bg-opacity-0 hover:bg-opacity-100
+      ">
+        <BsPlus size="28" />
+      </Link>
     </div>
   );
 }
@@ -50,10 +62,10 @@ function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
             <Link href={`/textbooks/${textbookName}?questionId=${q.id}`}
                   key={i} className={`
               p-2 rounded-full
+              cursor-pointer font-bold
               ${questionId === q.id.toString()
                   ? "text-neutral-200 underline"
                   : "text-neutral-900 hover:text-neutral-200"}
-              cursor-pointer font-bold
             `}>{q.num}</Link>
           ))
         }
