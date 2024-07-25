@@ -31,13 +31,7 @@ export function QuestionDetails() {
     updateQuestion();
   }, [questionId]);
 
-  if (typeof questionId !== "string") {
-    return (
-      <div className="mx-20 lg:ml-10 text-2xl">
-        No question selected.
-      </div>
-    );
-  } else if (loading) {
+if (loading) {
     return (
       <div className="mx-20 lg:ml-10 text-2xl">
         Loading question...

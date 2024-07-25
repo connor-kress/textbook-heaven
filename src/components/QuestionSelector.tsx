@@ -23,6 +23,7 @@ export default function QuestionSelector(
       }
       <Link
         href={`/textbooks/${textbookName}?newQuestion`}
+        title="Create New Question"
         className="
         rounded-full p-2 cursor-pointer
         text-neutral-500 hover:text-neutral-200

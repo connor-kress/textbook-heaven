@@ -4,6 +4,7 @@ import QuestionSelector from "./QuestionSelector";
 import { QuestionDetails } from "./QuestionDetails";
 import { useSearchParams } from "next/navigation";
 import { ChapterInfo } from "@/types/TextbookInfo";
+import { NewQuestionForm } from "./NewQuestionForm";
 
 export default function QuestionView({ chapters }: {chapters: ChapterInfo[]}) {
   const params = useSearchParams()
@@ -11,7 +12,7 @@ export default function QuestionView({ chapters }: {chapters: ChapterInfo[]}) {
   const newQuestion = params.get("newQuestion");
   let body = null;
   if (newQuestion !== null) {
-    body = <p>New Question: ...</p>;
+    body = <NewQuestionForm />;
   } else if (questionId === null) {
     body = <p>No question</p>;
   } else {
