@@ -56,7 +56,7 @@ function ChapterPill({ chapter }: { chapter: ChapterInfo }) {
       </button>
       {expanded && <div className="
         flex flex-row p-2 pr-3 gap-2
-        bg-cyan-600 rounded-r-3xl shadow-lg
+        bg-cyan-500 rounded-r-3xl shadow-lg
       ">
         {
           chapter.questions.map((q, i) => (

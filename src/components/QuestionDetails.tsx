@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchQuestionData } from "@/actions/questions";
+import { fetchQuestion} from "@/actions/questions";
 import Question, { TBComment } from "@/types/Question";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -19,7 +19,7 @@ export function QuestionDetails() {
         return;
       }
       try {
-        const id = await fetchQuestionData(parseInt(questionId));
+        const id = await fetchQuestion(parseInt(questionId));
         setQuestion(id);
       } catch (e) {
         // check error

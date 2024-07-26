@@ -1,7 +1,6 @@
-import QuestionSelector from "@/components/QuestionSelector";
 import QuestionView from "@/components/QuestionView";
 import { mockChapterData } from "@/lib/mockData";
-import { fetchComments, fetchTextbookInfo } from "@/lib/utils";
+import { fetchTextbookInfo } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
 

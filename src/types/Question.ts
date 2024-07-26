@@ -13,6 +13,7 @@ export type TBComment = Reply & {
 
 export type Question = {
   id: number,
+  translator: string, // TODO: UserInfo
   chapter: number,
   num: number,
   text: string,

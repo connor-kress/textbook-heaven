@@ -47,6 +47,7 @@ export const mockChapterData: ChapterInfo[] = [
 export const mockQuestionData = new Map<number, Question>();
 mockQuestionData.set(1337, {
   id: 1337,
+  translator: "anonymous",
   chapter: 3,
   num: 10,
   text: "Is this a question?",
