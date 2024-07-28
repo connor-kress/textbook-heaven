@@ -1,6 +1,5 @@
 import QuestionView from "@/components/QuestionView";
-import { mockChapterData } from "@/lib/mockData";
-import { fetchTextbookInfo } from "@/lib/utils";
+import { fetchTextbook } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -19,13 +18,12 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default async function TextbookPage({ params }: Props) {
-  const textbook = await fetchTextbookInfo(params.textbookName);
-  const chapters = mockChapterData;
+  const textbook = await fetchTextbook(params.textbookName);
   return (
     <div className="flex flex-row">
       <div className="w-1/2 h-[90vh] hidden lg:flex flex-col">
         <h1 className="text-2xl font-bold">
-          {textbook.name}
+          {textbook.title}
           <span className="text-sm"> (
             <Link href={textbook.filePath} target="_blank"
                   className="text-blue-700">
@@ -36,7 +34,7 @@ export default async function TextbookPage({ params }: Props) {
         <PDFView path={textbook.filePath}/>
       </div>
       <div className="flex flex-col w-full lg:w-1/2">
-        <QuestionView chapters={chapters}/>
+        <QuestionView chapters={textbook.chapters}/>
       </div>
     </div>
   );

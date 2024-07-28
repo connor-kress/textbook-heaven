@@ -3,10 +3,10 @@
 import QuestionSelector from "./QuestionSelector";
 import { QuestionDetails } from "./QuestionDetails";
 import { useSearchParams } from "next/navigation";
-import { ChapterInfo } from "@/types/TextbookInfo";
+import { Chapter } from "@/types/Textbook";
 import { NewQuestionForm } from "./NewQuestionForm";
 
-export default function QuestionView({ chapters }: {chapters: ChapterInfo[]}) {
+export default function QuestionView({ chapters }: {chapters: Chapter[]}) {
   const params = useSearchParams()
   const questionId = params.get("questionId");
   const newQuestion = params.get("newQuestion");

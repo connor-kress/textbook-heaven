@@ -1,7 +1,7 @@
 "use client";
 
 import { fetchQuestion} from "@/actions/questions";
-import Question, { TBComment } from "@/types/Question";
+import { Question, Reply } from "@/types/Question";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -20,7 +20,7 @@ export function QuestionDetails() {
       }
       try {
         const id = await fetchQuestion(parseInt(questionId));
-        setQuestion(id);
+        // setQuestion(id);
       } catch (e) {
         // check error
         setQuestion(null);
@@ -51,7 +51,7 @@ if (loading) {
           Chapter {question.chapter}: Q. {question.num}
         </h1>
         <hr className="border-neutral-600" />
-        <p className="mt-2 text-xl">{question.text}</p>
+        <p className="mt-2 text-xl">{question.body}</p>
       </div>
       <h2 className="mb-4">
         {question.comments.length} Comments:
@@ -66,7 +66,7 @@ if (loading) {
 }
 
 
-function CommentDetails({ comment }: { comment: TBComment }) {
+function CommentDetails({ comment }: { comment: Reply }) {
   return (
     <div className="flex flex-row items-center w-full">
       <div className="py-4 px-2 bg-blue-600 bg-opacity-20 flex-shrink-0">
@@ -77,7 +77,7 @@ function CommentDetails({ comment }: { comment: TBComment }) {
         <h3 className="pb-2">
           Posted: {comment.postDate.toLocaleDateString()}
         </h3>
-        <p>{comment.text}</p>
+        <p>{comment.body}</p>
         <div>{
           comment.replies.map((reply, i) => (
             <div key={i} className="p-2 bg-red-600 bg-opacity-10 flex flex-col">
@@ -85,7 +85,7 @@ function CommentDetails({ comment }: { comment: TBComment }) {
               <h3 className="pb-2">
                 Posted: {reply.postDate.toLocaleDateString()}
               </h3>
-              <p>{reply.text}</p>
+              <p>{reply.body}</p>
             </div>
           ))
         }</div>

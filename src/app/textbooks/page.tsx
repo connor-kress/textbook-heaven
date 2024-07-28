@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { fetchTextbookInfoList } from '@/lib/utils';
+import { fetchTextbooks } from '@/lib/utils';
 
 export const metadata = {
   title: "Available Textbooks - Textbook Heaven",
@@ -7,13 +7,15 @@ export const metadata = {
 };
 
 export default async function TextbookListPage() {
-  const textbookInfoList = await fetchTextbookInfoList();
+  const textbooks = await fetchTextbooks();
   return (
     <>
       <h1>Available Textbooks:</h1>
       {
-        textbookInfoList.map((tb, i) =>
-          <Link href={`/textbooks/${tb.uriName}`} key={i}><h3>{tb.name}</h3></Link>
+        textbooks.map((tb, i) =>
+          <Link href={`/textbooks/${tb.baseFileName}`} key={i}>
+            <h3>{tb.title}</h3>
+          </Link>
         )
       }
     </>

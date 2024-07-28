@@ -1,23 +1,41 @@
+import { z } from "zod"
+
 export type Reply = {
   id: number,
-  author: string, // TODO: UserInfo
+  author: string, // TODO: User
   postDate: Date,
   likes: number,
   dislikes: number,
-  text: string,
-}
-
-export type TBComment = Reply & {
+  body: string,
   replies: Reply[],
 }
 
 export type Question = {
   id: number,
-  translator: string, // TODO: UserInfo
+  author: string, // TODO: User
+  postDate: Date,
   chapter: number,
   num: number,
-  text: string,
-  comments: TBComment[],
+  body: string,
+  comments: Reply[],
 }
 
-export default Question;
+const ReplySchema: z.ZodType<Reply> = z.object({
+  id: z.number(),
+  author: z.string(),
+  postDate: z.date(),
+  likes: z.number(),
+  dislikes: z.number(),
+  body: z.string(),
+  replies: z.lazy(() => ReplySchema.array()),
+});
+
+export const QuestionSchema = z.object({
+  id: z.number(),
+  author: z.string(),
+  postDate: z.date(),
+  chapter: z.number(),
+  num: z.number(),
+  body: z.string(),
+  comments: ReplySchema.array(),
+});
