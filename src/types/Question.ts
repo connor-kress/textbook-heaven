@@ -14,7 +14,7 @@ export type Question = {
   id: number,
   author: string, // TODO: User
   postDate: Date,
-  chapter: number,
+  chapterId: number,
   num: number,
   body: string,
   comments: Reply[],
@@ -34,7 +34,7 @@ export const QuestionSchema = z.object({
   id: z.number(),
   author: z.string(),
   postDate: z.date(),
-  chapter: z.number(),
+  chapterId: z.number(),
   num: z.number(),
   body: z.string(),
   comments: ReplySchema.array(),

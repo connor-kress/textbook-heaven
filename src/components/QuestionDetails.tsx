@@ -19,8 +19,8 @@ export function QuestionDetails() {
         return;
       }
       try {
-        const id = await fetchQuestion(parseInt(questionId));
-        // setQuestion(id);
+        const questionData = await fetchQuestion(parseInt(questionId));
+        setQuestion(questionData);
       } catch (e) {
         // check error
         setQuestion(null);
@@ -44,11 +44,12 @@ if (loading) {
       </div>
     );
   }
+  
   return (
     <div className="mx-20 lg:ml-10">
       <div className="my-4">
         <h1 className="mb-2 text-2xl font-bold">
-          Chapter {question.chapter}: Q. {question.num}
+          Chapter ID {question.chapterId}: Q. {question.num}
         </h1>
         <hr className="border-neutral-600" />
         <p className="mt-2 text-xl">{question.body}</p>
