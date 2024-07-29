@@ -2,10 +2,13 @@
 
 import { fetchQuestion} from "@/actions/questions";
 import { Question, Reply } from "@/types/Question";
+import { Textbook } from "@/types/Textbook";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-export function QuestionDetails() {
+export function QuestionDetails(
+  { textbook }: {textbook: Textbook}
+) {
   const params = useSearchParams()
   const questionId = params.get("questionId");
   const [question, setQuestion] = useState<Question | null>(null);
@@ -44,12 +47,20 @@ if (loading) {
       </div>
     );
   }
+  const chapter =
+    textbook.chapters.find(c => c.id === question.chapterId);
+  if (chapter === undefined) {
+    throw new Error("Chapter data cannot be found for question");
+  }
   
   return (
     <div className="mx-20 lg:ml-10">
       <div className="my-4">
         <h1 className="mb-2 text-2xl font-bold">
-          Chapter ID {question.chapterId}: Q. {question.num}
+          Chapter {chapter.num}: {chapter.title} - {}
+          <span className="text-neutral-400">
+            Q. {question.num}
+          </span>
         </h1>
         <hr className="border-neutral-600" />
         <p className="mt-2 text-xl">{question.body}</p>

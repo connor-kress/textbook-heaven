@@ -1,15 +1,14 @@
 "use client";
 
-import { Chapter } from "@/types/Textbook";
+import { Chapter, Textbook } from "@/types/Textbook";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { BsPlus } from "react-icons/bs";
 
 export default function QuestionSelector(
-  { chapters }: { chapters: Chapter[] }
+  { textbook }: {textbook: Textbook}
 ) {
-  const { textbookName } = useParams<{ textbookName: string }>();
   return (
     <div className="
       flex flex-row items-center p-1.5 gap-2
@@ -17,12 +16,12 @@ export default function QuestionSelector(
       overflow-scroll no-scrollbar
     ">
       {
-        chapters.map((ch, i) => (
-          <ChapterPill key={i} chapter={ch} />
+        textbook.chapters.map((ch, i) => (
+          <ChapterPill key={i} textbook={textbook} chapter={ch} />
         ))
       }
       <Link
-        href={`/textbooks/${textbookName}?newQuestion`}
+        href={`/textbooks/${textbook.baseFileName}?newQuestion`}
         title="Create New Question"
         className="
         rounded-full p-2 cursor-pointer
@@ -36,11 +35,12 @@ export default function QuestionSelector(
   );
 }
 
-function ChapterPill({ chapter }: { chapter: Chapter }) {
+function ChapterPill(
+  { textbook, chapter }: {textbook: Textbook, chapter: Chapter}
+) {
   const params = useSearchParams()
   const questionId = params.get("questionId");
   const [expanded, setExpanded] = useState(false);
-  const { textbookName } = useParams<{ textbookName: string }>();
 
   chapter.questions.sort((a, b) => a.num - b.num);
   return (
@@ -61,7 +61,9 @@ function ChapterPill({ chapter }: { chapter: Chapter }) {
       ">
         {
           chapter.questions.map((q, i) => (
-            <Link href={`/textbooks/${textbookName}?questionId=${q.id}`}
+            <Link href={
+                `/textbooks/${textbook.baseFileName}?questionId=${q.id}`
+              }
                   key={i} className={`
               p-2 rounded-full
               cursor-pointer font-bold

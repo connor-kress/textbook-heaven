@@ -34,7 +34,7 @@ export default async function TextbookPage({ params }: Props) {
         <PDFView path={textbook.filePath}/>
       </div>
       <div className="flex flex-col w-full lg:w-1/2">
-        <QuestionView chapters={textbook.chapters}/>
+        <QuestionView textbook={textbook}/>
       </div>
     </div>
   );
