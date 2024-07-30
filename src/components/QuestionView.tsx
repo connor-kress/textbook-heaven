@@ -14,7 +14,7 @@ export default function QuestionView(
   const newQuestion = params.get("newQuestion");
   let body = null;
   if (newQuestion !== null) {
-    body = <NewQuestionForm />;
+    body = <NewQuestionForm textbook={textbook} />;
   } else if (questionId === null) {
     body = <p>No question</p>;
   } else {

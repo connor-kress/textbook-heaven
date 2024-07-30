@@ -2,6 +2,7 @@
 
 import pool from "@/lib/db";
 import { Question, QuestionSchema, Reply } from "@/types/Question";
+import { Textbook } from "@/types/Textbook";
 import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 
@@ -61,7 +62,6 @@ export async function fetchQuestion(
       } else {
         // Parent replies should always have a lower id
         // and thus be added to the structure first
-
         console.dir(replyMap, { depth: null });
         throw new Error(
           `Parent reply id ${row.reply_parent_reply_id} not found`
@@ -78,21 +78,43 @@ export async function fetchQuestion(
 }
 
 export async function postQuestion(
-  _chapterNum: number,
-  _chapterName: string | null,
-  _questionNum: number,
-  _body: string,
+  textbook: Textbook,
+  chapterNum: number,
+  chapterTitle: string | null,
+  questionNum: number,
+  questionBody: string,
 ): Promise<number | null> {
-  // if (chapter === undefined) {
-  //   if (chapterName === null) {
-  //     return null;
-  //   }
-  // } else {
-  //   if (chapter.questions.find(q => q.num == question.num)) {
-  //     return null;
-  //   }
-  // }
-  // revalidatePath("/textbooks");
-  // return question.id;
-  return null;
+  const chapter = textbook.chapters.find(ch => ch.num === chapterNum);
+  let query = "";
+  let args = [];
+  if (!chapter) {
+    if (!chapterTitle) return null;
+    query = `
+      WITH new_chapter AS (
+        INSERT INTO chapters (title, num, textbook_id)
+        VALUES ($1, $2, $3)
+        RETURNING id
+      )
+
+      INSERT INTO questions (author, num, body, chapter_id, post_date)
+      VALUES ($4, $5, $6, (SELECT id FROM new_chapter), CURRENT_TIMESTAMP)
+      RETURNING id;
+    `;
+    args = [chapterTitle, chapterNum, textbook.id,
+            "anonymous", questionNum, questionBody];
+  } else {
+    query = `
+      INSERT INTO questions (author, num, body, chapter_id, post_date)
+      VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+      RETURNING id;
+    `;
+    args = ["anonymous", questionNum, questionBody, chapter.id];
+  }
+  const res = await pool.query(query, args);
+  const newQuestionId = res.rows[0].id;
+  if (typeof newQuestionId !== "number") {
+    throw new Error("Unexpected return type");
+  }
+  revalidatePath("/textbooks");
+  return newQuestionId;
 }

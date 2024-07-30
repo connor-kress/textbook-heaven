@@ -35,10 +35,9 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
       })
     }
     const textbook = textbookMap.get(row.textbook_id);
+    const chapter = textbook!.chapters.find(c => c.id === row.chapter_id);
     if (row.chapter_id) {
-      const contains_chapter = textbook!.
-        chapters.findIndex(c => c.id === row.chapter_id) !== -1;
-      if (!contains_chapter) {
+      if (!chapter) {
         textbook!.chapters.push({
           id: row.chapter_id,
           title: row.chapter_title,
@@ -47,8 +46,6 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
         });
       }
     }
-    const chapter =
-      textbook?.chapters.find(c => c.id === row.chapter_id);
     if (row.question_id) {
       chapter!.questions.push({
         id: row.question_id,

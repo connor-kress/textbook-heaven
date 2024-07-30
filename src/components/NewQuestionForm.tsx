@@ -4,17 +4,20 @@ import { postQuestion } from "@/actions/questions";
 import { InputField, SubmitButton, TextArea } from "./FormFields";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Textbook } from "@/types/Textbook";
 
 type FormData = {
-  chapter: string,
-  chapterName: string,
+  chapterNum: string,
+  chapterTitle: string,
   num: string,
-  text: string,
+  body: string,
 };
 
-export function NewQuestionForm() {
+export function NewQuestionForm(
+  { textbook }: {textbook: Textbook}
+) {
   const [formData, setFormData] = useState<FormData>({
-    chapter: "", chapterName: "", num: "", text: "",
+    chapterNum: "", chapterTitle: "", num: "", body: "",
   });
   const { textbookName } = useParams<{ textbookName: string }>();
   const router = useRouter();
@@ -26,15 +29,15 @@ export function NewQuestionForm() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(formData);
-    const chapter = parseInt(formData.chapter);
+    const chapterNum = parseInt(formData.chapterNum);
     const num = parseInt(formData.num);
     const newId = await postQuestion(
-      chapter, formData.chapterName, num, formData.text
+      textbook, chapterNum, formData.chapterTitle, num, formData.body
     );
     if (newId === null) {
       alert("Error creating question.");
     } else {
-      // setFormData({chapter: "", chapterName: "", num: "", text: ""});
+      // setFormData({chapterNum: "", chapterTitle: "", num: "", body: ""});
       // revalidatePath("/textbooks");
       router.push(`/textbooks/${textbookName}?questionId=${newId}`);
     }
@@ -53,13 +56,13 @@ export function NewQuestionForm() {
           rounded
         "
       >
-        <InputField type="number" name="chapter" placeholder="Chapter #"
+        <InputField type="number" name="chapterNum" placeholder="Chapter #"
                     required={true} />
-        <InputField type="text" name="chapterName" placeholder="New Chapter Name"
-                    autoComplete="off" />
+        <InputField type="text" name="chapterTitle"
+                    placeholder="New Chapter Name" autoComplete="off" />
         <InputField type="number" name="num" placeholder="Question #"
                     required={true} />
-        <TextArea name="text" placeholder="Question Body" required={true}
+        <TextArea name="body" placeholder="Question Body" required={true}
                   rows={5} minLength={10} />
         <SubmitButton value="Submit" />
       </form>
