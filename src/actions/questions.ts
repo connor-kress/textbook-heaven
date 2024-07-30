@@ -1,9 +1,8 @@
 "use server";
 
 import pool from "@/lib/db";
-import { Question, QuestionSchema, Reply } from "@/types/Question";
+import { Question, QuestionSchema } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
-import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 
 export async function fetchQuestion(
@@ -28,8 +27,13 @@ export async function fetchQuestion(
     LEFT JOIN replies r ON r.question_id = q.id
     WHERE q.id = $1;
   `;
-  const res = await pool.query(query, [questionId]);
-  if (res.rows.length === 0) {
+  let res = null;
+  try {
+    res = await pool.query(query, [questionId]);
+    if (res.rows.length === 0) {
+      throw new Error("No questions found");
+    }
+  } catch {
     return null;
   }
   const row = res.rows[0];
@@ -110,7 +114,12 @@ export async function postQuestion(
     `;
     args = ["anonymous", questionNum, questionBody, chapter.id];
   }
-  const res = await pool.query(query, args);
+  let res = null;
+  try {
+    res = await pool.query(query, args);
+  } catch {
+    return null;
+  }
   const newQuestionId = res.rows[0].id;
   if (typeof newQuestionId !== "number") {
     throw new Error("Unexpected return type");
