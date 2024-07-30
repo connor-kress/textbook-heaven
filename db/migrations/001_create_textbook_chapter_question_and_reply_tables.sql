@@ -23,7 +23,8 @@ CREATE TABLE questions (
     body TEXT NOT NULL,
     chapter_id INT NOT NULL
         REFERENCES chapters(id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    UNIQUE (chapter_id, num)
 );
 
 CREATE TABLE replies (
