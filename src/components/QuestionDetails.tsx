@@ -70,7 +70,7 @@ if (loading) {
       </h2>
       <div className="flex flex-col items-start gap-10">
         {question?.comments.map((c, i) => (
-          <CommentDetails key={i} comment={c} />
+          <ReplyDetails key={i} reply={c} isBase={true} />
         ))}
       </div>
     </div>
@@ -78,27 +78,27 @@ if (loading) {
 }
 
 
-function CommentDetails({ comment }: { comment: Reply }) {
+function ReplyDetails({ reply, isBase }: { reply: Reply, isBase: boolean }) {
   return (
-    <div className="flex flex-row items-center w-full">
-      <div className="py-4 px-2 bg-blue-600 bg-opacity-20 flex-shrink-0">
-        Like btn
-      </div>
+    <div className="flex flex-row w-full">
+      {
+        isBase &&
+        <div className="
+            py-4 px-2 bg-blue-600 bg-opacity-20 flex-shrink-0
+          "
+        >
+          Like btn
+        </div>
+      }
       <div className="p-2 bg-red-600 bg-opacity-10 flex-1">
-        <h1 className="text-lg">{comment.author}</h1>
+        <h1 className="text-lg">{reply.author}</h1>
         <h3 className="pb-2">
-          Posted: {comment.postDate.toLocaleDateString()}
+          Posted: {reply.postDate.toLocaleDateString()}
         </h3>
-        <p>{comment.body}</p>
+        <p>{reply.body}</p>
         <div>{
-          comment.replies.map((reply, i) => (
-            <div key={i} className="p-2 bg-red-600 bg-opacity-10 flex flex-col">
-              <h1 className="text-lg">{reply.author}</h1>
-              <h3 className="pb-2">
-                Posted: {reply.postDate.toLocaleDateString()}
-              </h3>
-              <p>{reply.body}</p>
-            </div>
+          reply.replies.map((subReply, i) => (
+            <ReplyDetails key={i} reply={subReply} isBase={false} />
           ))
         }</div>
       </div>
