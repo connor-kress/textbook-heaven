@@ -70,7 +70,7 @@ if (loading) {
       </h2>
       <div className="flex flex-col items-start gap-10">
         {question?.comments.map((c, i) => (
-          <ReplyDetails key={i} reply={c} isBase={true} />
+          <ReplyDetails key={i} reply={c} />
         ))}
       </div>
     </div>
@@ -78,30 +78,23 @@ if (loading) {
 }
 
 
-function ReplyDetails({ reply, isBase }: { reply: Reply, isBase: boolean }) {
+function ReplyDetails(
+  { reply, parentId = null }: { reply: Reply, parentId?: number | null }
+) {
   return (
-    <div className="flex flex-row w-full">
-      {
-        isBase &&
-        <div className="
-            py-4 px-2 bg-blue-600 bg-opacity-20 flex-shrink-0
-          "
-        >
-          Like btn
-        </div>
-      }
-      <div className="p-2 bg-red-600 bg-opacity-10 flex-1">
+    <div className="flex flex-col w-full">
+      <div className="border-2 border-neutral-500 rounded-xl p-3 mb-5">
         <h1 className="text-lg">{reply.author}</h1>
         <h3 className="pb-2">
           Posted: {reply.postDate.toLocaleDateString()}
         </h3>
         <p>{reply.body}</p>
-        <div>{
-          reply.replies.map((subReply, i) => (
-            <ReplyDetails key={i} reply={subReply} isBase={false} />
-          ))
-        }</div>
       </div>
+      <div className="ml-10">{
+        reply.replies.map((subReply, i) => (
+          <ReplyDetails key={i} reply={subReply} parentId={reply.id} />
+        ))
+      }</div>
     </div>
   );
 }
