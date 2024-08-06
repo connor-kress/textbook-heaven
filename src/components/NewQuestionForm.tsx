@@ -19,13 +19,12 @@ export function NewQuestionForm(
   const [formData, setFormData] = useState<FormData>({
     chapterNum: "", chapterTitle: "", num: "", body: "",
   });
-  const { textbookName } = useParams<{ textbookName: string }>();
-  const router = useRouter();
 
   function handleChange(e: ChangeEvent<HTMLFormElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const router = useRouter();
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(formData);
@@ -39,7 +38,7 @@ export function NewQuestionForm(
     } else {
       // setFormData({chapterNum: "", chapterTitle: "", num: "", body: ""});
       // revalidatePath("/textbooks");
-      router.push(`/textbooks/${textbookName}?questionId=${newId}`);
+      router.push(`/textbooks/${textbook.baseFileName}?questionId=${newId}`);
     }
   }
 

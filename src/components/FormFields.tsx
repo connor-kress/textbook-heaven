@@ -29,10 +29,6 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   );
 }
 
-type SubmitButtonProps = {
-  value?: string,
-};
-
 export function SubmitButton(props: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
