@@ -5,6 +5,7 @@ import { Question, Reply } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import ReplyDetails from "./ReplyDetails";
 
 export function QuestionDetails(
   { textbook }: {textbook: Textbook}
@@ -73,28 +74,6 @@ if (loading) {
           <ReplyDetails key={i} reply={c} />
         ))}
       </div>
-    </div>
-  );
-}
-
-
-function ReplyDetails(
-  { reply, parentId = null }: { reply: Reply, parentId?: number | null }
-) {
-  return (
-    <div className="flex flex-col w-full">
-      <div className="border-2 border-neutral-500 rounded-xl p-3 mb-5">
-        <h1 className="text-lg">{reply.author}</h1>
-        <h3 className="pb-2">
-          Posted: {reply.postDate.toLocaleDateString()}
-        </h3>
-        <p>{reply.body}</p>
-      </div>
-      <div className="ml-10">{
-        reply.replies.map((subReply, i) => (
-          <ReplyDetails key={i} reply={subReply} parentId={reply.id} />
-        ))
-      }</div>
     </div>
   );
 }
