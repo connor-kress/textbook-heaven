@@ -1,9 +1,16 @@
-import { Reply } from "@/types/Question";
+import { Question, Reply } from "@/types/Question";
 import { useState } from "react";
 import NewReplyForm from "./NewReplyForm";
+import { Textbook } from "@/types/Textbook";
+
+type ReplyDetailsProps = {
+    textbook: Textbook,
+    reply: Reply,
+    question: Question,
+}
 
 export default function ReplyDetails(
-  { reply, parentId = null }: { reply: Reply, parentId?: number | null }
+  { textbook, reply, question }: ReplyDetailsProps
 ) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   return (
@@ -20,10 +27,10 @@ export default function ReplyDetails(
         </button>
       </div>
       <div className="ml-10">
-        { showReplyForm && <NewReplyForm />}
+        { showReplyForm && <NewReplyForm textbook={textbook} question={question} parentReplyId={reply.id} />}
         {
           reply.replies.map((subReply, i) => (
-            <ReplyDetails key={i} reply={subReply} parentId={reply.id} />
+            <ReplyDetails key={i} textbook={textbook} reply={subReply} question={question} />
           ))
         }
       </div>

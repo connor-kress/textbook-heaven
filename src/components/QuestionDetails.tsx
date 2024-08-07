@@ -71,7 +71,7 @@ if (loading) {
       </h2>
       <div className="flex flex-col items-start gap-10">
         {question?.comments.map((c, i) => (
-          <ReplyDetails key={i} reply={c} />
+          <ReplyDetails key={i} textbook={textbook} reply={c} question={question} />
         ))}
       </div>
     </div>

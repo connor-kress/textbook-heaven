@@ -3,7 +3,7 @@
 import { postQuestion } from "@/actions/questions";
 import { InputField, SubmitButton, TextArea } from "./FormFields";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Textbook } from "@/types/Textbook";
 
 type FormData = {

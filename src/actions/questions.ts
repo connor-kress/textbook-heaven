@@ -88,6 +88,7 @@ export async function postQuestion(
   questionNum: number,
   questionBody: string,
 ): Promise<number | null> {
+  // TODO: user authentication
   const chapter = textbook.chapters.find(ch => ch.num === chapterNum);
   let query = "";
   let args = [];
@@ -112,7 +113,7 @@ export async function postQuestion(
       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
       RETURNING id;
     `;
-    args = ["anonymous", questionNum, questionBody, chapter.id];
+    args = ["Anonymous", questionNum, questionBody, chapter.id];
   }
   let res = null;
   try {
@@ -124,6 +125,6 @@ export async function postQuestion(
   if (typeof newQuestionId !== "number") {
     throw new Error("Unexpected return type");
   }
-  revalidatePath("/textbooks");
+  revalidatePath(`/textbooks/${textbook.baseFileName}`);
   return newQuestionId;
 }

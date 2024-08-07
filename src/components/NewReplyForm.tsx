@@ -1,11 +1,24 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { InputField, SubmitButton, TextArea } from "./FormFields";
+import { Question, Reply } from "@/types/Question";
+import { postReply } from "@/actions/reply";
+import { Textbook } from "@/types/Textbook";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   body: string,
 };
 
-export default function NewReplyForm() {
+type NewReplyFormProps = {
+  textbook: Textbook,
+  parentReplyId: number | null,
+  question: Question,
+}
+
+export default function NewReplyForm(
+  { textbook, parentReplyId, question }: NewReplyFormProps
+) {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     body: "",
   });
@@ -16,7 +29,9 @@ export default function NewReplyForm() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO
+    console.log(formData);
+    await postReply(textbook, formData.body, parentReplyId, question.id);
+    window.location.reload();
   }
 
   return (
