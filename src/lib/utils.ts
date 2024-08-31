@@ -18,7 +18,12 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
     LEFT JOIN chapters c ON t.id = c.textbook_id
     LEFT JOIN questions q ON c.id = q.chapter_id;
   `;
-  const res = await pool.query(query);
+  let res = null;
+  try {
+    res = await pool.query(query);
+  } catch (e) {
+    throw new Error(`Postgres error: ${e}`);
+  }
 
   const textbookMap = new Map<number, Textbook>();
   res.rows.forEach(row => {
@@ -80,9 +85,14 @@ export async function fetchTextbook(
     WHERE t.file_name = $1;
   `;
   const fileName = `${baseFileName}.pdf`;
-  const res = await pool.query(query, [fileName]);
+  let res = null;
+  try {
+    res = await pool.query(query, [fileName]);
+  } catch (e) {
+    throw new Error(`Postgres error: ${e}`);
+  }
   if (res.rows.length === 0) {
-    throw new Error("No textbooks found")
+    throw new Error("No textbooks found");
   }
 
   const chapterMap = new Map<number, Chapter>();
