@@ -40,7 +40,7 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
       })
     }
     const textbook = textbookMap.get(row.textbook_id);
-    const chapter = textbook!.chapters.find(c => c.id === row.chapter_id);
+    let chapter = textbook!.chapters.find(c => c.id === row.chapter_id);
     if (row.chapter_id) {
       if (!chapter) {
         textbook!.chapters.push({
@@ -49,6 +49,7 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
           num: row.chapter_num,
           questions: [],
         });
+        chapter = textbook!.chapters.find(c => c.id === row.chapter_id);
       }
     }
     if (row.question_id) {
