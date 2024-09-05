@@ -12,10 +12,10 @@ export async function postReply(
 ) {
   // TODO: user authentication
   const query = `
-    INSERT INTO replies (author, body, parent_reply_id, question_id, post_date)
+    INSERT INTO replies (author_id, body, parent_reply_id, question_id, post_date)
     VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP);
   `;
-  const args = ["Anonymous", body, parentReplyId, questionId];
+  const args = [2, body, parentReplyId, questionId];
   await pool.query(query, args);
   revalidatePath(`/textbooks/${textbook.baseFileName}`);
 }

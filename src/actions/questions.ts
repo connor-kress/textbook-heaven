@@ -11,21 +11,26 @@ export async function fetchQuestion(
   const query = `
     SELECT
       q.id AS question_id,
-      q.author AS question_author,
+      q.author_id AS question_author_id,
       q.post_date AS question_post_date,
       q.num AS question_num,
       q.body AS question_body,
       q.chapter_id as question_chapter_id,
       r.id AS reply_id,
-      r.author AS reply_author,
+      r.author_id AS reply_author_id,
       r.post_date AS reply_post_date,
       r.likes AS reply_likes,
       r.dislikes AS reply_dislikes,
       r.body AS reply_body,
-      r.parent_reply_id AS reply_parent_reply_id
+      r.parent_reply_id AS reply_parent_reply_id,
+      uq.name AS question_author_name,
+      ur.name AS reply_author_name
     FROM questions q
     LEFT JOIN replies r ON r.question_id = q.id
-    WHERE q.id = $1;
+    LEFT JOIN users uq ON q.author_id = uq.id
+    LEFT JOIN users ur ON r.author_id = ur.id
+    WHERE q.id = $1
+    ORDER BY r.id ASC;
   `;
   let res = null;
   try {
@@ -39,7 +44,8 @@ export async function fetchQuestion(
   const row = res.rows[0];
   const question: any = {
     id: row.question_id,
-    author: row.question_author,
+    author_id: row.question_author_id,
+    author_name: row.question_author_name,
     postDate: row.question_post_date,
     num: row.question_num,
     body: row.question_body,
@@ -51,7 +57,8 @@ export async function fetchQuestion(
     if (!row.reply_id) return;
     const reply: any = {
       id: row.reply_id,
-      author: row.reply_author,
+      author_id: row.reply_author_id,
+      author_name: row.reply_author_name,
       postDate: row.reply_post_date,
       likes: row.reply_likes,
       dislikes: row.reply_dislikes,
@@ -101,19 +108,19 @@ export async function postQuestion(
         RETURNING id
       )
 
-      INSERT INTO questions (author, num, body, chapter_id, post_date)
+      INSERT INTO questions (author_id, num, body, chapter_id, post_date)
       VALUES ($4, $5, $6, (SELECT id FROM new_chapter), CURRENT_TIMESTAMP)
       RETURNING id;
     `;
     args = [chapterTitle, chapterNum, textbook.id,
-            "anonymous", questionNum, questionBody];
+            2, questionNum, questionBody];
   } else {
     query = `
-      INSERT INTO questions (author, num, body, chapter_id, post_date)
+      INSERT INTO questions (author_id, num, body, chapter_id, post_date)
       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
       RETURNING id;
     `;
-    args = ["Anonymous", questionNum, questionBody, chapter.id];
+    args = [2, questionNum, questionBody, chapter.id];
   }
   let res = null;
   try {

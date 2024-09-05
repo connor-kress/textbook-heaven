@@ -1,3 +1,8 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE textbooks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255),
@@ -17,7 +22,9 @@ CREATE TABLE chapters (
 
 CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
-    author VARCHAR(50) NOT NULL,
+    author_id INT NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
     post_date TIMESTAMP NOT NULL,
     num INT NOT NULL,
     body TEXT NOT NULL,
@@ -29,7 +36,9 @@ CREATE TABLE questions (
 
 CREATE TABLE replies (
     id SERIAL PRIMARY KEY,
-    author VARCHAR(50) NOT NULL,
+    author_id INT NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
     post_date TIMESTAMP NOT NULL,
     likes INT DEFAULT 0,
     dislikes INT DEFAULT 0,
