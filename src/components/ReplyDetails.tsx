@@ -16,7 +16,7 @@ export default function ReplyDetails(
   return (
     <div className="flex flex-col w-full">
       <div className="border-2 border-neutral-500 rounded-xl p-3 mb-5">
-        <h1 className="text-lg">{reply.author}</h1>
+        <h1 className="text-lg">{reply.author_name}</h1>
         <h3 className="pb-2">
           Posted: {reply.postDate.toLocaleDateString()}
         </h3>
