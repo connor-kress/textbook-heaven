@@ -95,10 +95,9 @@ export async function fetchTextbook(
   if (res.rows.length === 0) {
     throw new Error("No textbooks found");
   }
-
   const chapterMap = new Map<number, Chapter>();
   res.rows.forEach(row => {
-    if (!chapterMap.has(row.chapter_id)) {
+    if (row.chapter_id !== null && !chapterMap.has(row.chapter_id)) {
       chapterMap.set(row.chapter_id, {
         id: row.chapter_id,
         title: row.chapter_title,

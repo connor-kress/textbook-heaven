@@ -18,7 +18,7 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default async function TextbookPage({ params }: Props) {
-  const textbook = await fetchTextbook(params.textbookName);
+  const textbook = await fetchTextbook(decodeURI(params.textbookName));
   return (
     <div className="flex flex-row">
       <div className="w-1/2 h-[90vh] hidden lg:flex flex-col">
