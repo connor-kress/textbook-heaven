@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { fetchTextbooks } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Available Textbooks - Textbook Heaven",
   description: "A list of available textbooks to post and view question answers.",
