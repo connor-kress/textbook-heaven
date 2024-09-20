@@ -2,6 +2,7 @@ import { Chapter, Textbook, TextbookSchema } from '@/types/Textbook';
 import pool from "./db";
 
 export async function fetchTextbooks(): Promise<Textbook[]> {
+  console.log(`Querying database host: ${process.env.DB_HOST}`);
   const query = `
     SELECT
       t.id AS textbook_id,
@@ -68,6 +69,7 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
 export async function fetchTextbook(
   baseFileName: string
 ): Promise<Textbook> {
+  console.log(`Querying database host: ${process.env.DB_HOST}`);
   const query = `
     SELECT
       t.id AS textbook_id,

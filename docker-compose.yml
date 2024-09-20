@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    env_file:
+      - .env.local
+    networks:
+      - app-network
+
+  db:
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    env_file:
+      - .db.env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
