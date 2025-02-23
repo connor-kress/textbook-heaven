@@ -1,5 +1,6 @@
 "use client";
 
+import ReactMarkdown from "react-markdown"
 import { postQuestion } from "@/actions/questions";
 import { InputField, SubmitButton, TextArea } from "./FormFields";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -43,7 +44,7 @@ export function NewQuestionForm(
   }
 
   return (
-    <div className="py-4 px-20">
+    <div className="py-4 px-20 flex flex-col">
       <h1 className="text-2xl font-bold mb-2">Compose New Question:</h1>
       <form
         onSubmit={handleSubmit}
@@ -65,6 +66,25 @@ export function NewQuestionForm(
                   rows={5} minLength={10} />
         <SubmitButton value="Submit" />
       </form>
+
+      {formData.body &&
+        <>
+        <h1 className="text-2xl font-bold mb-2 mt-4">Preview:</h1>
+        <div
+          className="
+            prose dark:prose-dark
+            flex flex-col
+            max-w-full w-full
+            p-3 rounded
+            dark:bg-neutral-800
+          "
+        >
+          <ReactMarkdown
+            children={formData.body}
+          />
+        </div>
+        </>
+      }
     </div>
   );
 }

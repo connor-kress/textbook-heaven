@@ -17,8 +17,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="
         flex flex-col
-        bg-gray-200 dark:bg-neutral-900
-        text-gray-950 dark:text-neutral-200
+        bg-white dark:bg-neutral-900
+        text-neutral-950 dark:text-neutral-200
       ">
         <Topbar />
         <main className="mt-16 flex-1">{children}</main>
