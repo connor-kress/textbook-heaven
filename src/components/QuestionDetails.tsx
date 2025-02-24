@@ -1,11 +1,12 @@
 "use client";
 
 import { fetchQuestion} from "@/actions/questions";
-import { Question, Reply } from "@/types/Question";
+import { Question } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 export function QuestionDetails(
   { textbook }: {textbook: Textbook}
@@ -63,8 +64,8 @@ if (loading) {
             Q. {question.num}
           </span>
         </h1>
-        <hr className="border-neutral-600" />
-        <p className="mt-2 text-xl">{question.body}</p>
+        <hr className="mb-2 border-neutral-600" />
+        <MarkdownRenderer text={question.body}/>
       </div>
       <h2 className="mb-4">
         {question.comments.length} Comments:

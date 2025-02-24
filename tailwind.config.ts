@@ -74,20 +74,20 @@ const config: Config = {
             color: theme("colors.neutral.300"),
             code: { // Inline code (single backticks)
               color: theme("colors.neutral.100"),
-              backgroundColor: theme("colors.neutral.900"),
+              backgroundColor: theme("colors.neutral.950"),
               fontWeight: "700",
               padding: "0.1em 0",
               borderRadius: "0.25rem",
             },
             "pre > code": { // Code blocks (triple backticks)
               color: theme("colors.neutral.200"),
-              backgroundColor: theme("colors.neutral.700"),
+              backgroundColor: theme("colors.neutral.800"),
               fontWeight: "700",
               padding: "0",
               borderRadius: "0",
             },
             pre: {
-              backgroundColor: theme("colors.neutral.700"),
+              backgroundColor: theme("colors.neutral.800"),
               marginTop: "0.5em",
               marginBottom: "0.5em",
             },

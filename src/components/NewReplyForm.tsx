@@ -1,9 +1,9 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import { InputField, SubmitButton, TextArea } from "./FormFields";
-import { Question, Reply } from "@/types/Question";
+import { SubmitButton, TextArea } from "./FormFields";
+import { Question } from "@/types/Question";
 import { postReply } from "@/actions/reply";
 import { Textbook } from "@/types/Textbook";
-import { useRouter } from "next/navigation";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 type FormData = {
   body: string,
@@ -18,7 +18,6 @@ type NewReplyFormProps = {
 export default function NewReplyForm(
   { textbook, parentReplyId, question }: NewReplyFormProps
 ) {
-  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     body: "",
   });
@@ -47,6 +46,12 @@ export default function NewReplyForm(
         {/* reply preview here */}
         <SubmitButton value="Submit" />
       </form>
+      {formData.body &&
+        <>
+        <h1 className="text-2xl font-bold mb-2 mt-4">Preview:</h1>
+        <MarkdownRenderer text={formData.body} />
+        </>
+      }
     </div>
   );
 }

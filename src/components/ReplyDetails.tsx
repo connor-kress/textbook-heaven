@@ -2,6 +2,7 @@ import { Question, Reply } from "@/types/Question";
 import { useState } from "react";
 import NewReplyForm from "./NewReplyForm";
 import { Textbook } from "@/types/Textbook";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 type ReplyDetailsProps = {
     textbook: Textbook,
@@ -20,17 +21,31 @@ export default function ReplyDetails(
         <h3 className="pb-2">
           Posted: {reply.postDate.toLocaleDateString()}
         </h3>
-        <p className="pb-2">{reply.body}</p>
-        <button onClick={() => setShowReplyForm(true)}
-                className="text-blue-500 hover:underline">
+        <MarkdownRenderer text={reply.body}/>
+        <button
+          onClick={() => setShowReplyForm(true)}
+          className="text-blue-500 hover:underline"
+        >
           New Reply
         </button>
       </div>
       <div className="ml-10">
-        { showReplyForm && <NewReplyForm textbook={textbook} question={question} parentReplyId={reply.id} />}
+        {
+          showReplyForm &&
+          <NewReplyForm
+            textbook={textbook}
+            question={question}
+            parentReplyId={reply.id}
+          />
+        }
         {
           reply.replies.map((subReply, i) => (
-            <ReplyDetails key={i} textbook={textbook} reply={subReply} question={question} />
+            <ReplyDetails
+              key={i}
+              textbook={textbook}
+              reply={subReply}
+              question={question}
+            />
           ))
         }
       </div>

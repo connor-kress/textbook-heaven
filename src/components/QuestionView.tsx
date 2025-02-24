@@ -16,7 +16,7 @@ export default function QuestionView(
   if (newQuestion !== null) {
     body = <NewQuestionForm textbook={textbook} />;
   } else if (questionId === null) {
-    body = <p>No question</p>;
+    body = <p>No question selected.</p>;
   } else {
     body = <QuestionDetails textbook={textbook} />;
   }

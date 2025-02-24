@@ -1,6 +1,9 @@
 import Topbar from "@/components/Topbar";
 import pool from "@/lib/db";
+
 import "@/styles/globals.css";
+import "katex/dist/katex.min.css";
+
 
 export const metadata = {
   title: "Textbook Heaven",

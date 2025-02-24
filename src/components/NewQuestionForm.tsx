@@ -1,15 +1,11 @@
 "use client";
 
-import ReactMarkdown from "react-markdown"
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 import { postQuestion } from "@/actions/questions";
 import { InputField, SubmitButton, TextArea } from "./FormFields";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Textbook } from "@/types/Textbook";
-
-import "katex/dist/katex.min.css";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 type FormData = {
   chapterNum: string,
@@ -73,22 +69,8 @@ export function NewQuestionForm(
 
       {formData.body &&
         <>
-        <h1 className="text-2xl font-bold mb-2 mt-4">Preview:</h1>
-        <div
-          className="
-            prose dark:prose-dark
-            flex flex-col
-            max-w-full w-full
-            p-3 rounded
-            dark:bg-neutral-800
-          "
-        >
-          <ReactMarkdown
-            remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-            children={formData.body}
-          />
-        </div>
+          <h1 className="text-2xl font-bold mb-2 mt-4">Preview:</h1>
+          <MarkdownRenderer text={formData.body} />
         </>
       }
     </div>
