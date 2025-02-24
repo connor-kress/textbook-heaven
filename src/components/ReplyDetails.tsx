@@ -23,10 +23,10 @@ export default function ReplyDetails(
         </h3>
         <MarkdownRenderer text={reply.body}/>
         <button
-          onClick={() => setShowReplyForm(true)}
+          onClick={() => setShowReplyForm(prev => !prev)}
           className="text-blue-500 hover:underline"
         >
-          New Reply
+          { showReplyForm ? "Close Form" : "New Reply"}
         </button>
       </div>
       <div className="ml-10">
