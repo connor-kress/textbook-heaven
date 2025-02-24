@@ -40,13 +40,13 @@ export function QuestionDetails(
 
 if (loading) {
     return (
-      <div className="mx-20 lg:ml-10 my-4 text-2xl">
+      <div className="text-2xl">
         Loading question...
       </div>
     );
   } else if (question === null) {
     return (
-      <div className="mx-20 lg:ml-10 my-4 text-2xl">
+      <div className="text-2xl">
         No question data found.
       </div>
     );
@@ -58,17 +58,15 @@ if (loading) {
   }
   
   return (
-    <div className="mx-20 lg:ml-10">
-      <div className="my-4">
-        <h1 className="mb-2 text-2xl font-bold">
-          Chapter {chapter.num}: {chapter.title}
-          <span className="text-neutral-400">
-            {" "}- Q. {question.num}
-          </span>
-        </h1>
-        <hr className="mb-2 border-neutral-600" />
-        <MarkdownRenderer text={question.body}/>
-      </div>
+    <>
+      <h1 className="mb-2 text-2xl font-bold">
+        Chapter {chapter.num}: {chapter.title}
+        <span className="text-neutral-400">
+          {" "}- Q. {question.num}
+        </span>
+      </h1>
+      <hr className="mb-2 border-neutral-600" />
+      <MarkdownRenderer text={question.body}/>
       <button
         onClick={() => setShowCommentForm(prev => !prev)}
         className="text-blue-500 hover:underline mb-2"
@@ -93,6 +91,6 @@ if (loading) {
           <ReplyDetails key={i} textbook={textbook} reply={c} question={question} />
         ))}
       </div>
-    </div>
+    </>
   );
 }

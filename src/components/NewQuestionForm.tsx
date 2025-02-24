@@ -44,7 +44,7 @@ export function NewQuestionForm(
   }
 
   return (
-    <div className="py-4 px-20 flex flex-col">
+    <div className="flex flex-col">
       <h1 className="text-2xl font-bold mb-2">Compose New Question:</h1>
       <form
         onSubmit={handleSubmit}
