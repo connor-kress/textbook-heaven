@@ -22,20 +22,25 @@ export function generateMetadata({ params }: Props): Metadata {
 export default async function TextbookPage({ params }: Props) {
   const textbook = await fetchTextbook(decodeURI(params.textbookName));
   return (
-    <div className="flex flex-row">
-      <div className="w-1/2 h-[90vh] hidden lg:flex flex-col">
-        <h1 className="text-2xl font-bold">
-          {textbook.title}
-          <span className="text-sm"> (
-            <Link href={textbook.filePath} target="_blank"
-                  className="text-blue-700">
-              full screen
-            </Link>)
-          </span>
-        </h1>
+    <div className="fixed inset-0 top-16 flex flex-row">
+      {/* top-16 accounts for the top nav bar */}
+      <div className="w-1/2 h-[calc(100vh-4rem)] hidden lg:flex flex-col">
+        <div className="flex flex-col items-center">
+          <div className="p-0.5">
+            <span className="text-2xl font-bold">{textbook.title}</span>
+            <span className="text-lg"> by {textbook.author}</span>
+            <span className="text-sm"> (
+              <Link href={textbook.filePath} target="_blank"
+                    className="text-blue-700">
+                view file
+              </Link>)
+            </span>
+          </div>
+        </div>
         <PDFView path={textbook.filePath}/>
       </div>
-      <div className="flex flex-col w-full lg:w-1/2">
+      {/* -4rem accounts for the top nav bar */}
+      <div className="flex flex-col w-full lg:w-1/2 h-[calc(100vh-4rem)] overflow-y-auto">
         <QuestionView textbook={textbook}/>
       </div>
     </div>

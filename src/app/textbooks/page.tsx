@@ -11,15 +11,18 @@ export const metadata = {
 export default async function TextbookListPage() {
   const textbooks = await fetchTextbooks();
   return (
-    <>
-      <h1>Available Textbooks:</h1>
+    <div className="flex flex-col items-center gap-2 p-2">
+      <h1 className="text-2xl font-bold">Available Textbooks:</h1>
       {
         textbooks.map((tb, i) =>
-          <Link href={`/textbooks/${tb.baseFileName}`} key={i}>
+          <Link
+            href={`/textbooks/${tb.baseFileName}`} key={i}
+            className="text-blue-400"
+          >
             <h3>{tb.title}</h3>
           </Link>
         )
       }
-    </>
+    </div>
   );
 }
