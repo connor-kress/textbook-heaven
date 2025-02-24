@@ -15,8 +15,9 @@ export function MarkdownRenderer({ text }: { text: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeKatex]}
-        children={text}
-      />
+      >
+        {text}
+      </ReactMarkdown>
     </div>
   );
 }
