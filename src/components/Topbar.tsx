@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Topbar() {
   return (
     <header className="
-      fixed h-16 w-full
+      fixed h-16 w-full z-50
       flex flex-row items-center
       shadow-xl
       bg-gray-400 dark:bg-neutral-800
