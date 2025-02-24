@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import NewReplyForm from "./NewReplyForm";
 
 export function QuestionDetails(
   { textbook }: {textbook: Textbook}
@@ -15,6 +16,7 @@ export function QuestionDetails(
   const questionId = params.get("questionId");
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showCommentForm, setShowCommentForm] = useState(false);
 
   async function updateQuestion() {
       setLoading(true);
@@ -67,10 +69,26 @@ if (loading) {
         <hr className="mb-2 border-neutral-600" />
         <MarkdownRenderer text={question.body}/>
       </div>
+      <button
+        onClick={() => setShowCommentForm(prev => !prev)}
+        className="text-blue-500 hover:underline mb-2"
+      >
+        { showCommentForm ? "Close Form" : "New Reply"}
+      </button>
       <h2 className="mb-4">
-        {question.comments.length} Comments:
+        {question.comments.length} Replies:
       </h2>
       <div className="flex flex-col items-start gap-10">
+        {
+          showCommentForm &&
+          <div className="w-full">
+            <NewReplyForm
+              textbook={textbook}
+              question={question}
+              parentReplyId={null}
+            />
+          </div>
+        }
         {question?.comments.map((c, i) => (
           <ReplyDetails key={i} textbook={textbook} reply={c} question={question} />
         ))}
