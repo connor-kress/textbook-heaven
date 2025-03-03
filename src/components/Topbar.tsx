@@ -6,7 +6,8 @@ export default function Topbar() {
       fixed h-16 w-full z-50
       flex flex-row items-center
       shadow-xl
-      bg-gray-400 dark:bg-neutral-800
+      text-neutral-200
+      bg-neutral-800
     ">
       <Logo />
       <NavLink href="/textbooks" text="Textbooks" />
@@ -21,7 +22,7 @@ function Logo() {
       h-full max-w-36 px-4
       text-xl font-bold
       cursor-pointer
-      hover:bg-gray-300 dark:hover:bg-neutral-700
+      hover:bg-neutral-700
     ">
       <Link href="/">Textbook Heaven</Link>
     </div>
@@ -35,7 +36,7 @@ function NavLink({ href, text }: { href: string, text: string }) {
       h-full px-4
       text-lg
       cursor-pointer
-      hover:bg-gray-300 dark:hover:bg-neutral-700
+      hover:bg-neutral-700
     ">
       <Link href={href}>{text}</Link>
     </div>

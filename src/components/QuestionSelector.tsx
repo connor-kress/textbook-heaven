@@ -49,6 +49,7 @@ function ChapterPill(
         title={chapter.title === null ? "No Title" : chapter.title}
         className={`
         p-4 text-nowrap cursor-pointer shadow-lg
+        text-neutral-200
         bg-neutral-900 hover:bg-neutral-700
         ${expanded ? "rounded-l-3xl" : "rounded-3xl"}
       `}>
