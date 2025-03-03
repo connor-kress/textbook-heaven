@@ -61,7 +61,7 @@ if (loading) {
     <>
       <h1 className="mb-2 text-2xl font-bold">
         Chapter {chapter.num}: {chapter.title}
-        <span className="text-neutral-400">
+        <span className="text-neutral-500 dark:text-neutral-400">
           {" "}- Q. {question.num}
         </span>
       </h1>
