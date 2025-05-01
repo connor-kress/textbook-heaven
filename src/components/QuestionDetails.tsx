@@ -1,7 +1,6 @@
 "use client";
 
-import { fetchQuestion} from "@/actions/questions";
-import { Question } from "@/types/Question";
+import { Question, QuestionSchema } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -26,10 +25,14 @@ export function QuestionDetails(
         return;
       }
       try {
-        const questionData = await fetchQuestion(parseInt(questionId));
+        const res = await fetch(`/api/questions/${questionId}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error((await res.json()).error);
+        const questionData = QuestionSchema.parse(await res.json());
         setQuestion(questionData);
-      } catch (e) {
-        // check error
+      } catch (err) {
+        console.error(err);
         setQuestion(null);
       }
       setLoading(false);
@@ -88,7 +91,12 @@ if (loading) {
           </div>
         }
         {question?.comments.map((c, i) => (
-          <ReplyDetails key={i} textbook={textbook} reply={c} question={question} />
+          <ReplyDetails
+            key={i}
+            textbook={textbook}
+            reply={c}
+            question={question}
+          />
         ))}
       </div>
     </>
