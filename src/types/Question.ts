@@ -1,35 +1,20 @@
 import { z } from "zod"
 
-export type Reply = {
-  id: number,
-  author_id: number,
-  author_name: string,
-  postDate: Date,
-  likes: number,
-  dislikes: number,
-  body: string,
-  replies: Reply[],
-}
-
-export type Question = {
-  id: number,
-  author_id: number,
-  author_name: string,
-  postDate: Date,
-  chapterId: number,
-  num: number,
-  body: string,
-  comments: Reply[],
-}
-
-const ReplySchema: z.ZodType<Reply> = z.object({
+const ReplyBaseSchema = z.object({
   id: z.number(),
   author_id: z.number(),
   author_name: z.string(),
-  postDate: z.date(),
+  postDate: z.coerce.date(),
   likes: z.number(),
   dislikes: z.number(),
   body: z.string(),
+});
+
+// Because type inference is needed for recursive zod types
+export type Reply = z.infer<typeof ReplyBaseSchema> & {
+  replies: Reply[],
+};
+export const ReplySchema: z.ZodType<Reply> = ReplyBaseSchema.extend({
   replies: z.lazy(() => ReplySchema.array()),
 });
 
@@ -37,9 +22,11 @@ export const QuestionSchema = z.object({
   id: z.number(),
   author_id: z.number(),
   author_name: z.string(),
-  postDate: z.date(),
+  postDate: z.coerce.date(),
   chapterId: z.number(),
   num: z.number(),
   body: z.string(),
   comments: ReplySchema.array(),
 });
+
+export type Question = z.infer<typeof QuestionSchema>;
