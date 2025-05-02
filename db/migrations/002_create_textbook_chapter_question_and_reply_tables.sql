@@ -17,8 +17,8 @@ CREATE TABLE chapters (
 
 CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
-    author_id INT NOT NULL
-        REFERENCES users(id)
+    author_id TEXT NOT NULL
+        REFERENCES "user"(id)
         ON DELETE CASCADE,
     post_date TIMESTAMP NOT NULL,
     num INT NOT NULL,
@@ -31,8 +31,8 @@ CREATE TABLE questions (
 
 CREATE TABLE replies (
     id SERIAL PRIMARY KEY,
-    author_id INT NOT NULL
-        REFERENCES users(id)
+    author_id TEXT NOT NULL
+        REFERENCES "user"(id)
         ON DELETE CASCADE,
     post_date TIMESTAMP NOT NULL,
     body TEXT NOT NULL,

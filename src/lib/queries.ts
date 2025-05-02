@@ -21,8 +21,8 @@ export async function getQuestionById(
       ur.name AS reply_author_name
     FROM questions q
     LEFT JOIN replies r ON r.question_id = q.id
-    LEFT JOIN users uq ON q.author_id = uq.id
-    LEFT JOIN users ur ON r.author_id = ur.id
+    LEFT JOIN "user" uq ON q.author_id = uq.id
+    LEFT JOIN "user" ur ON r.author_id = ur.id
     WHERE q.id = $1
     ORDER BY r.id ASC;
   `;

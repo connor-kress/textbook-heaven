@@ -1,8 +1,10 @@
 "use server";
 
+import { auth } from "@/lib/auth";
 import pool from "@/lib/db";
 import { Textbook } from "@/types/Textbook";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 export async function postQuestion(
   textbook: Textbook,
@@ -11,10 +13,15 @@ export async function postQuestion(
   questionNum: number,
   questionBody: string,
 ): Promise<number | null> {
-  // TODO: user authentication
+  const session = await auth.api.getSession({
+      headers: headers(),
+  })
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
   const chapter = textbook.chapters.find(ch => ch.num === chapterNum);
-  let query = "";
-  let args = [];
+  let query;
+  let args;
   if (!chapter) {
     if (!chapterTitle) return null;
     query = `
@@ -29,16 +36,16 @@ export async function postQuestion(
       RETURNING id;
     `;
     args = [chapterTitle, chapterNum, textbook.id,
-            2, questionNum, questionBody];
+            session.user.id, questionNum, questionBody];
   } else {
     query = `
       INSERT INTO questions (author_id, num, body, chapter_id, post_date)
       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
       RETURNING id;
     `;
-    args = [2, questionNum, questionBody, chapter.id];
+    args = [session.user.id, questionNum, questionBody, chapter.id];
   }
-  let res = null;
+  let res;
   try {
     res = await pool.query(query, args);
   } catch {
