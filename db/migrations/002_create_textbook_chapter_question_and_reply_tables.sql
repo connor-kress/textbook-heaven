@@ -35,8 +35,6 @@ CREATE TABLE replies (
         REFERENCES users(id)
         ON DELETE CASCADE,
     post_date TIMESTAMP NOT NULL,
-    likes INT DEFAULT 0,
-    dislikes INT DEFAULT 0,
     body TEXT NOT NULL,
     parent_reply_id INT
         REFERENCES replies(id)
