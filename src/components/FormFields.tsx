@@ -4,7 +4,7 @@ export function InputField(props: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       className="
-        p-2 rounded shadow-lg
+        p-2 rounded shadow-lg w-full
         bg-neutral-700 text-white
         placeholder-gray-400
         focus:outline-none focus:ring-2 focus:ring-cyan-500
@@ -18,7 +18,7 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       className="
-        p-2 rounded shadow-lg
+        p-2 rounded shadow-lg w-full
         bg-neutral-700 text-white
         placeholder-gray-400
         focus:outline-none focus:ring-2 focus:ring-cyan-500
