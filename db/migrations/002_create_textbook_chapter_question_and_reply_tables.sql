@@ -1,12 +1,7 @@
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE textbooks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255),
-    author VARCHAR(50),
+    author VARCHAR(255),
     description TEXT,
     file_name VARCHAR(255) NOT NULL UNIQUE
 );
