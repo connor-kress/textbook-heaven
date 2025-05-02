@@ -1,9 +1,12 @@
+"use client";
+
 import { ChangeEvent, FormEvent, useState } from "react";
 import { SubmitButton, TextArea } from "./FormFields";
 import { Question } from "@/types/Question";
 import { postReply } from "@/actions/reply";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   body: string,
@@ -18,6 +21,7 @@ type NewReplyFormProps = {
 export default function NewReplyForm(
   { textbook, parentReplyId, question }: NewReplyFormProps
 ) {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     body: "",
   });
@@ -29,7 +33,20 @@ export default function NewReplyForm(
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(formData);
-    await postReply(textbook, formData.body, parentReplyId, question.id);
+    try{
+      await postReply(textbook, formData.body, parentReplyId, question.id);
+    } catch (err: any){
+      if (
+        err?.message === "Unauthorized" ||
+        err?.toString().includes("Unauthorized")
+      ) {
+        router.push("/signin");
+        return;
+      }
+      alert(err?.message || err);
+      return;
+    }
+    // Post-submit callback?
     window.location.reload();
   }
 

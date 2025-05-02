@@ -17,6 +17,7 @@ type FormData = {
 export function NewQuestionForm(
   { textbook }: {textbook: Textbook}
 ) {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     chapterNum: "", chapterTitle: "", num: "", body: "",
   });
@@ -25,22 +26,29 @@ export function NewQuestionForm(
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const router = useRouter();
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(formData);
     const chapterNum = parseInt(formData.chapterNum);
     const num = parseInt(formData.num);
-    const newId = await postQuestion(
-      textbook, chapterNum, formData.chapterTitle, num, formData.body
-    );
-    if (newId === null) {
-      alert("Error creating question.");
-    } else {
-      // setFormData({chapterNum: "", chapterTitle: "", num: "", body: ""});
-      // revalidatePath("/textbooks");
-      router.push(`/textbooks/${textbook.baseFileName}?questionId=${newId}`);
+    let newId = null;
+    try{
+      newId = await postQuestion(
+        textbook, chapterNum, formData.chapterTitle, num, formData.body
+      );
+      if (!newId) throw Error("Could not create question");
+    } catch (err: any){
+      if (
+        err?.message === "Unauthorized" ||
+        err?.toString().includes("Unauthorized")
+      ) {
+        router.push("/signin");
+        return;
+      }
+      alert(err?.message || err);
+      return;
     }
+    router.push(`/textbooks/${textbook.baseFileName}?questionId=${newId}`);
   }
 
   return (
