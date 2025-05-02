@@ -5,30 +5,34 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { InputField, SubmitButton } from "@/components/FormFields";
 
-export default function SignupPage() {
+export default function SigninPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
     password: "",
-    name: ""
+    rememberMe: false
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  function handleChange (e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
   };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
-    await authClient.signUp.email(
+    await authClient.signIn.email(
       {
         email: form.email,
         password: form.password,
-        name: form.name,
-        callbackURL: "/textbooks"
+        callbackURL: "/textbooks",
+        rememberMe: form.rememberMe
       },
       {
         onRequest: () => {
@@ -64,32 +68,13 @@ export default function SignupPage() {
         "
       >
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Sign Up
+          Sign In
         </h2>
         {error && (
           <div className="mb-4 text-red-600 dark:text-red-400 text-center">
             {error}
           </div>
         )}
-        <div>
-          <label
-            className="block mb-1 font-medium"
-            htmlFor="name"
-          >
-            Name
-          </label>
-          <InputField
-            id="name"
-            name="name"
-            type="text"
-            value={form.name}
-            onChange={handleChange}
-            required
-            autoComplete="name"
-            placeholder="Your name"
-            disabled={loading}
-          />
-        </div>
         <div>
           <label
             className="block mb-1 font-medium"
@@ -124,14 +109,28 @@ export default function SignupPage() {
             onChange={handleChange}
             required
             minLength={8}
-            autoComplete="new-password"
-            placeholder="At least 8 characters"
+            autoComplete="current-password"
+            placeholder="Your password"
             disabled={loading}
           />
         </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="rememberMe"
+            name="rememberMe"
+            type="checkbox"
+            checked={form.rememberMe}
+            onChange={handleChange}
+            disabled={loading}
+            className="accent-cyan-600 w-4 h-4"
+          />
+          <label htmlFor="rememberMe" className="text-sm select-none">
+            Remember me
+          </label>
+        </div>
         <div className="flex justify-center mt-2">
           <SubmitButton
-            value={loading ? "Signing up..." : "Sign Up"}
+            value={loading ? "Signing in..." : "Sign In"}
             disabled={loading}
           />
         </div>
