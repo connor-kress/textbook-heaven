@@ -2,15 +2,25 @@ import Link from "next/link";
 
 export default function Topbar() {
   return (
-    <header className="
-      fixed h-16 w-full z-50
-      flex flex-row items-center
-      shadow-xl
-      text-neutral-200
-      bg-neutral-800
-    ">
-      <Logo />
-      <NavLink href="/textbooks" text="Textbooks" />
+    <header
+      className="
+        fixed h-16 w-full z-50
+        flex items-center justify-between
+        shadow-xl
+        text-neutral-200 bg-neutral-800
+      "
+    >
+      {/* left side */}
+      <div className="flex items-center h-full">
+        <Logo />
+        <NavLink href="/textbooks" text="Textbooks" />
+      </div>
+
+      {/* right side */}
+      <div className="flex items-center h-full">
+        <NavLink href="/signin" text="Login" />
+        <NavLink href="/signup" text="Sign up" />
+      </div>
     </header>
   );
 }
