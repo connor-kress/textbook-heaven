@@ -1,12 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { InputField, SubmitButton } from "@/components/FormFields";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!isPending && session) {
+      router.replace("/textbooks");
+    }
+  }, [isPending, session, router]);
+
   const [form, setForm] = useState({
     email: "",
     password: "",
