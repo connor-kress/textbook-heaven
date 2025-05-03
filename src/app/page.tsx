@@ -19,7 +19,7 @@ export default function Home() {
 
       <div className="flex space-x-6">
         <Link
-          href="/signin"
+          href="/login"
           className="text-blue-500 hover:underline font-medium"
         >
           Login

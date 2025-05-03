@@ -11,7 +11,7 @@ export default function Topbar() {
   if (isPending || !session) {
     rightItems = (
       <>
-        <NavLink href="/signin" text="Login" />
+        <NavLink href="/login" text="Login" />
         <NavLink href="/signup" text="Sign up" />
       </>
     );

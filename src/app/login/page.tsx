@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { InputField, SubmitButton } from "@/components/FormFields";
 
-export default function SigninPage() {
+export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
@@ -68,7 +68,7 @@ export default function SigninPage() {
         "
       >
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Sign In
+          Login
         </h2>
         {error && (
           <div className="mb-4 text-red-600 dark:text-red-400 text-center">
@@ -130,7 +130,7 @@ export default function SigninPage() {
         </div>
         <div className="flex justify-center mt-2">
           <SubmitButton
-            value={loading ? "Signing in..." : "Sign In"}
+            value={loading ? "Logging in..." : "Login"}
             disabled={loading}
           />
         </div>

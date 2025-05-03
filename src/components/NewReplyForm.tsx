@@ -36,7 +36,7 @@ export default function NewReplyForm(
     const res = await postReply(textbook, formData.body, parentReplyId, question.id);
     if (res) {
       if (res?.error === "Unauthorized") {
-        router.push("/signin");
+        router.push("/login");
         return;
       }
       alert(res.error);

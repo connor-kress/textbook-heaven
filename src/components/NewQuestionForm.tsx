@@ -36,7 +36,7 @@ export function NewQuestionForm(
     );
     if (typeof res !== "number") {
       if (res.error === "Unauthorized") {
-        router.push("/signin");
+        router.push("/login");
         return;
       }
       alert(res.error);
