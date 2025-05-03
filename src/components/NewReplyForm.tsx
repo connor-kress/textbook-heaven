@@ -33,17 +33,13 @@ export default function NewReplyForm(
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(formData);
-    try{
-      await postReply(textbook, formData.body, parentReplyId, question.id);
-    } catch (err: any){
-      if (
-        err?.message === "Unauthorized" ||
-        err?.toString().includes("Unauthorized")
-      ) {
+    const res = await postReply(textbook, formData.body, parentReplyId, question.id);
+    if (res) {
+      if (res?.error === "Unauthorized") {
         router.push("/signin");
         return;
       }
-      alert(err?.message || err);
+      alert(res.error);
       return;
     }
     // Post-submit callback?

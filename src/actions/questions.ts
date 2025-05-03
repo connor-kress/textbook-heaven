@@ -12,18 +12,20 @@ export async function postQuestion(
   chapterTitle: string | null,
   questionNum: number,
   questionBody: string,
-): Promise<number | null> {
+): Promise<number | { error: string }> {
   const session = await auth.api.getSession({
       headers: headers(),
   })
   if (!session) {
-    throw new Error("Unauthorized");
+    return { error: "Unauthorized" };
   }
   const chapter = textbook.chapters.find(ch => ch.num === chapterNum);
   let query;
   let args;
   if (!chapter) {
-    if (!chapterTitle) return null;
+    if (!chapterTitle) {
+      return { error: "Chapter title not provided" };
+    }
     query = `
       WITH new_chapter AS (
         INSERT INTO chapters (title, num, textbook_id)
@@ -48,8 +50,14 @@ export async function postQuestion(
   let res;
   try {
     res = await pool.query(query, args);
-  } catch {
-    return null;
+  } catch (err: any) {
+    const message =
+      typeof err?.message === "string"
+        ? err.message
+        : typeof err === "string"
+          ? err
+          : "Unknown error";
+    return { error: message };
   }
   const newQuestionId = res.rows[0].id;
   if (typeof newQuestionId !== "number") {

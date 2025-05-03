@@ -31,24 +31,18 @@ export function NewQuestionForm(
     console.log(formData);
     const chapterNum = parseInt(formData.chapterNum);
     const num = parseInt(formData.num);
-    let newId = null;
-    try{
-      newId = await postQuestion(
-        textbook, chapterNum, formData.chapterTitle, num, formData.body
-      );
-      if (!newId) throw Error("Could not create question");
-    } catch (err: any){
-      if (
-        err?.message === "Unauthorized" ||
-        err?.toString().includes("Unauthorized")
-      ) {
+    const res = await postQuestion(
+      textbook, chapterNum, formData.chapterTitle, num, formData.body
+    );
+    if (typeof res !== "number") {
+      if (res.error === "Unauthorized") {
         router.push("/signin");
         return;
       }
-      alert(err?.message || err);
+      alert(res.error);
       return;
     }
-    router.push(`/textbooks/${textbook.baseFileName}?questionId=${newId}`);
+    router.push(`/textbooks/${textbook.baseFileName}?questionId=${res}`);
   }
 
   return (
