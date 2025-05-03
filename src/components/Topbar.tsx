@@ -1,6 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import ProfilePicture from "./ProfilePicture";
+import { authClient } from "@/lib/auth-client";
 
 export default function Topbar() {
+  const { data: session, isPending } = authClient.useSession();
+  let rightItems;
+  if (isPending || !session) {
+    rightItems = (
+      <>
+        <NavLink href="/signin" text="Login" />
+        <NavLink href="/signup" text="Sign up" />
+      </>
+    );
+  } else {
+    rightItems = <ProfilePicture />;
+  }
+
   return (
     <header
       className="
@@ -18,8 +35,7 @@ export default function Topbar() {
 
       {/* right side */}
       <div className="flex items-center h-full">
-        <NavLink href="/signin" text="Login" />
-        <NavLink href="/signup" text="Sign up" />
+        {rightItems}
       </div>
     </header>
   );
