@@ -3,6 +3,7 @@
 import Link from "next/link";
 import ProfilePicture from "./ProfilePicture";
 import { authClient } from "@/lib/auth-client";
+import LogoutButton from "./LogoutButton";
 
 export default function Topbar() {
   const { data: session, isPending } = authClient.useSession();
@@ -15,13 +16,18 @@ export default function Topbar() {
       </>
     );
   } else {
-    rightItems = <ProfilePicture />;
+    rightItems = (
+      <>
+        <ProfilePicture />
+        <LogoutButton />
+      </>
+    );
   }
 
   return (
     <header
       className="
-        fixed h-16 w-full z-50
+        fixed h-16 w-full z-50 pr-4
         flex items-center justify-between
         shadow-xl
         text-neutral-200 bg-neutral-800
