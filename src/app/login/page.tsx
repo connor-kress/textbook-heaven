@@ -1,20 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { InputField, SubmitButton } from "@/components/FormFields";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const loggedOut = searchParams.get("loggedOut");
   const { data: session, isPending } = authClient.useSession();
 
   // Redirect if already logged in
   useEffect(() => {
-    if (!isPending && session) {
+    if (!isPending && session && !loggedOut) {
       router.replace("/textbooks");
     }
-  }, [isPending, session, router]);
+  }, [isPending, session, loggedOut, router]);
 
   const [form, setForm] = useState({
     email: "",
@@ -61,11 +63,21 @@ export default function LoginPage() {
 
   return (
     <div className="
-      min-h-screen flex items-center justify-center
+      min-h-screen flex flex-col items-center justify-center
       bg-white dark:bg-neutral-900
       text-neutral-700 dark:text-neutral-200
       transition-colors
     ">
+      {loggedOut && (
+        <div className="
+          mb-4 px-4 py-2 rounded
+          bg-green-100 dark:bg-green-900
+          text-green-700 dark:text-green-200
+          shadow
+        ">
+          You have been logged out.
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="
