@@ -12,6 +12,14 @@ export const auth = betterAuth({
       port: process.env.DB_PORT === undefined ? undefined
                                               : parseInt(process.env.DB_PORT),
     }),
+    socialProviders: {
+        google: {
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            redirectURI: process.env.BETTER_AUTH_URL
+                         + "/api/auth/callback/google",
+        },
+    },
     emailAndPassword: {
       enabled: true,
     },
