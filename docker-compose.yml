@@ -1,16 +1,48 @@
 services:
+  traefik:
+    image: traefik:v2.9
+    user: "0"  # root
+    privileged: true
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80  # HTTP
+      - --entrypoints.websecure.address=:443  # HTTPS
+      - --certificatesresolvers.myresolver.acme.email=ckress04@gmail.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+    networks:
+      - app-network
+
   web:
     build:
       context: .
       dockerfile: ./Dockerfile
-    ports:
-      - "80:3000"
     depends_on:
       - db
     env_file:
       - .env
     networks:
       - app-network
+    labels:
+      - "traefik.enable=true"
+      # HTTP router: redirect all HTTP to HTTPS
+      - "traefik.http.routers.web-http.rule=Host(`textbookheaven.org`)"
+      - "traefik.http.routers.web-http.entrypoints=web"
+      - "traefik.http.routers.web-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # HTTPS router
+      - "traefik.http.routers.web.rule=Host(`textbookheaven.org`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
 
   db:
     image: "postgres:latest"
@@ -22,9 +54,12 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - app-network
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   db_data:
+  traefik-certificates:
 
 networks:
   app-network:
