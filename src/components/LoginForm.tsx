@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { InputField, SubmitButton } from "@/components/FormFields";
+import { FcGoogle } from "react-icons/fc"
 
 export default function LoginForm() {
   const router = useRouter();
@@ -21,7 +22,6 @@ export default function LoginForm() {
   const [form, setForm] = useState({
     email: "",
     password: "",
-    rememberMe: false
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,10 +43,10 @@ export default function LoginForm() {
         email: form.email,
         password: form.password,
         callbackURL: "/textbooks",
-        rememberMe: form.rememberMe
       },
       {
         onRequest: () => {
+          setError("")
           setLoading(true);
         },
         onSuccess: () => {
@@ -60,6 +60,31 @@ export default function LoginForm() {
       }
     );
   };
+
+  async function googleSignIn() {
+    try {
+      await authClient.signIn.social({
+        provider: "google"
+      }, {
+        onResponse: () => {
+          setLoading(false)
+        },
+        onRequest: () => {
+          setError("")
+          setLoading(true)
+        },
+        onSuccess: () => {
+          router.replace("/textbooks")
+        },
+        onError: (ctx) => {
+          setError(ctx.error.message)
+        }
+      });
+    } catch (err: any) {
+      console.error(err);
+      setError("Something went wrong");
+    }
+  }
 
   return (
     <>
@@ -130,25 +155,22 @@ export default function LoginForm() {
             disabled={loading}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            id="rememberMe"
-            name="rememberMe"
-            type="checkbox"
-            checked={form.rememberMe}
-            onChange={handleChange}
-            disabled={loading}
-            className="accent-cyan-600 w-4 h-4"
-          />
-          <label htmlFor="rememberMe" className="text-sm select-none">
-            Remember me
-          </label>
-        </div>
         <div className="flex justify-center mt-2">
           <SubmitButton
             value={loading ? "Logging in..." : "Login"}
             disabled={loading}
           />
+        </div>
+        <hr className="border-gray-500 my-2" />
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onClick={googleSignIn}
+            disabled={loading}
+            className="flex items-center gap-2"
+          >
+            <FcGoogle />
+            Sign in with Google
+          </button>
         </div>
       </form>
     </>
