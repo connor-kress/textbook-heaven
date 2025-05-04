@@ -48,28 +48,34 @@ export default function Topbar() {
 
 function Logo() {
   return (
-    <div className="
-      flex items-center text-center
-      h-full max-w-36 px-4
-      text-xl font-bold
-      cursor-pointer
-      hover:bg-neutral-700
-    ">
-      <Link href="/">Textbook Heaven</Link>
-    </div>
+    <Link
+      href="/"
+      className="
+        flex items-center text-center
+        h-full max-w-36 px-4
+        text-xl font-bold
+        cursor-pointer
+        hover:bg-neutral-700
+      "
+    >
+      Textbook Heaven
+    </Link>
   );
 }
 
 function NavLink({ href, text }: { href: string, text: string }) {
   return (
-    <div className="
-      flex items-center text-center
-      h-full px-4
-      text-lg
-      cursor-pointer
-      hover:bg-neutral-700
-    ">
-      <Link href={href}>{text}</Link>
-    </div>
+    <Link
+      href={href}
+      className="
+        flex items-center text-center
+        h-full px-4
+        text-lg
+        cursor-pointer
+        hover:bg-neutral-700
+      "
+    >
+      {text}
+    </Link>
   );
 }
