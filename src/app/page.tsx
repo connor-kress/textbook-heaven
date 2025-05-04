@@ -17,20 +17,12 @@ export default function Home() {
         Browse Textbooks
       </Link>
 
-      <div className="flex space-x-6">
-        <Link
-          href="/login"
-          className="text-blue-500 hover:underline font-medium"
-        >
-          Login
-        </Link>
-        <Link
-          href="/signup"
-          className="text-blue-500 hover:underline font-medium"
-        >
-          Sign Up
-        </Link>
-      </div>
+      <Link
+        href="/login"
+        className="text-blue-500 hover:underline font-medium"
+      >
+        Sign in with Google
+      </Link>
     </div>
   );
 }

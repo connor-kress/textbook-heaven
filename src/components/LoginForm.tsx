@@ -19,66 +19,29 @@ export default function LoginForm() {
     }
   }, [isPending, session, loggedOut, router]);
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  function handleChange (e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
-  };
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    await authClient.signIn.email(
-      {
-        email: form.email,
-        password: form.password,
-        callbackURL: "/textbooks",
-      },
-      {
-        onRequest: () => {
-          setError("")
-          setLoading(true);
-        },
-        onSuccess: () => {
-          setLoading(false);
-          router.push("/textbooks");
-        },
-        onError: (ctx) => {
-          setLoading(false);
-          setError(ctx.error.message);
-        }
-      }
-    );
-  };
 
   async function googleSignIn() {
     try {
       await authClient.signIn.social({
-        provider: "google"
+        provider: "google",
+        callbackURL: "/textbooks",
+        requestSignUp: true,
       }, {
         onResponse: () => {
-          setLoading(false)
+          setLoading(false);
         },
         onRequest: () => {
-          setError("")
-          setLoading(true)
+          setError("");
+          setLoading(true);
         },
         onSuccess: () => {
-          router.replace("/textbooks")
+          console.log("Login successful");
         },
         onError: (ctx) => {
-          setError(ctx.error.message)
-        }
+          setError(ctx.error.message);
+        },
       });
     } catch (err: any) {
       console.error(err);
@@ -98,8 +61,7 @@ export default function LoginForm() {
           You have been logged out.
         </div>
       )}
-      <form
-        onSubmit={handleSubmit}
+      <div
         className="
           flex flex-col
           p-8 gap-4
@@ -116,63 +78,24 @@ export default function LoginForm() {
             {error}
           </div>
         )}
-        <div>
-          <label
-            className="block mb-1 font-medium"
-            htmlFor="email"
-          >
-            Email
-          </label>
-          <InputField
-            id="email"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            disabled={loading}
-          />
-        </div>
-        <div>
-          <label
-            className="block mb-1 font-medium"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <InputField
-            id="password"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            minLength={8}
-            autoComplete="current-password"
-            placeholder="Your password"
-            disabled={loading}
-          />
-        </div>
-        <div className="flex justify-center mt-2">
-          <SubmitButton
-            value={loading ? "Logging in..." : "Login"}
-            disabled={loading}
-          />
-        </div>
-        <hr className="border-gray-500 my-2" />
         <div className="flex flex-col items-center gap-2">
           <button
             onClick={googleSignIn}
             disabled={loading}
-            className="flex items-center gap-2"
+            className="
+              flex items-center justify-center gap-2
+              border border-blue-500 text-blue-600
+              bg-white px-6 py-2 rounded-md
+              hover:bg-blue-50 transition
+              font-medium
+              text-center
+            "
           >
-            <FcGoogle />
-            Sign in with Google
+            <FcGoogle className="text-xl" />
+            Sign In with Google
           </button>
         </div>
-      </form>
+      </div>
     </>
   );
 }

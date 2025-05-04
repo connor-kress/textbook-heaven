@@ -12,7 +12,6 @@ export default function Topbar() {
     rightItems = (
       <>
         <NavLink href="/login" text="Login" />
-        <NavLink href="/signup" text="Sign up" />
       </>
     );
   } else {
