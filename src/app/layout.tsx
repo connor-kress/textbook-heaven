@@ -1,5 +1,4 @@
 import Topbar from "@/components/Topbar";
-import pool from "@/lib/db";
 
 import "@/styles/globals.css";
 import "katex/dist/katex.min.css";
@@ -15,7 +14,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  pool;
   return (
     <html lang="en">
       <body className="
