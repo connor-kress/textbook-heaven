@@ -1,12 +1,7 @@
-import "dotenv/config";
-import { defineConfig } from "drizzle-kit";
+import { drizzle } from 'drizzle-orm/node-postgres';
 
-
-export default defineConfig({
-  schema: "./src/db/schema.ts",
-  out: "./drizzle",
-  dialect: "postgresql",
-  dbCredentials: {
+export const db = drizzle({ 
+  connection: { 
     user: process.env.DB_USER!,
     host: process.env.DB_HOST!,
     database: process.env.DB_NAME!,
@@ -15,5 +10,5 @@ export default defineConfig({
       ? undefined
       : parseInt(process.env.DB_PORT),
     ssl: false, // TODO: true in production
-  },
+  }
 });
