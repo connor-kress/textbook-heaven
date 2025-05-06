@@ -1,7 +1,8 @@
 "use server";
 
+import { createChapter, findChapterByNumAndTextbook } from "@/db/chapters";
+import { createQuestion } from "@/db/questions";
 import { auth } from "@/lib/auth";
-import pool from "@/lib/db";
 import { Textbook } from "@/types/Textbook";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -19,50 +20,39 @@ export async function postQuestion(
   if (!session) {
     return { error: "Unauthorized" };
   }
-  const chapter = textbook.chapters.find(ch => ch.num === chapterNum);
-  let query;
-  let args;
+
+  // Find or create the chapter
+  let chapter = await findChapterByNumAndTextbook(chapterNum, textbook.id);
   if (!chapter) {
     if (!chapterTitle) {
       return { error: "Chapter title not provided" };
     }
-    query = `
-      WITH new_chapter AS (
-        INSERT INTO chapters (title, num, textbook_id)
-        VALUES ($1, $2, $3)
-        RETURNING id
-      )
+    chapter = await createChapter({
+      title: chapterTitle,
+      num: chapterNum,
+      textbookId: textbook.id,
+    });
+    if (!chapter) {
+      return { error: "Failed to create chapter" };
+    }
+  }
 
-      INSERT INTO questions (author_id, num, body, chapter_id, post_date)
-      VALUES ($4, $5, $6, (SELECT id FROM new_chapter), CURRENT_TIMESTAMP)
-      RETURNING id;
-    `;
-    args = [chapterTitle, chapterNum, textbook.id,
-            session.user.id, questionNum, questionBody];
-  } else {
-    query = `
-      INSERT INTO questions (author_id, num, body, chapter_id, post_date)
-      VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-      RETURNING id;
-    `;
-    args = [session.user.id, questionNum, questionBody, chapter.id];
-  }
-  let res;
+  // Insert the question
+  let question;
   try {
-    res = await pool.query(query, args);
+    question = await createQuestion({
+      authorId: session.user.id,
+      num: questionNum,
+      body: questionBody,
+      chapterId: chapter.id,
+    });
   } catch (err: any) {
-    const message =
-      typeof err?.message === "string"
-        ? err.message
-        : typeof err === "string"
-          ? err
-          : "Unknown error";
-    return { error: message };
+    return { error: err?.message ?? "Unknown error" };
   }
-  const newQuestionId = res.rows[0].id;
-  if (typeof newQuestionId !== "number") {
+
+  if (!question || typeof question.id !== "number") {
     throw new Error("Unexpected return type");
   }
   revalidatePath(`/textbooks/${textbook.baseFileName}`);
-  return newQuestionId;
+  return question.id;
 }

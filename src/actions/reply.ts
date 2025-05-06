@@ -1,7 +1,7 @@
 "use server";
 
+import { createReply } from "@/db/replies";
 import { auth } from "@/lib/auth";
-import pool from "@/lib/db";
 import { Textbook } from "@/types/Textbook";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -18,22 +18,16 @@ export async function postReply(
   if (!session) {
     return { error: "Unauthorized" };
   }
-  const query = `
-    INSERT INTO replies (author_id, body, parent_reply_id, question_id,
-                         post_date)
-    VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP);
-  `;
-  const args = [session.user.id, body, parentReplyId, questionId];
+
   try {
-    await pool.query(query, args);
+    await createReply({
+      authorId: session.user.id,
+      body,
+      parentReplyId,
+      questionId,
+    });
   } catch (err: any) {
-    const message =
-      typeof err?.message === "string"
-        ? err.message
-        : typeof err === "string"
-          ? err
-          : "Unknown error";
-    return { error: message };
+    return { error: err?.message ?? "Unknown error" };
   }
   revalidatePath(`/textbooks/${textbook.baseFileName}`);
   return null;
