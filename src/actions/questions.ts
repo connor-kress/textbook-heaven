@@ -14,7 +14,7 @@ export async function postQuestion(
   questionBody: string,
 ): Promise<number | { error: string }> {
   const session = await auth.api.getSession({
-      headers: headers(),
+      headers: await headers(),
   })
   if (!session) {
     return { error: "Unauthorized" };

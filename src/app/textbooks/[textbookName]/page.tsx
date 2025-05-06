@@ -6,21 +6,23 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  params: {
+  params: Promise<{
     textbookName: string,
-  },
+  }>,
 };
 
-export function generateMetadata({ params }: Props): Metadata {
-  const textbookName = decodeURI(params.textbookName);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { textbookName } = await params;
+  const textbookNameDecoded = decodeURI(textbookName);
   return {
-    title: `${textbookName} - Textbook Heaven`,
-    description: `Questions and PDF view from ${textbookName}.`,
+    title: `${textbookNameDecoded} - Textbook Heaven`,
+    description: `Questions and PDF view from ${textbookNameDecoded}.`,
   };
 }
 
 export default async function TextbookPage({ params }: Props) {
-  const textbook = await fetchTextbook(decodeURI(params.textbookName));
+  const { textbookName } = await params;
+  const textbook = await fetchTextbook(decodeURI(textbookName));
   return (
     <div className="fixed inset-0 top-16 flex flex-row">
       {/* Left panel: visible only on lg */}

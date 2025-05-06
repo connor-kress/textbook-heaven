@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { getQuestionById } from "@/lib/queries";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
-) {
-  const id = parseInt(params.id, 10);
+type Props = {
+  params: Promise<{
+    id: string,
+  }>,
+};
+
+export async function GET(_req: Request, { params }: Props) {
+  const { id: idStr } = await params;
+  const id = parseInt(idStr, 10);
   if (Number.isNaN(id)) {
     return NextResponse.json({ error: "invalid id" }, { status: 400 });
   }
