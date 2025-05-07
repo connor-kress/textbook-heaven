@@ -14,10 +14,7 @@ export async function createQuestion(input: CreateQuestionInput) {
   const [question] = await db
     .insert(questions)
     .values({
-      authorId: input.authorId,
-      num: input.num,
-      body: input.body,
-      chapterId: input.chapterId,
+      ...input,
       postDate: new Date().toISOString(),
     })
     .returning();
@@ -32,21 +29,10 @@ export async function getQuestionById(
 
   const rows = await db
     .select({
-      question_id: questions.id,
-      question_author_id: questions.authorId,
-      question_post_date: questions.postDate,
-      question_num: questions.num,
-      question_body: questions.body,
-      question_chapter_id: questions.chapterId,
-
-      reply_id: replies.id,
-      reply_author_id: replies.authorId,
-      reply_post_date: replies.postDate,
-      reply_body: replies.body,
-      reply_parent_reply_id: replies.parentReplyId,
-
-      question_author_name: questionUser.name,
-      reply_author_name: replyUser.name,
+      question: questions,
+      reply: replies,
+      questionAuthorName: questionUser.name,
+      replyAuthorName: replyUser.name,
     })
     .from(questions)
     // questionUser should be an inner join but drizzle has a bug
@@ -62,37 +48,37 @@ export async function getQuestionById(
 
   const first = rows[0];
   const question: any = {
-    id: first.question_id,
-    author_id: first.question_author_id,
-    author_name: first.question_author_name,
-    postDate: first.question_post_date,
-    num: first.question_num,
-    body: first.question_body,
-    chapterId: first.question_chapter_id,
+    id: first.question.id,
+    author_id: first.question.authorId,
+    author_name: first.questionAuthorName,
+    postDate: first.question.postDate,
+    num: first.question.num,
+    body: first.question.body,
+    chapterId: first.question.chapterId,
     comments: [],
   };
   const replyMap = new Map<number, Reply>(); // type validation at end
   for (let row of rows) {
-    if (!row.reply_id) continue;
+    if (!row.reply) continue;
     const reply: any = {
-      id: row.reply_id,
-      author_id: row.reply_author_id,
-      author_name: row.reply_author_name,
-      postDate: row.reply_post_date,
+      id: row.reply.id,
+      author_id: row.reply.authorId,
+      author_name: row.replyAuthorName,
+      postDate: row.reply.postDate,
       likes: 1, // TODO: get from likes table
       dislikes: 0,
-      body: row.reply_body,
+      body: row.reply.body,
       replies: [],
     }
     replyMap.set(reply.id, reply);
-    if (row.reply_parent_reply_id) {
-      const parentReply = replyMap.get(row.reply_parent_reply_id);
+    if (row.reply.parentReplyId) {
+      const parentReply = replyMap.get(row.reply.parentReplyId);
       // Parent replies should always have a lower id
       // and thus be added to the structure first
       if (!parentReply) {
         console.dir(replyMap, { depth: null });
         throw new Error(
-          `Parent reply id ${row.reply_parent_reply_id} not found`
+          `Parent reply id ${row.reply.parentReplyId} not found`
         );
       }
       parentReply.replies.push(reply);

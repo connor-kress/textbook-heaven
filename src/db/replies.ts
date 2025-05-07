@@ -9,11 +9,12 @@ export type CreateReplyInput = {
 };
 
 export async function createReply(input: CreateReplyInput) {
-  await db.insert(replies).values({
-    authorId: input.authorId,
-    body: input.body,
-    parentReplyId: input.parentReplyId,
-    questionId: input.questionId,
-    postDate: new Date().toISOString(),
-  }).execute();
+  const [reply] = await db
+    .insert(replies)
+    .values({
+      ...input,
+      postDate: new Date().toISOString(),
+    })
+    .returning();
+  return reply;
 }
