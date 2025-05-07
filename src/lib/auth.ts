@@ -1,16 +1,14 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { Pool } from "pg";
+import { db } from "@/db";
+import { user, session, account, verification } from "../db/schema";
 
 export const auth = betterAuth({
-    plugins: [nextCookies()], // make sure nextCookies is the last plugin
-    database: new Pool({
-      user: process.env.DB_USER,
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
-      port: process.env.DB_PORT === undefined ? undefined
-                                              : parseInt(process.env.DB_PORT),
+    plugins: [nextCookies()], // ensure nextCookies is last
+    database: drizzleAdapter(db, {
+      provider: "pg",
+      schema: { user, session, account, verification },
     }),
     socialProviders: {
       google: {

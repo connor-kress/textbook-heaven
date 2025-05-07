@@ -9,6 +9,8 @@ import {
   integer,
 } from "drizzle-orm/pg-core"
 
+/* Better Auth Tables */
+
 export const user = pgTable("user", {
 	id: text().primaryKey().notNull(),
 	name: text().notNull(),
@@ -69,6 +71,8 @@ export const verification = pgTable("verification", {
 	createdAt: timestamp({ mode: "string" }),
 	updatedAt: timestamp({ mode: "string" }),
 });
+
+/* My Tables */
 
 export const textbooks = pgTable("textbooks", {
 	id: serial().primaryKey().notNull(),
