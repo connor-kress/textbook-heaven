@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getQuestionById } from "@/lib/queries";
+import { getQuestionById } from "@/db/questions";
 
 type Props = {
   params: Promise<{

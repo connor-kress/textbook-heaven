@@ -5,7 +5,7 @@ const QuestionSchema = z.object({
   num: z.number(),
 });
 
-const ChapterSchema = z.object({
+export const ChapterSchema = z.object({
   id: z.number(),
   title: z.string().nullable(),
   num: z.number(),
