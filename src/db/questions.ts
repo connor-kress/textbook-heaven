@@ -48,26 +48,18 @@ export async function getQuestionById(
 
   const first = rows[0];
   const question: any = {
-    id: first.question.id,
-    author_id: first.question.authorId,
-    author_name: first.questionAuthorName,
-    postDate: first.question.postDate,
-    num: first.question.num,
-    body: first.question.body,
-    chapterId: first.question.chapterId,
+    ...first.question,
+    authorName: first.questionAuthorName!,
     comments: [],
   };
   const replyMap = new Map<number, Reply>(); // type validation at end
   for (let row of rows) {
     if (!row.reply) continue;
     const reply: any = {
-      id: row.reply.id,
-      author_id: row.reply.authorId,
-      author_name: row.replyAuthorName,
-      postDate: row.reply.postDate,
+      ...row.reply,
+      authorName: row.replyAuthorName,
       likes: 1, // TODO: get from likes table
       dislikes: 0,
-      body: row.reply.body,
       replies: [],
     }
     replyMap.set(reply.id, reply);

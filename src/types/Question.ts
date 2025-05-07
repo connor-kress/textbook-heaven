@@ -2,8 +2,8 @@ import { z } from "zod"
 
 const ReplyBaseSchema = z.object({
   id: z.number(),
-  author_id: z.string(),
-  author_name: z.string(),
+  authorId: z.string(),
+  authorName: z.string(),
   postDate: z.coerce.date(),
   likes: z.number(),
   dislikes: z.number(),
@@ -20,8 +20,8 @@ export const ReplySchema: z.ZodType<Reply> = ReplyBaseSchema.extend({
 
 export const QuestionSchema = z.object({
   id: z.number(),
-  author_id: z.string(),
-  author_name: z.string(),
+  authorId: z.string(),
+  authorName: z.string(),
   postDate: z.coerce.date(),
   chapterId: z.number(),
   num: z.number(),
