@@ -11,10 +11,7 @@ export type CreateReplyInput = {
 export async function createReply(input: CreateReplyInput) {
   const [reply] = await db
     .insert(replies)
-    .values({
-      ...input,
-      postDate: new Date().toISOString(),
-    })
+    .values(input)
     .returning();
   return reply;
 }

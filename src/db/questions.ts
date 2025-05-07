@@ -13,10 +13,7 @@ type CreateQuestionInput = {
 export async function createQuestion(input: CreateQuestionInput) {
   const [question] = await db
     .insert(questions)
-    .values({
-      ...input,
-      postDate: new Date().toISOString(),
-    })
+    .values(input)
     .returning();
   return question;
 }

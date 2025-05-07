@@ -96,7 +96,7 @@ export const chapters = pgTable("chapters", {
 export const questions = pgTable("questions", {
 	id: serial().primaryKey().notNull(),
 	authorId: text("author_id").notNull(),
-	postDate: timestamp("post_date", { mode: "string" }).notNull(),
+	postDate: timestamp("post_date", { mode: "string" }).notNull().defaultNow(),
 	num: integer().notNull(),
 	body: text().notNull(),
 	chapterId: integer("chapter_id").notNull(),
@@ -117,7 +117,7 @@ export const questions = pgTable("questions", {
 export const replies = pgTable("replies", {
 	id: serial().primaryKey().notNull(),
 	authorId: text("author_id").notNull(),
-	postDate: timestamp("post_date", { mode: "string" }).notNull(),
+	postDate: timestamp("post_date", { mode: "string" }).notNull().defaultNow(),
 	body: text().notNull(),
 	parentReplyId: integer("parent_reply_id"),
 	questionId: integer("question_id").notNull(),
