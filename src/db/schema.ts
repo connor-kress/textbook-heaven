@@ -75,66 +75,60 @@ export const textbooks = pgTable("textbooks", {
 	title: text(),
 	author: text(),
 	description: text(),
-	fileName: text("file_name").notNull(),
+	fileName: text().notNull(),
 }, (table) => [
-	unique("textbooks_file_name_key").on(table.fileName),
+	unique().on(table.fileName),
 ]);
 
 export const chapters = pgTable("chapters", {
 	id: serial().primaryKey().notNull(),
 	title: text(),
 	num: integer().notNull(),
-	textbookId: integer("textbook_id").notNull(),
+	textbookId: integer().notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.textbookId],
 			foreignColumns: [textbooks.id],
-			name: "chapters_textbook_id_fkey"
 		}).onDelete("cascade"),
 ]);
 
 export const questions = pgTable("questions", {
 	id: serial().primaryKey().notNull(),
-	authorId: text("author_id").notNull(),
-	postDate: timestamp("post_date", { mode: "string" }).notNull().defaultNow(),
+	authorId: text().notNull(),
+	postDate: timestamp({ mode: "string" }).notNull().defaultNow(),
 	num: integer().notNull(),
 	body: text().notNull(),
-	chapterId: integer("chapter_id").notNull(),
+	chapterId: integer().notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.authorId],
 			foreignColumns: [user.id],
-			name: "questions_author_id_fkey"
 		}).onDelete("cascade"),
 	foreignKey({
 			columns: [table.chapterId],
 			foreignColumns: [chapters.id],
-			name: "questions_chapter_id_fkey"
 		}).onDelete("cascade"),
-	unique("questions_chapter_id_num_key").on(table.num, table.chapterId),
+	unique().on(table.num, table.chapterId),
 ]);
 
 export const replies = pgTable("replies", {
 	id: serial().primaryKey().notNull(),
-	authorId: text("author_id").notNull(),
-	postDate: timestamp("post_date", { mode: "string" }).notNull().defaultNow(),
+	authorId: text().notNull(),
+	postDate: timestamp({ mode: "string" }).notNull().defaultNow(),
 	body: text().notNull(),
-	parentReplyId: integer("parent_reply_id"),
-	questionId: integer("question_id").notNull(),
+	parentReplyId: integer(),
+	questionId: integer().notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.authorId],
 			foreignColumns: [user.id],
-			name: "replies_author_id_fkey"
 		}).onDelete("cascade"),
 	foreignKey({
 			columns: [table.parentReplyId],
 			foreignColumns: [table.id],
-			name: "replies_parent_reply_id_fkey"
 		}).onDelete("cascade"),
 	foreignKey({
 			columns: [table.questionId],
 			foreignColumns: [questions.id],
-			name: "replies_question_id_fkey"
 		}).onDelete("cascade"),
 ]);
