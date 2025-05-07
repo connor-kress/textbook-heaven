@@ -1,7 +1,7 @@
-import { Question, QuestionSchema } from "@/types/Question";
+import { aliasedTable, eq } from "drizzle-orm";
 import { db } from "./index";
 import { questions, replies, user } from "./schema";
-import { aliasedTable, eq } from "drizzle-orm";
+import { Question, QuestionSchema, Reply } from "@/types/Question";
 
 type CreateQuestionInput = {
   authorId: string;
@@ -49,8 +49,9 @@ export async function getQuestionById(
       reply_author_name: replyUser.name,
     })
     .from(questions)
-    .leftJoin(replies, eq(replies.questionId, questions.id))
+    // questionUser should be an inner join but drizzle has a bug
     .leftJoin(questionUser, eq(questions.authorId, questionUser.id))
+    .leftJoin(replies, eq(replies.questionId, questions.id))
     .leftJoin(replyUser, eq(replies.authorId, replyUser.id))
     .where(eq(questions.id, questionId))
     .orderBy(replies.id);
@@ -70,10 +71,10 @@ export async function getQuestionById(
     chapterId: first.question_chapter_id,
     comments: [],
   };
-  const replyMap = new Map<number, any>(); // type validation at end
-  rows.forEach(row => {
-    if (!row.reply_id) return;
-    const reply = {
+  const replyMap = new Map<number, Reply>(); // type validation at end
+  for (let row of rows) {
+    if (!row.reply_id) continue;
+    const reply: any = {
       id: row.reply_id,
       author_id: row.reply_author_id,
       author_name: row.reply_author_name,
@@ -98,9 +99,8 @@ export async function getQuestionById(
     } else {
       question.comments.push(reply);
     }
-  })
+  }
 
-  const ret = QuestionSchema.parse(question);
-  console.dir(ret, {depth: null});
-  return ret;
+  console.dir(question, {depth: null});
+  return QuestionSchema.parse(question);
 }

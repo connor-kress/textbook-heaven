@@ -1,5 +1,5 @@
 import QuestionView from "@/components/QuestionView";
-import { fetchTextbook } from "@/lib/utils";
+import { fetchTextbook } from "@/db/textbooks";
 import { Metadata } from "next";
 import Link from "next/link";
 

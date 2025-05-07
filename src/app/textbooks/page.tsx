@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { fetchTextbooks } from '@/lib/utils';
+import { fetchTextbooks } from '@/db/textbooks';
 
 export const dynamic = 'force-dynamic';
 
