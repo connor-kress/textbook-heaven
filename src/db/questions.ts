@@ -31,8 +31,8 @@ export async function getQuestionById(
     .select({
       question: questions,
       reply: replies,
-      questionAuthorName: questionUser.name,
-      replyAuthorName: replyUser.name,
+      questionAuthor: questionUser,
+      replyAuthor: replyUser,
     })
     .from(questions)
     // questionUser should be an inner join but drizzle has a bug
@@ -49,7 +49,7 @@ export async function getQuestionById(
   const first = rows[0];
   const question: any = {
     ...first.question,
-    authorName: first.questionAuthorName!,
+    author: first.questionAuthor!,
     comments: [],
   };
   const replyMap = new Map<number, Reply>(); // type validation at end
@@ -57,7 +57,7 @@ export async function getQuestionById(
     if (!row.reply) continue;
     const reply: any = {
       ...row.reply,
-      authorName: row.replyAuthorName,
+      author: row.replyAuthor!,
       likes: 1, // TODO: get from likes table
       dislikes: 0,
       replies: [],
@@ -79,6 +79,7 @@ export async function getQuestionById(
     }
   }
 
-  console.dir(question, {depth: null});
-  return QuestionSchema.parse(question);
+  const validQuestion = QuestionSchema.parse(question);
+  console.dir(validQuestion, {depth: null});
+  return validQuestion;
 }

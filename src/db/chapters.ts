@@ -1,12 +1,11 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "./index";
 import { chapters } from "./schema";
-import { Chapter, ChapterSchema } from "@/types/Textbook";
 
 export async function findChapterByNumAndTextbook(
   num: number,
   textbookId: number
-): Promise<Chapter | null> {
+) {
   const rows = await db
     .select()
     .from(chapters)
@@ -18,7 +17,7 @@ export async function findChapterByNumAndTextbook(
     )
     .limit(1);
   if (!rows[0]) return null;
-  return ChapterSchema.parse(rows[0]);
+  return rows[0];
 }
 
 type CreateChapterInput = {
@@ -29,7 +28,7 @@ type CreateChapterInput = {
 
 export async function createChapter(
   input: CreateChapterInput
-): Promise<Chapter> {
+) {
   const [chapter] = await db
     .insert(chapters)
     .values({
@@ -38,5 +37,5 @@ export async function createChapter(
       textbookId: input.textbookId,
     })
     .returning();
-  return ChapterSchema.parse(chapter);
+  return chapter;
 }
