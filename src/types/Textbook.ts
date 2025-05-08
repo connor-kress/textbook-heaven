@@ -5,10 +5,18 @@ const QuestionSchema = z.object({
   num: z.number(),
 });
 
+export const SectionSchema = z.object({
+  id: z.number(),
+  title: z.string().nullable(),
+  num: z.number(),
+  questions: QuestionSchema.array(),
+});
+
 export const ChapterSchema = z.object({
   id: z.number(),
   title: z.string().nullable(),
   num: z.number(),
+  sections: SectionSchema.array(),
   questions: QuestionSchema.array(),
 });
 

@@ -1,21 +1,39 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "./index";
-import { questions, textbooks } from "./schema"
+import { questions, sections, textbooks } from "./schema"
 import { Textbook, TextbookSchema } from '@/types/Textbook';
 
-export async function fetchTextbooks(): Promise<Textbook[]> {
-  const rawTextbooks = await db.query.textbooks.findMany({
-    orderBy: [asc(textbooks.id)],
-    with: { chapters: {
-      with: { questions: {
+const allChaptersAndSections = {
+  chapters: {
+    with: {
+      questions: {
         columns: {
           id: true,
           num: true,
         },
         orderBy: [asc(questions.num)],
-      }},
-    }},
-  })
+      },
+      sections: {
+        orderBy: [asc(sections.num)],
+        with: {
+          questions: {
+            columns: {
+              id: true,
+              num: true,
+            },
+            orderBy: [asc(questions.num)],
+          },
+        },
+      },
+    },
+  },
+};
+
+export async function fetchTextbooks(): Promise<Textbook[]> {
+  const rawTextbooks = await db.query.textbooks.findMany({
+    orderBy: [asc(textbooks.id)],
+    with: allChaptersAndSections,
+  });
   const textbookArray = rawTextbooks.map(textbook => ({
     ...textbook,
     baseFileName : textbook.fileName.replace(/.pdf$/, ""),
@@ -30,16 +48,8 @@ export async function fetchTextbook(
 ): Promise<Textbook | null> {
   const rawTextbook = await db.query.textbooks.findFirst({
     where: eq(textbooks.fileName, `${baseFileName}.pdf`),
-    with: { chapters: {
-      with: { questions: {
-        columns: {
-          id: true,
-          num: true,
-        },
-        orderBy: [asc(questions.num)],
-      }},
-    }},
-  })
+    with: allChaptersAndSections,
+  });
   if (!rawTextbook) return null;
   const textbook = {
     ...rawTextbook,
