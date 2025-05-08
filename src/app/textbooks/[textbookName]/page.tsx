@@ -2,8 +2,9 @@ import QuestionView from "@/components/QuestionView";
 import { fetchTextbook } from "@/db/textbooks";
 import { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TextbookPage({ params }: Props) {
   const { textbookName } = await params;
   const textbook = await fetchTextbook(decodeURI(textbookName));
+  if (!textbook) notFound();
   return (
     <div className="fixed inset-0 top-16 flex flex-row">
       {/* Left panel: visible only on lg */}
