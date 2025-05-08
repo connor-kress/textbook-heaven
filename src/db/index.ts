@@ -1,6 +1,9 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as schema from "./schema"
+import * as relations from "./relations"
 
 export const db = drizzle({ 
+  schema: { ...schema, ...relations },
   connection: { 
     user: process.env.DB_USER!,
     host: process.env.DB_HOST!,
@@ -10,5 +13,5 @@ export const db = drizzle({
       ? undefined
       : parseInt(process.env.DB_PORT),
     ssl: false, // TODO: true in production
-  }
+  },
 });

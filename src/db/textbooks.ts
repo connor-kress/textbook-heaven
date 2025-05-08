@@ -1,49 +1,26 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "./index";
-import { chapters, questions, textbooks } from "./schema";
-import { Chapter, Textbook, TextbookSchema } from '@/types/Textbook';
-
-const textbookQuery = db
-    .select({
-      textbook: textbooks,
-      chapter: chapters,
-      question: {
-        id: questions.id,
-        num: questions.num,
-      },
-    })
-    .from(textbooks)
-    .leftJoin(chapters, eq(textbooks.id, chapters.textbookId))
-    .leftJoin(questions, eq(chapters.id, questions.chapterId));
+import { questions, textbooks } from "./schema"
+import { Textbook, TextbookSchema } from '@/types/Textbook';
 
 export async function fetchTextbooks(): Promise<Textbook[]> {
-  const rows = await textbookQuery
-    .orderBy(textbooks.id)
-    .execute();
-
-  const textbookMap = new Map<number, Textbook>();
-  for (let row of rows) {
-    if (!textbookMap.has(row.textbook.id)) {
-      textbookMap.set(row.textbook.id, {
-        ...row.textbook,
-        baseFileName : row.textbook.fileName.replace(/.pdf$/, ""),
-        filePath: `/pdf/${row.textbook.fileName}`,
-        chapters: [],
-      })
-    }
-    const textbook = textbookMap.get(row.textbook.id)!;
-    let chapter = textbook.chapters.find(c => c.id === row.chapter?.id);
-    if (row.chapter) {
-      if (!chapter) {
-        chapter = { ...row.chapter, questions: [] };
-        textbook.chapters.push(chapter);
-      }
-    }
-    if (row.question) {
-      chapter!.questions.push(row.question);
-    }
-  };
-  const textbookArray = Array.from(textbookMap.values());
+  const rawTextbooks = await db.query.textbooks.findMany({
+    orderBy: [asc(textbooks.id)],
+    with: { chapters: {
+      with: { questions: {
+        columns: {
+          id: true,
+          num: true,
+        },
+        orderBy: [asc(questions.num)],
+      }},
+    }},
+  })
+  const textbookArray = rawTextbooks.map(textbook => ({
+    ...textbook,
+    baseFileName : textbook.fileName.replace(/.pdf$/, ""),
+    filePath: `/pdf/${textbook.fileName}`,
+  }));
   console.log(textbookArray);
   return TextbookSchema.array().parse(textbookArray);
 }
@@ -51,33 +28,23 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
 export async function fetchTextbook(
   baseFileName: string
 ): Promise<Textbook | null> {
-  const rows = await textbookQuery
-    .where(eq(textbooks.fileName, `${baseFileName}.pdf`))
-    .execute()
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const chapterMap = new Map<number, Chapter>();
-  for (let row of rows) {
-    if (!row.chapter) {
-      continue;
-    }
-    if (!chapterMap.has(row.chapter.id)) {
-      chapterMap.set(row.chapter.id, { ...row.chapter, questions: [] });
-    }
-    if (row.question) {
-      chapterMap.get(row.chapter.id)?.questions.push(row.question);
-    }
-  };
-  const chapters = Array.from(chapterMap.values());
-  const first = rows[0];
-  const textbook: Textbook = {
-    ...first.textbook,
-    baseFileName,
-    filePath: `/pdf/${first.textbook.fileName}`,
-    chapters,
+  const rawTextbook = await db.query.textbooks.findFirst({
+    where: eq(textbooks.fileName, `${baseFileName}.pdf`),
+    with: { chapters: {
+      with: { questions: {
+        columns: {
+          id: true,
+          num: true,
+        },
+        orderBy: [asc(questions.num)],
+      }},
+    }},
+  })
+  if (!rawTextbook) return null;
+  const textbook = {
+    ...rawTextbook,
+    baseFileName : rawTextbook.fileName.replace(/.pdf$/, ""),
+    filePath: `/pdf/${rawTextbook.fileName}`,
   };
   console.log(textbook);
   return TextbookSchema.parse(textbook);
