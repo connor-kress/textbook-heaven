@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, isNull } from "drizzle-orm";
 import { db } from "./index";
 import { questions, sections, textbooks } from "./schema"
 import { Textbook, TextbookSchema } from '@/types/Textbook';
@@ -11,6 +11,7 @@ const allChaptersAndSections = {
           id: true,
           num: true,
         },
+        where: isNull(questions.sectionId),
         orderBy: [asc(questions.num)],
       },
       sections: {

@@ -8,10 +8,12 @@ import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 type FormData = {
-  chapterNum: string,
-  chapterTitle: string,
   num: string,
   body: string,
+  chapterNum: string,
+  chapterTitle: string,
+  sectionNum: string,
+  sectionTitle: string,
 };
 
 export function NewQuestionForm(
@@ -19,7 +21,9 @@ export function NewQuestionForm(
 ) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    chapterNum: "", chapterTitle: "", num: "", body: "",
+    num: "", body: "",
+    chapterNum: "", chapterTitle: "",
+    sectionNum: "", sectionTitle: "",
   });
 
   function handleChange(e: ChangeEvent<HTMLFormElement>) {
@@ -30,10 +34,22 @@ export function NewQuestionForm(
     e.preventDefault();
     console.log(formData);
     const chapterNum = parseInt(formData.chapterNum);
-    const num = parseInt(formData.num);
-    const res = await postQuestion(
-      textbook, chapterNum, formData.chapterTitle, num, formData.body
-    );
+    const sectionNum = formData.sectionNum.trim() !== ""
+      ? parseInt(formData.sectionNum)
+      : null;
+    const questionNum = parseInt(formData.num);
+    const chapterTitle = formData.chapterTitle.trim() !== ""
+      ? formData.chapterTitle.trim()
+      : null;
+    const sectionTitle = formData.sectionTitle.trim() !== ""
+      ? formData.sectionTitle.trim()
+      : null;
+    const res = await postQuestion({
+      textbook,
+      questionNum, questionBody: formData.body,
+      chapterNum, chapterTitle: chapterTitle,
+      sectionNum, sectionTitle: sectionTitle,
+    });
     if (typeof res !== "number") {
       if (res.error === "Unauthorized") {
         router.push("/login");
@@ -62,6 +78,9 @@ export function NewQuestionForm(
                     required={true} />
         <InputField type="text" name="chapterTitle"
                     placeholder="New Chapter Name" autoComplete="off" />
+        <InputField type="number" name="sectionNum" placeholder="Section #" />
+        <InputField type="text" name="sectionTitle"
+                    placeholder="New Section Name" autoComplete="off" />
         <InputField type="number" name="num" placeholder="Question #"
                     required={true} />
         <TextArea name="body" placeholder="Question Body" required={true}
