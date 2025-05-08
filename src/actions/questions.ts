@@ -50,9 +50,6 @@ export async function postQuestion(
     return { error: err?.message ?? "Unknown error" };
   }
 
-  if (!question || typeof question.id !== "number") {
-    throw new Error("Unexpected return type");
-  }
   revalidatePath(`/textbooks/${textbook.baseFileName}`);
   return question.id;
 }
