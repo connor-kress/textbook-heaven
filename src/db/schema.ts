@@ -7,6 +7,7 @@ import {
   foreignKey,
   serial,
   integer,
+  index,
 } from "drizzle-orm/pg-core"
 
 /* Better Auth Tables */
@@ -94,6 +95,20 @@ export const chapters = pgTable("chapters", {
       columns: [table.textbookId],
       foreignColumns: [textbooks.id],
     }).onDelete("cascade"),
+  unique().on(table.num, table.textbookId),
+]);
+
+export const sections = pgTable("sections", {
+  id: serial().primaryKey().notNull(),
+  title: text(),
+  num: integer().notNull(),
+  chapterId: integer().notNull(),
+}, (table) => [
+  foreignKey({
+      columns: [table.chapterId],
+      foreignColumns: [chapters.id],
+    }).onDelete("cascade"),
+  unique().on(table.num, table.chapterId),
 ]);
 
 export const questions = pgTable("questions", {
@@ -103,6 +118,7 @@ export const questions = pgTable("questions", {
   num: integer().notNull(),
   body: text().notNull(),
   chapterId: integer().notNull(),
+  sectionId: integer(),
 }, (table) => [
   foreignKey({
       columns: [table.authorId],
@@ -112,7 +128,11 @@ export const questions = pgTable("questions", {
       columns: [table.chapterId],
       foreignColumns: [chapters.id],
     }).onDelete("cascade"),
-  unique().on(table.num, table.chapterId),
+  foreignKey({
+      columns: [table.sectionId],
+      foreignColumns: [sections.id],
+    }).onDelete("cascade"),
+  unique().on(table.num, table.sectionId),
 ]);
 
 export const replies = pgTable("replies", {
@@ -135,4 +155,5 @@ export const replies = pgTable("replies", {
       columns: [table.questionId],
       foreignColumns: [questions.id],
     }).onDelete("cascade"),
+  index().on(table.questionId),
 ]);

@@ -7,6 +7,7 @@ import {
   chapters,
   questions,
   replies,
+  sections,
 } from "./schema";
 
 export const sessionRelations = relations(session, ({one}) => ({
@@ -30,16 +31,25 @@ export const accountRelations = relations(account, ({one}) => ({
   }),
 }));
 
+export const textbooksRelations = relations(textbooks, ({many}) => ({
+  chapters: many(chapters),
+}));
+
 export const chaptersRelations = relations(chapters, ({one, many}) => ({
   textbook: one(textbooks, {
     fields: [chapters.textbookId],
     references: [textbooks.id]
   }),
+  sections: many(sections),
   questions: many(questions),
 }));
 
-export const textbooksRelations = relations(textbooks, ({many}) => ({
-  chapters: many(chapters),
+export const sectionsRelations = relations(sections, ({ one, many }) => ({
+  chapter: one(chapters, {
+    fields: [sections.chapterId],
+    references: [chapters.id],
+  }),
+  questions: many(questions),
 }));
 
 export const questionsRelations = relations(questions, ({one, many}) => ({
@@ -51,6 +61,10 @@ export const questionsRelations = relations(questions, ({one, many}) => ({
     fields: [questions.chapterId],
     references: [chapters.id]
   }),
+  section: one(sections, {
+    fields: [questions.sectionId],
+    references: [sections.id]
+  }),
   replies: many(replies),
 }));
 
@@ -59,14 +73,11 @@ export const repliesRelations = relations(replies, ({one, many}) => ({
     fields: [replies.authorId],
     references: [user.id]
   }),
-  reply: one(replies, {
+  parentReply: one(replies, {
     fields: [replies.parentReplyId],
     references: [replies.id],
-    relationName: "replies_parentReplyId_replies_id"
   }),
-  replies: many(replies, {
-    relationName: "replies_parentReplyId_replies_id"
-  }),
+  replies: many(replies),
   question: one(questions, {
     fields: [replies.questionId],
     references: [questions.id]
