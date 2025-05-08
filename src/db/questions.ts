@@ -8,6 +8,7 @@ type CreateQuestionInput = {
   num: number;
   body: string;
   chapterId: number;
+  sectionId: number | null;
 };
 
 export async function createQuestion(input: CreateQuestionInput) {

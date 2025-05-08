@@ -31,11 +31,7 @@ export async function createChapter(
 ) {
   const [chapter] = await db
     .insert(chapters)
-    .values({
-      title: input.title,
-      num: input.num,
-      textbookId: input.textbookId,
-    })
+    .values(input)
     .returning();
   return chapter;
 }
