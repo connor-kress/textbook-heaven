@@ -159,21 +159,30 @@ function ChapterDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "rounded-full",
-            hasActiveQuestion
-              ? "bg-cyan-800 hover:bg-cyan-700 text-white border-cyan-500"
-              : "bg-neutral-900 hover:bg-neutral-700 text-neutral-200",
-            "flex items-center gap-2"
-          )}
-        >
-          {"Ch."} {chapter.num}
-          <ChevronDown className="h-3 w-3 opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "rounded-full",
+                  hasActiveQuestion
+                    ? "bg-cyan-800 hover:bg-cyan-700 text-white border-cyan-500"
+                    : "bg-neutral-900 hover:bg-neutral-700 text-neutral-200",
+                  "flex items-center gap-2"
+                )}
+              >
+                {"Ch."} {chapter.num}
+                <ChevronDown className="h-3 w-3 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            {chapter.title}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuLabel>{chapter.title}</DropdownMenuLabel>
