@@ -31,5 +31,6 @@ export const TextbookSchema = z.object({
   chapters: ChapterSchema.array(),
 });
 
+export type Section = z.infer<typeof SectionSchema>;
 export type Chapter = z.infer<typeof ChapterSchema>;
 export type Textbook = z.infer<typeof TextbookSchema>;

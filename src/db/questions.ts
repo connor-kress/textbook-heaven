@@ -78,6 +78,6 @@ export async function getQuestionById(
   }
 
   const validQuestion = QuestionSchema.parse(question);
-  console.dir(validQuestion, {depth: null});
+  // console.dir(validQuestion, {depth: null});
   return validQuestion;
 }

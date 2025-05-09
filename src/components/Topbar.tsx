@@ -4,6 +4,7 @@ import Link from "next/link";
 import ProfilePicture from "./ProfilePicture";
 import { authClient } from "@/lib/auth-client";
 import LogoutButton from "./LogoutButton";
+import { ThemeToggleButton } from "./ThemeToggleButton";
 
 export default function Topbar() {
   const { data: session, isPending } = authClient.useSession();
@@ -41,6 +42,9 @@ export default function Topbar() {
       {/* right side */}
       <div className="flex items-center h-full">
         {rightItems}
+        <div className="ml-2">
+          <ThemeToggleButton />
+        </div>
       </div>
     </header>
   );

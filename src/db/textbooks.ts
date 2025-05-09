@@ -40,7 +40,7 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
     baseFileName : textbook.fileName.replace(/.pdf$/, ""),
     filePath: `/pdf/${textbook.fileName}`,
   }));
-  console.log(textbookArray);
+  // console.log(textbookArray);
   return TextbookSchema.array().parse(textbookArray);
 }
 
@@ -57,6 +57,6 @@ export async function fetchTextbook(
     baseFileName : rawTextbook.fileName.replace(/.pdf$/, ""),
     filePath: `/pdf/${rawTextbook.fileName}`,
   };
-  console.log(textbook);
+  // console.dir(textbook, { depth: null });
   return TextbookSchema.parse(textbook);
 }
