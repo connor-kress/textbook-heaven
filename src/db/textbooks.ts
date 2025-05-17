@@ -1,10 +1,11 @@
 import { asc, eq, isNull } from "drizzle-orm";
 import { db } from "./index";
-import { questions, sections, textbooks } from "./schema"
+import { chapters, questions, sections, textbooks } from "./schema"
 import { Textbook, TextbookSchema } from '@/types/Textbook';
 
 const allChaptersAndSections = {
   chapters: {
+    orderBy: [asc(chapters.num)],
     with: {
       questions: {
         columns: {
