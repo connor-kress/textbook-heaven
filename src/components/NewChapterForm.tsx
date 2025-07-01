@@ -1,20 +1,30 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createChapterEndpoint } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
+import { tbUrl } from "@/lib/utils";
 
 export function NewChapterForm({ textbook }: { textbook: Textbook }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const newChapterNum = searchParams.get("newChapterNum") ?? "";
   const [formData, setFormData] = useState({
     num: "",
     body: "",
     chapterId: "",
     sectionId: "",
   });
+
+  // Set initial chapter number from newChapterNum if present
+  useEffect(() => {
+    if (newChapterNum && !formData.num) {
+      setFormData((prev) => ({ ...prev, num: newChapterNum }));
+    }
+  }, [newChapterNum, formData.num]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -37,8 +47,7 @@ export function NewChapterForm({ textbook }: { textbook: Textbook }) {
       alert(res.error);
       return;
     }
-    // TODO: implement textbook page chapter view
-    router.push(`/textbooks/${textbook.baseFileName}?chapterId=${res.id}`);
+    router.push(tbUrl(textbook));
   }
 
   return (

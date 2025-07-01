@@ -7,8 +7,9 @@ import { Textbook } from "@/types/Textbook";
 import { NewQuestionForm } from "./NewQuestionForm";
 import { NewChapterForm } from "./NewChapterForm";
 import { NewSectionForm } from "./NewSectionForm";
+import { TextbookHomePage } from "./TextbookHomePage";
 
-export default function QuestionView(
+export default function TextbookView(
   { textbook }: {textbook: Textbook}
 ) {
   const params = useSearchParams()
@@ -24,12 +25,7 @@ export default function QuestionView(
   } else if (newSection !== null) {
     body = <NewSectionForm textbook={textbook} />;
   } else if (questionId === null) {
-    body = (
-      <>
-        <p className="text-2xl">No question selected.</p>
-        <p>Click on a chapter above to view questions.</p>
-      </>
-    );
+    body = <TextbookHomePage textbook={textbook} />;
   } else {
     body = <QuestionDetails textbook={textbook} />;
   }
@@ -41,4 +37,4 @@ export default function QuestionView(
       </div>
     </div>
   );
-}
+} 

@@ -103,7 +103,7 @@ export async function postQuestion({
   textbook: Textbook;
   chapterId: number;
   sectionId: number | null;
-}): Promise<number | { error: string }> {
+}): Promise<{id: number} | { error: string }> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -125,5 +125,5 @@ export async function postQuestion({
   }
 
   revalidatePath(`/textbooks/${textbook.baseFileName}`);
-  return question.id;
+  return { id: question.id };
 }

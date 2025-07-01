@@ -68,13 +68,12 @@ if (loading) {
   const questionTitle = question.sectionId === null && chapter.sections.length > 0 
     ? `Review Question ${question.num}`
     : `Question ${question.num}`;
-
   const shouldSplit = chapterTitle.length > 40 || (sectionTitle && sectionTitle.length > 35);
 
   return (
     <>
       <div className="mb-4">
-        <div className={`flex ${shouldSplit ? 'flex-col' : 'flex-row items-center'} gap-1`}>
+        <div className={`flex ${shouldSplit ? "flex-col" : "flex-row items-center"} gap-1`}>
           <h1 className="text-xl font-semibold">
             {chapterTitle}
           </h1>

@@ -6,15 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createSectionEndpoint } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
-
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
+import { tbUrl } from "@/lib/utils";
 
 export function NewSectionForm({ textbook }: { textbook: Textbook }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const newChapterId = searchParams.get("newChapterId") ?? "";
+  const newSectionNum = searchParams.get("newSectionNum") ?? "";
   const [formData, setFormData] = useState({
     num: "",
     body: "",
@@ -28,6 +29,13 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
       setFormData((prev) => ({ ...prev, chapterId: newChapterId }));
     }
   }, [newChapterId, formData.chapterId]);
+
+  // Set initial section number from newSectionNum if present
+  useEffect(() => {
+    if (newSectionNum && !formData.num) {
+      setFormData((prev) => ({ ...prev, num: newSectionNum }));
+    }
+  }, [newSectionNum, formData.num]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -51,8 +59,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
       alert(res.error);
       return;
     }
-    // TODO: implement textbook page section view
-    router.push(`/textbooks/${textbook.baseFileName}?sectionId=${res.id}`);
+    router.push(tbUrl(textbook));
   }
   return (
     <div>
@@ -66,7 +73,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
             }}
             chapters={textbook.chapters}
           />
-          <Link href={`/textbooks/${textbook.baseFileName}?newChapter`}>
+          <Link href={tbUrl(textbook, { newChapter: "" })}>
             <Button variant="outline" size="icon">
               <PlusIcon className="h-4 w-4" />
             </Button>

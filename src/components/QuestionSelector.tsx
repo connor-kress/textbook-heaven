@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { tbUrl } from "@/lib/utils";
 
 export default function QuestionSelector({ textbook }: { textbook: Textbook }) {
   const params = useSearchParams();
@@ -44,7 +45,7 @@ export default function QuestionSelector({ textbook }: { textbook: Textbook }) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href={`/textbooks/${textbook.baseFileName}?newQuestion`}
+              href={tbUrl(textbook, { newQuestion: "" })}
               title=""
             >
               <Button
@@ -207,7 +208,7 @@ function QuestionMenuItem({
   return (
     <DropdownMenuItem asChild>
       <Link
-        href={`/textbooks/${textbook.baseFileName}?questionId=${question.id}`}
+        href={tbUrl(textbook, { questionId: question.id })}
         className={cn(
           isActive && "bg-accent font-medium"
         )}

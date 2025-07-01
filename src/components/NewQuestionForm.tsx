@@ -1,8 +1,8 @@
 "use client";
 
 import { postQuestion } from "@/actions/questions";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
 import { SectionSelect } from "@/components/SectionSelect";
+import { tbUrl } from "@/lib/utils";
 
 type FormData = {
   num: string;
@@ -22,6 +23,10 @@ type FormData = {
 
 export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const newChapterId = searchParams.get("newChapterId") ?? "";
+  const newSectionId = searchParams.get("newSectionId") ?? "";
+  const newQuestionNum = searchParams.get("newQuestionNum") ?? "";
   const [formData, setFormData] = useState<FormData>({
     num: "",
     body: "",
@@ -32,6 +37,27 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
   const selectedChapter = textbook.chapters.find(
     (c) => c.id.toString() === formData.chapterId
   );
+
+  // Set initial chapterId from newChapterId if present
+  useEffect(() => {
+    if (newChapterId && !formData.chapterId) {
+      setFormData((prev) => ({ ...prev, chapterId: newChapterId, sectionId: "" }));
+    }
+  }, [newChapterId, formData.chapterId]);
+
+  // Set initial sectionId from newSectionId if present
+  useEffect(() => {
+    if (newSectionId && !formData.sectionId) {
+      setFormData((prev) => ({ ...prev, sectionId: newSectionId }));
+    }
+  }, [newSectionId, formData.sectionId]);
+
+  // Set initial question number from newQuestionNum if present
+  useEffect(() => {
+    if (newQuestionNum && !formData.num) {
+      setFormData((prev) => ({ ...prev, num: newQuestionNum }));
+    }
+  }, [newQuestionNum, formData.num]);
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,7 +77,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
       sectionId,
     });
 
-    if (typeof res !== "number") {
+    if ("error" in res) {
       if (res.error === "Unauthorized") {
         router.push("/login");
         return;
@@ -59,7 +85,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
       alert(res.error);
       return;
     }
-    router.push(`/textbooks/${textbook.baseFileName}?questionId=${res}`);
+    router.push(tbUrl(textbook, { questionId: res.id }));
   }
 
   return (
@@ -74,7 +100,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
             }}
             chapters={textbook.chapters}
           />
-          <Link href={`/textbooks/${textbook.baseFileName}?newChapter`}>
+          <Link href={tbUrl(textbook, { newChapter: "" })}>
             <Button variant="outline" size="icon">
               <PlusIcon className="h-4 w-4" />
             </Button>
@@ -90,11 +116,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
               }}
               sections={selectedChapter.sections}
             />
-            <Link href={
-              `/textbooks/${textbook.baseFileName}?newSection${
-                formData.chapterId ? `&newChapterId=${formData.chapterId}` : ''
-              }`
-            }>
+            <Link href={tbUrl(textbook, { newSection: "", newChapterId: formData.chapterId })}>
               <Button variant="outline" size="icon">
                 <PlusIcon className="h-4 w-4" />
               </Button>

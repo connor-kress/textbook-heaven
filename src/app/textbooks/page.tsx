@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { fetchTextbooks } from "@/db/textbooks";
+import { tbUrl } from '@/lib/utils';
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default async function TextbookListPage() {
             ? `/covers/${tb.coverImagePath}`
             : "/covers/cover-placeholder.jpg";
           return <Link
-            href={`/textbooks/${tb.baseFileName}`}
+            href={tbUrl(tb)}
             key={i}
             className="group block rounded-lg shadow hover:shadow-lg transition overflow-hidden bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700"
           >
