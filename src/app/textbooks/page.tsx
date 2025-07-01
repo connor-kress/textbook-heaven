@@ -17,7 +17,7 @@ export default async function TextbookListPage() {
         {textbooks.map((tb, i) => {
           const coverImagePath = tb.coverImagePath
             ? `/covers/${tb.coverImagePath}`
-            : "/covers/cover-placeholder.png";
+            : "/covers/cover-placeholder.jpg";
           return <Link
             href={`/textbooks/${tb.baseFileName}`}
             key={i}
