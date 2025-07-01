@@ -23,6 +23,7 @@ export const QuestionSchema = z.object({
   author: UserSchema,
   postDate: z.coerce.date(),
   chapterId: z.number(),
+  sectionId: z.number().nullable(),
   num: z.number(),
   body: z.string(),
   comments: ReplySchema.array(),

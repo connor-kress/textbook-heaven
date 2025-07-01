@@ -40,7 +40,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const chapterId = parseInt(formData.chapterId);
-    const sectionId = parseInt(formData.sectionId);
+    const sectionId = formData.sectionId ? parseInt(formData.sectionId) : null;
     const questionNum = parseInt(formData.num);
 
     const res = await postQuestion({

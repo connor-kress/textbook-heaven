@@ -59,16 +59,37 @@ if (loading) {
   if (chapter === undefined) {
     throw new Error("Chapter data cannot be found for question");
   }
+  const section = question.sectionId
+    ? chapter.sections.find(s => s.id === question.sectionId) ?? null
+    : null;
   
+  const chapterTitle = `Chapter ${chapter.num}: ${chapter.title}`;
+  const sectionTitle = section ? `Section ${section.num}: ${section.title}` : null;
+  const questionTitle = question.sectionId === null && chapter.sections.length > 0 
+    ? `Review Question ${question.num}`
+    : `Question ${question.num}`;
+
+  const shouldSplit = chapterTitle.length > 40 || (sectionTitle && sectionTitle.length > 35);
+
   return (
     <>
-      <h1 className="mb-2 text-2xl font-bold">
-        Chapter {chapter.num}: {chapter.title}
-        <span className="text-neutral-500 dark:text-neutral-400">
-          {" "}- Q. {question.num}
-        </span>
-      </h1>
-      <hr className="mb-2 border-neutral-600" />
+      <div className="mb-4">
+        <div className={`flex ${shouldSplit ? 'flex-col' : 'flex-row items-center'} gap-1`}>
+          <h1 className="text-xl font-semibold">
+            {chapterTitle}
+          </h1>
+          {section && (
+            <h2 className="text-lg text-neutral-600 dark:text-neutral-500">
+              {shouldSplit ? sectionTitle : `- ${sectionTitle}`}
+            </h2>
+          )}
+        </div>
+        <div className="mt-1">
+          <h2 className="text-lg font-medium text-neutral-700 dark:text-neutral-300">
+            {questionTitle}
+          </h2>
+        </div>
+      </div>
       <MarkdownRenderer text={question.body}/>
       <button
         onClick={() => setShowCommentForm(prev => !prev)}
