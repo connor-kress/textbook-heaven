@@ -15,6 +15,20 @@
       "when": 1746728897261,
       "tag": "0001_add_sections_table",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751403497661,
+      "tag": "0002_add_cover_image_to_textbooks",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1751404558726,
+      "tag": "0003_make_titles_non_nullable",
+      "breakpoints": true
     }
   ]
 }

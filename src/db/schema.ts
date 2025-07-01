@@ -77,17 +77,18 @@ export const verification = pgTable("verification", {
 
 export const textbooks = pgTable("textbooks", {
   id: serial().primaryKey().notNull(),
-  title: text(),
-  author: text(),
+  title: text().notNull(),
+  author: text().notNull(),
   description: text(),
   fileName: text().notNull(),
+  coverImagePath: text(),
 }, (table) => [
   unique().on(table.fileName),
 ]);
 
 export const chapters = pgTable("chapters", {
   id: serial().primaryKey().notNull(),
-  title: text(),
+  title: text().notNull(),
   num: integer().notNull(),
   textbookId: integer().notNull(),
 }, (table) => [
@@ -100,7 +101,7 @@ export const chapters = pgTable("chapters", {
 
 export const sections = pgTable("sections", {
   id: serial().primaryKey().notNull(),
-  title: text(),
+  title: text().notNull(),
   num: integer().notNull(),
   chapterId: integer().notNull(),
 }, (table) => [

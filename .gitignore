@@ -35,8 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# public PDFs
-pdf
+# public files
+public/pdf/
+public/covers/
 
 # personal notes
 NOTES/
