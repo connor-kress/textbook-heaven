@@ -1,55 +1,56 @@
 "use client";
 
 import { postQuestion } from "@/actions/questions";
-import { InputField, SubmitButton, TextArea } from "./FormFields";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
+import { ChapterSelect } from "@/components/ChapterSelect";
+import { SectionSelect } from "@/components/SectionSelect";
 
 type FormData = {
-  num: string,
-  body: string,
-  chapterNum: string,
-  chapterTitle: string,
-  sectionNum: string,
-  sectionTitle: string,
+  num: string;
+  body: string;
+  chapterId: string;
+  sectionId: string;
 };
 
-export function NewQuestionForm(
-  { textbook }: {textbook: Textbook}
-) {
+export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    num: "", body: "",
-    chapterNum: "", chapterTitle: "",
-    sectionNum: "", sectionTitle: "",
+    num: "",
+    body: "",
+    chapterId: "",
+    sectionId: "",
   });
 
-  function handleChange(e: ChangeEvent<HTMLFormElement>) {
+  const selectedChapter = textbook.chapters.find(
+    (c) => c.id.toString() === formData.chapterId
+  );
+
+  function handleInputChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(formData);
-    const chapterNum = parseInt(formData.chapterNum);
-    const sectionNum = formData.sectionNum.trim() !== ""
-      ? parseInt(formData.sectionNum)
-      : null;
+    const chapterId = parseInt(formData.chapterId);
+    const sectionId = parseInt(formData.sectionId);
     const questionNum = parseInt(formData.num);
-    const chapterTitle = formData.chapterTitle.trim() !== ""
-      ? formData.chapterTitle.trim()
-      : null;
-    const sectionTitle = formData.sectionTitle.trim() !== ""
-      ? formData.sectionTitle.trim()
-      : null;
+
     const res = await postQuestion({
       textbook,
-      questionNum, questionBody: formData.body,
-      chapterNum, chapterTitle: chapterTitle,
-      sectionNum, sectionTitle: sectionTitle,
+      questionNum,
+      questionBody: formData.body,
+      chapterId,
+      sectionId,
     });
+
     if (typeof res !== "number") {
       if (res.error === "Unauthorized") {
         router.push("/login");
@@ -64,36 +65,71 @@ export function NewQuestionForm(
   return (
     <div className="flex flex-col">
       <h1 className="text-2xl font-bold mb-2">Compose New Question:</h1>
-      <form
-        onSubmit={handleSubmit}
-        onChange={handleChange}
-        className="
-          flex flex-col
-          p-3 gap-2
-          bg-neutral-800
-          rounded
-        "
-      >
-        <InputField type="number" name="chapterNum" placeholder="Chapter #"
-                    required={true} />
-        <InputField type="text" name="chapterTitle"
-                    placeholder="New Chapter Name" autoComplete="off" />
-        <InputField type="number" name="sectionNum" placeholder="Section #" />
-        <InputField type="text" name="sectionTitle"
-                    placeholder="New Section Name" autoComplete="off" />
-        <InputField type="number" name="num" placeholder="Question #"
-                    required={true} />
-        <TextArea name="body" placeholder="Question Body" required={true}
-                  rows={5} minLength={10} />
-        <SubmitButton value="Submit" />
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+        <div className="flex items-center space-x-2">
+          <ChapterSelect
+            value={formData.chapterId}
+            onValueChange={(value) => {
+              setFormData({ ...formData, chapterId: value, sectionId: "" });
+            }}
+            chapters={textbook.chapters}
+          />
+          <Link href={`/textbooks/${textbook.baseFileName}?newChapter`}>
+            <Button variant="outline" size="icon">
+              <PlusIcon className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+
+        {selectedChapter && (
+          <div className="flex items-center space-x-2">
+            <SectionSelect
+              value={formData.sectionId}
+              onValueChange={(value) => {
+                setFormData({ ...formData, sectionId: value });
+              }}
+              sections={selectedChapter.sections}
+            />
+            <Link href={
+              `/textbooks/${textbook.baseFileName}?newSection${
+                formData.chapterId ? `&newChapterId=${formData.chapterId}` : ''
+              }`
+            }>
+              <Button variant="outline" size="icon">
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        <Input
+          type="number"
+          name="num"
+          placeholder="Question #"
+          required
+          value={formData.num}
+          onChange={handleInputChange}
+        />
+
+        <Textarea
+          name="body"
+          placeholder="Question Body"
+          required
+          rows={5}
+          minLength={10}
+          value={formData.body}
+          onChange={handleInputChange}
+        />
+
+        <Button type="submit">Submit</Button>
       </form>
 
-      {formData.body &&
+      {formData.body && (
         <>
           <h1 className="text-2xl font-bold mb-2 mt-4">Preview:</h1>
           <MarkdownRenderer text={formData.body} />
         </>
-      }
+      )}
     </div>
   );
 }

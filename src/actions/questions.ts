@@ -18,61 +18,107 @@ type questionInput = {
   sectionTitle: string | null;
 };
 
-export async function postQuestion({
-  questionNum, questionBody, textbook,
-  chapterNum, chapterTitle, sectionNum, sectionTitle,
-}: questionInput): Promise<number | { error: string }> {
+// Create a Chapter
+export async function createChapterEndpoint({
+  chapterNum,
+  chapterTitle,
+  textbook,
+}: {
+  chapterNum: number;
+  chapterTitle: string;
+  textbook: Textbook;
+}): Promise<{ id: number } | { error: string }> {
   const session = await auth.api.getSession({
-      headers: await headers(),
-  })
+    headers: await headers(),
+  });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+  if (!chapterTitle) {
+    return { error: "Chapter title not provided" };
+  }
+  let chapter = await findChapterByNumAndTextbook(chapterNum, textbook.id);
+  if (chapter) {
+    return { id: chapter.id };
+  }
+  chapter = await createChapter({
+    title: chapterTitle,
+    num: chapterNum,
+    textbookId: textbook.id,
+  });
+  if (!chapter) {
+    return { error: "Failed to create chapter" };
+  }
+  revalidatePath(`/textbooks/${textbook.baseFileName}`);
+  return { id: chapter.id };
+}
+
+// Create a Section
+export async function createSectionEndpoint({
+  sectionNum,
+  sectionTitle,
+  chapterId,
+  textbook,
+}: {
+  sectionNum: number;
+  sectionTitle: string;
+  chapterId: number;
+  textbook: Textbook;
+}): Promise<{ id: number } | { error: string }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+  if (!sectionTitle) {
+    return { error: "Section title not provided" };
+  }
+  let section = await findSectionByNumAndChapter(sectionNum, chapterId);
+  if (section) {
+    return { id: section.id };
+  }
+  section = await createSection({
+    title: sectionTitle,
+    num: sectionNum,
+    chapterId,
+  });
+  if (!section) {
+    return { error: "Failed to create section" };
+  }
+  revalidatePath(`/textbooks/${textbook.baseFileName}`);
+  return { id: section.id };
+}
+
+// Post a Question
+export async function postQuestion({
+  questionNum,
+  questionBody,
+  textbook,
+  chapterId,
+  sectionId,
+}: {
+  questionNum: number;
+  questionBody: string;
+  textbook: Textbook;
+  chapterId: number;
+  sectionId: number | null;
+}): Promise<number | { error: string }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   if (!session) {
     return { error: "Unauthorized" };
   }
 
-  // Find or create the chapter
-  let chapter = await findChapterByNumAndTextbook(chapterNum, textbook.id);
-  if (!chapter) {
-    if (!chapterTitle) {
-      return { error: "Chapter title not provided" };
-    }
-    chapter = await createChapter({
-      title: chapterTitle,
-      num: chapterNum,
-      textbookId: textbook.id,
-    });
-    if (!chapter) {
-      return { error: "Failed to create chapter" };
-    }
-  }
-
-  // Find or create the section
-  let section = null;
-  if (sectionNum) {
-    section = await findSectionByNumAndChapter(sectionNum, chapter.id);
-    if (!section) {
-      if (!sectionTitle) {
-        return { error: "Section title not provided" };
-      }
-      section = await createSection({
-        title: sectionTitle,
-        num: sectionNum,
-        chapterId: chapter.id,
-      });
-      if (!section) {
-        return { error: "Failed to create section" };
-      }
-    }
-  }
-
-  // Insert the question
   let question;
   try {
     question = await createQuestion({
       authorId: session.user.id,
       num: questionNum,
       body: questionBody,
-      chapterId: chapter.id,
-      sectionId: section ? section.id : null,
+      chapterId,
+      sectionId: sectionId ?? null,
     });
   } catch (err: any) {
     return { error: err?.message ?? "Unknown error" };
