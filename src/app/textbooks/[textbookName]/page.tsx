@@ -1,4 +1,4 @@
-import QuestionView from "@/components/QuestionView";
+import TextbookView from "@/components/TextbookView";
 import { fetchTextbook } from "@/db/textbooks";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -45,7 +45,7 @@ export default async function TextbookPage({ params }: Props) {
       </div>
       {/* Right Panel: scrollable area */}
       <div className="flex flex-col w-full lg:w-1/2 h-full overflow-y-auto">
-        <QuestionView textbook={textbook}/>
+        <TextbookView textbook={textbook}/>
       </div>
     </div>
   );
