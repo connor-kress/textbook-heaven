@@ -2,11 +2,12 @@
 
 import { Question, QuestionSchema } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import NewReplyForm from "./NewReplyForm";
+import { getPrevQuestionId, getNextQuestionId } from "@/lib/utils";
 
 export function QuestionDetails(
   { textbook }: {textbook: Textbook}
@@ -16,6 +17,10 @@ export function QuestionDetails(
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCommentForm, setShowCommentForm] = useState(false);
+
+  const router = useRouter();
+  const prevId = question ? getPrevQuestionId(question.id, textbook) : null;
+  const nextId = question ? getNextQuestionId(question.id, textbook) : null;
 
   async function updateQuestion() {
       setLoading(true);
@@ -41,7 +46,7 @@ export function QuestionDetails(
     updateQuestion();
   }, [questionId]);
 
-if (loading) {
+  if (loading) {
     return (
       <div className="text-2xl">
         Loading question...
@@ -72,6 +77,30 @@ if (loading) {
 
   return (
     <>
+      <div className="flex justify-between mb-6 w-full">
+        <button
+          className={`px-4 py-2 rounded font-semibold border transition-colors
+            ${prevId
+              ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
+              : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
+          `}
+          disabled={!prevId}
+          onClick={() => prevId && router.push(`?questionId=${prevId}`)}
+        >
+          Previous Question
+        </button>
+        <button
+          className={`px-4 py-2 rounded font-semibold border transition-colors
+            ${nextId
+              ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
+              : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
+          `}
+          disabled={!nextId}
+          onClick={() => nextId && router.push(`?questionId=${nextId}`)}
+        >
+          Next Question
+        </button>
+      </div>
       <div className="mb-4">
         <div className={`flex ${shouldSplit ? "flex-col" : "flex-row items-center"} gap-1`}>
           <h1 className="text-xl font-semibold">

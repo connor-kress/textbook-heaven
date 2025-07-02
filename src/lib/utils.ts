@@ -3,11 +3,19 @@ import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Textbook } from "@/types/Textbook";
 
-export function cn(...inputs: ClassValue[]) {
+/**
+ * Merges multiple class values into a single string.
+ */
+export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-export function tbUrl(textbook: Textbook, params?: Record<string, string | number>) {
+/**
+ * Returns the URL for a textbook with optional search parameters.
+ */
+export function tbUrl(
+  textbook: Textbook, params?: Record<string, string | number>
+): string {
   const url = `/textbooks/${textbook.baseFileName}`;
   if (!params || Object.keys(params).length === 0) {
     return url;
@@ -17,4 +25,52 @@ export function tbUrl(textbook: Textbook, params?: Record<string, string | numbe
     searchParams.append(key, value.toString());
   });
   return `${url}?${searchParams.toString()}`;
+}
+
+/**
+ * Helper to get all question ids in reading order.
+ */
+export function getOrderedQuestionIds(textbook: Textbook): number[] {
+  const ordered: number[] = [];
+  const sortedChapters = [...textbook.chapters].sort((a, b) => a.num - b.num);
+  for (const chapter of sortedChapters) {
+    // Section questions
+    const sortedSections = [...chapter.sections].sort((a, b) => a.num - b.num);
+    for (const section of sortedSections) {
+      const sortedSectionQuestions = [...section.questions].sort((a, b) => a.num - b.num);
+      for (const q of sortedSectionQuestions) {
+        ordered.push(q.id);
+      }
+    }
+    // Review questions
+    const sortedChapterQuestions = [...chapter.questions].sort((a, b) => a.num - b.num);
+    for (const q of sortedChapterQuestions) {
+      ordered.push(q.id);
+    }
+  }
+  return ordered;
+}
+
+/**
+ * Returns the next question in reading order, or null if at the end.
+ */
+export function getNextQuestionId(
+  currentId: number, textbook: Textbook
+): number | null {
+  const ordered = getOrderedQuestionIds(textbook);
+  const idx = ordered.findIndex(q => q === currentId);
+  if (idx < 0 || idx === ordered.length - 1) return null;
+  return ordered[idx + 1];
+}
+
+/**
+ * Returns the previous question in reading order, or null if at the start.
+ */
+export function getPrevQuestionId(
+  currentId: number, textbook: Textbook
+): number | null {
+  const ordered = getOrderedQuestionIds(textbook);
+  const idx = ordered.findIndex(q => q === currentId);
+  if (idx <= 0) return null;
+  return ordered[idx - 1];
 }
