@@ -246,18 +246,17 @@ function SectionItem({ section, chapter, textbook }: SectionItemProps) {
         <h5 className="font-medium">
           Section {section.num}: {section.title}
         </h5>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {section.questions.length} question{section.questions.length !== 1 ? 's' : ''}
-        </p>
-        <div className="flex flex-wrap gap-1 mt-2">
-          {section.questions.map((question) => (
-            <QuestionItem
-              key={question.id}
-              question={question}
-              textbook={textbook}
-            />
-          ))}
-        </div>
+        {section.questions.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {section.questions.map((question) => (
+              <QuestionItem
+                key={question.id}
+                question={question}
+                textbook={textbook}
+              />
+            ))}
+          </div>
+        )}
       </div>
       <div className="mt-2">
         <Link
@@ -288,4 +287,4 @@ function QuestionItem({ question, textbook }: QuestionItemProps) {
       Q{question.num}
     </Link>
   );
-} 
+}
