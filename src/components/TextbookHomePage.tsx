@@ -11,6 +11,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface TextbookHomePageProps {
   textbook: Textbook;
@@ -31,9 +37,16 @@ export function TextbookHomePage({ textbook }: TextbookHomePageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{textbook.title}</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">{textbook.title}</h1>
+          {textbook.author && (
+            <p className="text-lg text-neutral-600 dark:text-neutral-400">
+              by {textbook.author}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
           <Link href={tbUrl(textbook, { newChapter: "" })}>
             <Button variant="outline" size="sm">
               <PlusIcon className="h-4 w-4 mr-2" />
@@ -54,12 +67,6 @@ export function TextbookHomePage({ textbook }: TextbookHomePageProps) {
           </Link>
         </div>
       </div>
-
-      {textbook.author && (
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
-          by {textbook.author}
-        </p>
-      )}
 
       {textbook.description && (
         <p className="text-neutral-700 dark:text-neutral-300">
@@ -108,32 +115,44 @@ interface ChapterCardProps {
 function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) {
   const hasSections = chapter.sections.length > 0;
   const hasQuestions = chapter.questions.length > 0;
-  const totalQuestions = chapter.questions.length + 
-    chapter.sections.reduce((sum, section) => sum + section.questions.length, 0);
+  const totalQuestions = chapter.questions.length
+    + chapter.sections.reduce((sum, section) => sum + section.questions.length, 0);
 
   return (
     <Collapsible open={isOpen} onOpenChange={onToggle}>
       <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg">
-        <CollapsibleTrigger asChild>
-          <Button
-            variant="ghost"
-            className="w-full justify-between p-4 h-auto"
-          >
-            <div className="flex items-center gap-3">
-              {isOpen ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-              <div className="text-left">
-                <h3 className="font-semibold">Chapter {chapter.num}: {chapter.title}</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  {totalQuestions} question{totalQuestions !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
-          </Button>
-        </CollapsibleTrigger>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between p-4 h-auto"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {isOpen ? (
+                      <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                    )}
+                    <div className="text-left min-w-0 flex-1">
+                      <h3 className="font-semibold truncate">Chapter {chapter.num}: {chapter.title}</h3>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {totalQuestions} question{totalQuestions !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                </Button>
+              </CollapsibleTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="lg:block hidden">
+              <p>Chapter {chapter.num}: {chapter.title}</p>
+            </TooltipContent>
+            <TooltipContent side="top" className="lg:hidden">
+              <p>Chapter {chapter.num}: {chapter.title}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         <CollapsibleContent className="px-4 pb-4">
           <div className="space-y-3">
@@ -165,32 +184,36 @@ function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) 
               </Button>
             </Link>
 
-            {/* Chapter Questions (if no sections) */}
-            {!hasSections && hasQuestions && (
+            {/* Review Questions (always show if they exist) */}
+            {hasQuestions && (
               <div className="space-y-2">
                 <h4 className="font-medium text-sm text-neutral-600 dark:text-neutral-400">
-                  Questions:
+                  {hasSections ? "Review Questions:" : "Questions:"}
                 </h4>
-                {chapter.questions.map((question) => (
-                  <QuestionItem
-                    key={question.id}
-                    question={question}
-                    textbook={textbook}
-                  />
-                ))}
+                <div className="ml-4 border-l-2 border-neutral-200 dark:border-neutral-700 pl-3">
+                  <div className="flex flex-wrap gap-1">
+                    {chapter.questions.map((question) => (
+                      <QuestionItem
+                        key={question.id}
+                        question={question}
+                        textbook={textbook}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-2">
+                    <Link
+                      href={tbUrl(textbook, { newQuestion: "", newChapterId: chapter.id })}
+                      className="block"
+                    >
+                      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                        <PlusIcon className="h-3 w-3 mr-1" />
+                        Add Question
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
-
-            {/* Add Question Link */}
-            <Link
-              href={tbUrl(textbook, { newQuestion: "", newChapterId: chapter.id })}
-              className="block"
-            >
-              <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
-                <PlusIcon className="h-3 w-3 mr-1" />
-                Add Question
-              </Button>
-            </Link>
           </div>
         </CollapsibleContent>
       </div>
@@ -207,16 +230,14 @@ interface SectionItemProps {
 function SectionItem({ section, chapter, textbook }: SectionItemProps) {
   return (
     <div className="ml-4 border-l-2 border-neutral-200 dark:border-neutral-700 pl-3">
-      <div className="flex items-center justify-between">
-        <div>
-          <h5 className="font-medium">
-            Section {section.num}: {section.title}
-          </h5>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {section.questions.length} question{section.questions.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <div className="flex gap-1">
+      <div>
+        <h5 className="font-medium">
+          Section {section.num}: {section.title}
+        </h5>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          {section.questions.length} question{section.questions.length !== 1 ? 's' : ''}
+        </p>
+        <div className="flex flex-wrap gap-1 mt-2">
           {section.questions.map((question) => (
             <QuestionItem
               key={question.id}
