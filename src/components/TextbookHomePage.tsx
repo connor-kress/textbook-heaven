@@ -207,14 +207,26 @@ function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) 
                     >
                       <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
                         <PlusIcon className="h-3 w-3 mr-1" />
-                        Add Question
+                        Add {hasSections ? "Review " : ""}Question
                       </Button>
                     </Link>
                   </div>
                 </div>
               </div>
             )}
-          </div>
+
+            {/* Add first Review Question (when no review questions exist) */}
+            {!hasQuestions && (
+              <Link
+                href={tbUrl(textbook, { newQuestion: "", newChapterId: chapter.id })}
+                className="block"
+              >
+                <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                  <PlusIcon className="h-3 w-3 mr-1" />
+                  Add {hasSections ? "Review " : ""}Question
+                </Button>
+              </Link>
+            )}          </div>
         </CollapsibleContent>
       </div>
     </Collapsible>
