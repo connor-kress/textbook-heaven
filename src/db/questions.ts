@@ -48,7 +48,7 @@ export async function getQuestionById(
   const question: any = {
     ...first.question,
     author: first.questionAuthor!,
-    comments: [],
+    replies: [],
   };
   const replyMap = new Map<number, Reply>(); // type validation at end
   for (let row of rows) {
@@ -73,7 +73,7 @@ export async function getQuestionById(
       }
       parentReply.replies.push(reply);
     } else {
-      question.comments.push(reply);
+      question.replies.push(reply);
     }
   }
 

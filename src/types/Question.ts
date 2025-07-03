@@ -26,7 +26,7 @@ export const QuestionSchema = z.object({
   sectionId: z.number().nullable(),
   num: z.number(),
   body: z.string(),
-  comments: ReplySchema.array(),
+  replies: ReplySchema.array(),
 });
 
 export type Question = z.infer<typeof QuestionSchema>;
