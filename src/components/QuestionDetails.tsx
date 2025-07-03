@@ -29,7 +29,7 @@ export function QuestionDetails({ textbook }: {textbook: Textbook}) {
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-300 mb-2">Question Not Found</h2>
         <p className="text-gray-600 dark:text-gray-500">
-          The question you're looking for doesn't exist.
+          {"The question you're looking for doesn't exist."}
         </p>
       </div>
     );
