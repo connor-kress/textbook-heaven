@@ -12,6 +12,7 @@ import ReplyDetails from "./ReplyDetails";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import NewReplyForm from "./NewReplyForm";
 import { getOrderedQuestionInfo } from "@/lib/utils";
+import { QuestionContentSkeleton, RepliesSkeleton } from "./skeletons";
 
 export function QuestionDetails({ textbook }: {textbook: Textbook}) {
   const params = useSearchParams();
@@ -64,15 +65,13 @@ export function QuestionDetails({ textbook }: {textbook: Textbook}) {
   const nextQuestion = questionIdx < orderedQuestions.length - 1 ? orderedQuestions[questionIdx + 1] : null;
 
   const content = loading ? (
-    <div className="text-2xl">
-      Loading question...
-    </div>
+    <QuestionContentSkeleton />
   ) : question === null ? (
     <div className="text-2xl">
       No question data found.
     </div>
   ) : (
-    <QuestionContent question={question} textbook={textbook} />
+    <MarkdownRenderer text={question.body}/>
   );
 
   return (
@@ -80,6 +79,7 @@ export function QuestionDetails({ textbook }: {textbook: Textbook}) {
       <NavigationButtons prevQuestion={prevQuestion} nextQuestion={nextQuestion} router={router} />
       <QuestionHeader questionInfo={currentQuestionInfo} textbook={textbook} />
       {content}
+      <QuestionReplies question={question} loading={loading} textbook={textbook} />
     </>
   );
 }
@@ -157,41 +157,53 @@ function QuestionHeader({
   );
 }
 
-function QuestionContent({ question, textbook }: {question: Question, textbook: Textbook}) {
+function QuestionReplies({ question, loading, textbook }: {
+  question: Question | null;
+  loading: boolean;
+  textbook: Textbook;
+}) {
   const [showCommentForm, setShowCommentForm] = useState(false);
-  
+  const replyCount = question ? question.replies.length : 0;
   return (
     <>
-      <MarkdownRenderer text={question.body}/>
       <button
         onClick={() => setShowCommentForm(prev => !prev)}
         className="text-blue-500 hover:underline mb-2"
+        disabled={loading}
       >
         { showCommentForm ? "Close Form" : "New Reply"}
       </button>
       <h2 className="mb-4">
-        {question.comments.length} Replies:
+        {`${replyCount} ${replyCount === 1 ? "Reply" : "Replies"}`}
       </h2>
-      <div className="flex flex-col items-start gap-10">
-        {
-          showCommentForm &&
-          <div className="w-full">
-            <NewReplyForm
+      {loading ? (
+        <RepliesSkeleton />
+      ) : question === null ? (
+        <div className="text-2xl">
+          No question data found.
+        </div>
+      ) : (
+        <div className="flex flex-col items-start gap-10 w-full">
+          {
+            showCommentForm &&
+            <div className="w-full">
+              <NewReplyForm
+                textbook={textbook}
+                question={question}
+                parentReplyId={null}
+              />
+            </div>
+          }
+          {question.replies.map((c, i) => (
+            <ReplyDetails
+              key={i}
               textbook={textbook}
+              reply={c}
               question={question}
-              parentReplyId={null}
             />
-          </div>
-        }
-        {question?.comments.map((c, i) => (
-          <ReplyDetails
-            key={i}
-            textbook={textbook}
-            reply={c}
-            question={question}
-          />
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }
