@@ -9,58 +9,10 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 import NewReplyForm from "./NewReplyForm";
 import { getPrevQuestionId, getNextQuestionId } from "@/lib/utils";
 
-export function QuestionDetails(
-  { textbook }: {textbook: Textbook}
-) {
-  const params = useSearchParams()
-  const questionId = params.get("questionId");
-  const [question, setQuestion] = useState<Question | null>(null);
-  const [loading, setLoading] = useState(true);
+function QuestionContent({ question, textbook }: {question: Question, textbook: Textbook}) {
   const [showCommentForm, setShowCommentForm] = useState(false);
-
-  const router = useRouter();
-  const prevId = question ? getPrevQuestionId(question.id, textbook) : null;
-  const nextId = question ? getNextQuestionId(question.id, textbook) : null;
-
-  async function updateQuestion() {
-      setLoading(true);
-      if (typeof questionId !== "string") {
-        setQuestion(null);
-        setLoading(false);
-        return;
-      }
-      try {
-        const res = await fetch(`/api/questions/${questionId}`, {
-          cache: "no-store",
-        });
-        if (!res.ok) throw new Error((await res.json()).error);
-        const questionData = QuestionSchema.parse(await res.json());
-        setQuestion(questionData);
-      } catch (err) {
-        console.error(err);
-        setQuestion(null);
-      }
-      setLoading(false);
-  }
-  useEffect(() => {
-    updateQuestion();
-  }, [questionId]);
-
-  if (loading) {
-    return (
-      <div className="text-2xl">
-        Loading question...
-      </div>
-    );
-  } else if (question === null) {
-    return (
-      <div className="text-2xl">
-        No question data found.
-      </div>
-    );
-  }
-  const chapter =
-    textbook.chapters.find(c => c.id === question.chapterId);
+  
+  const chapter = textbook.chapters.find(c => c.id === question.chapterId);
   if (chapter === undefined) {
     throw new Error("Chapter data cannot be found for question");
   }
@@ -77,30 +29,6 @@ export function QuestionDetails(
 
   return (
     <>
-      <div className="flex justify-between mb-6 w-full">
-        <button
-          className={`px-4 py-2 rounded font-semibold border transition-colors
-            ${prevId
-              ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
-              : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
-          `}
-          disabled={!prevId}
-          onClick={() => prevId && router.push(`?questionId=${prevId}`)}
-        >
-          Previous Question
-        </button>
-        <button
-          className={`px-4 py-2 rounded font-semibold border transition-colors
-            ${nextId
-              ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
-              : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
-          `}
-          disabled={!nextId}
-          onClick={() => nextId && router.push(`?questionId=${nextId}`)}
-        >
-          Next Question
-        </button>
-      </div>
       <div className="mb-4">
         <div className={`flex ${shouldSplit ? "flex-col" : "flex-row items-center"} gap-1`}>
           <h1 className="text-xl font-semibold">
@@ -148,6 +76,98 @@ export function QuestionDetails(
           />
         ))}
       </div>
+    </>
+  );
+}
+
+function NavigationButtons({ prevId, nextId, router }: { 
+  prevId: number | null; 
+  nextId: number | null; 
+  router: any;
+}) {
+  return (
+    <div className="flex justify-between mb-6 w-full">
+      <button
+        className={`px-4 py-2 rounded font-semibold border transition-colors
+          ${prevId
+            ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
+            : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
+        `}
+        disabled={!prevId}
+        onClick={() => prevId && router.push(`?questionId=${prevId}`)}
+      >
+        Previous Question
+      </button>
+      <button
+        className={`px-4 py-2 rounded font-semibold border transition-colors
+          ${nextId
+            ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
+            : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
+        `}
+        disabled={!nextId}
+        onClick={() => nextId && router.push(`?questionId=${nextId}`)}
+      >
+        Next Question
+      </button>
+    </div>
+  );
+}
+
+export function QuestionDetails(
+  { textbook }: {textbook: Textbook}
+) {
+  const params = useSearchParams()
+  const questionId = params.get("questionId");
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  
+  const questionIdNum = questionId ? parseInt(questionId) : null;
+  const isValidId = questionIdNum && !isNaN(questionIdNum);
+  const prevId = isValidId ? getPrevQuestionId(questionIdNum, textbook) : null;
+  const nextId = isValidId ? getNextQuestionId(questionIdNum, textbook) : null;
+
+  async function updateQuestion() {
+      setLoading(true);
+      if (!isValidId) {
+        setQuestion(null);
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/questions/${questionId}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error((await res.json()).error);
+        const questionData = QuestionSchema.parse(await res.json());
+        setQuestion(questionData);
+      } catch (err) {
+        console.error(err);
+        setQuestion(null);
+      }
+      setLoading(false);
+  }
+  
+  useEffect(() => {
+    updateQuestion();
+  }, [questionId]);
+
+  const content = loading ? (
+    <div className="text-2xl">
+      Loading question...
+    </div>
+  ) : question === null ? (
+    <div className="text-2xl">
+      No question data found.
+    </div>
+  ) : (
+    <QuestionContent question={question} textbook={textbook} />
+  );
+
+  return (
+    <>
+      <NavigationButtons prevId={prevId} nextId={nextId} router={router} />
+      {content}
     </>
   );
 }
