@@ -30,3 +30,17 @@ export const QuestionSchema = z.object({
 });
 
 export type Question = z.infer<typeof QuestionSchema>;
+
+export const QuestionInfoSchema = z.object({
+  id: z.number(),
+  num: z.number(),
+});
+
+export type QuestionInfo = z.infer<typeof QuestionInfoSchema>;
+
+export type QuestionInfoWithLocation = QuestionInfo & {
+  chapterNum: number;
+  chapterId: number;
+  sectionNum: number | null;
+  sectionId: number | null;
+};

@@ -1,15 +1,11 @@
 import { z } from "zod"
-
-const QuestionSchema = z.object({
-  id: z.number(),
-  num: z.number(),
-});
+import { QuestionInfoSchema } from "./Question";
 
 export const SectionSchema = z.object({
   id: z.number(),
   title: z.string(),
   num: z.number(),
-  questions: QuestionSchema.array(),
+  questions: QuestionInfoSchema.array(),
 });
 
 export const ChapterSchema = z.object({
@@ -17,7 +13,7 @@ export const ChapterSchema = z.object({
   title: z.string(),
   num: z.number(),
   sections: SectionSchema.array(),
-  questions: QuestionSchema.array(),
+  questions: QuestionInfoSchema.array(),
 });
 
 export const TextbookSchema = z.object({
