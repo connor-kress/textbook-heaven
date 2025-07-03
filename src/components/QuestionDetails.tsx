@@ -14,31 +14,17 @@ import NewReplyForm from "./NewReplyForm";
 import { getOrderedQuestionInfo } from "@/lib/utils";
 
 export function QuestionDetails({ textbook }: {textbook: Textbook}) {
-  const params = useSearchParams()
+  const params = useSearchParams();
   const questionId = params.get("questionId");
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  
+
   const questionIdNum = questionId ? parseInt(questionId) : null;
   const isValidId = questionIdNum && !isNaN(questionIdNum);
-  const orderedQuestions = getOrderedQuestionInfo(textbook);
-  const questionIdx = orderedQuestions.findIndex(q => q.id === questionIdNum);
-  if (questionIdx < 0) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-300 mb-2">Question Not Found</h2>
-        <p className="text-gray-600 dark:text-gray-500">
-          {"The question you're looking for doesn't exist."}
-        </p>
-      </div>
-    );
-  }
-  const currentQuestionInfo = orderedQuestions[questionIdx];
-  const prevQuestion = questionIdx > 0 ? orderedQuestions[questionIdx - 1] : null;
-  const nextQuestion = questionIdx < orderedQuestions.length - 1 ? orderedQuestions[questionIdx + 1] : null;
 
-  async function updateQuestion() {
+  useEffect(() => {
+    async function fetchQuestion() {
       setLoading(true);
       if (!isValidId) {
         setQuestion(null);
@@ -57,11 +43,25 @@ export function QuestionDetails({ textbook }: {textbook: Textbook}) {
         setQuestion(null);
       }
       setLoading(false);
+    }
+    fetchQuestion();
+  }, [questionId, isValidId]);
+
+  const orderedQuestions = getOrderedQuestionInfo(textbook);
+  const questionIdx = orderedQuestions.findIndex(q => q.id === questionIdNum);
+  if (questionIdx < 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-300 mb-2">Question Not Found</h2>
+        <p className="text-gray-600 dark:text-gray-500">
+          {"The question you're looking for doesn't exist."}
+        </p>
+      </div>
+    );
   }
-  
-  useEffect(() => {
-    updateQuestion();
-  }, [questionId]);
+  const currentQuestionInfo = orderedQuestions[questionIdx];
+  const prevQuestion = questionIdx > 0 ? orderedQuestions[questionIdx - 1] : null;
+  const nextQuestion = questionIdx < orderedQuestions.length - 1 ? orderedQuestions[questionIdx + 1] : null;
 
   const content = loading ? (
     <div className="text-2xl">
