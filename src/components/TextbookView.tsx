@@ -8,12 +8,13 @@ import { NewQuestionForm } from "./NewQuestionForm";
 import { NewChapterForm } from "./NewChapterForm";
 import { NewSectionForm } from "./NewSectionForm";
 import { TextbookHomePage } from "./TextbookHomePage";
+import { useQuestionId } from "@/hooks/useQuestionId";
 
 export default function TextbookView(
   { textbook }: {textbook: Textbook}
 ) {
-  const params = useSearchParams()
-  const questionId = params.get("questionId");
+  const params = useSearchParams();
+  const [questionId, setQuestionId] = useQuestionId();
   const newQuestion = params.get("newQuestion");
   const newChapter = params.get("newChapter");
   const newSection = params.get("newSection");
@@ -25,13 +26,28 @@ export default function TextbookView(
   } else if (newSection !== null) {
     body = <NewSectionForm textbook={textbook} />;
   } else if (questionId === null) {
-    body = <TextbookHomePage textbook={textbook} />;
+    body = (
+      <TextbookHomePage
+        textbook={textbook}
+        setQuestionId={setQuestionId}
+      />
+    );
   } else {
-    body = <QuestionDetails textbook={textbook} />;
+    body = (
+      <QuestionDetails
+        textbook={textbook}
+        questionId={questionId}
+        setQuestionId={setQuestionId}
+      />
+    );
   }
   return (
     <div className="flex flex-col">
-      <QuestionSelector textbook={textbook} />
+      <QuestionSelector
+        textbook={textbook}
+        questionId={questionId}
+        setQuestionId={setQuestionId}
+      />
       <div className="mx-[5%] lg:ml-[3%] my-4">
         {body}
       </div>

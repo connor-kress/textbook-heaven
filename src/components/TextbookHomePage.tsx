@@ -17,12 +17,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { QuestionInfo } from "@/types/Question";
 
-interface TextbookHomePageProps {
+export function TextbookHomePage({
+  textbook,
+  setQuestionId,
+}: {
   textbook: Textbook;
-}
-
-export function TextbookHomePage({ textbook }: TextbookHomePageProps) {
+  setQuestionId: (questionId: number | null) => void;
+}) {
   const [openChapters, setOpenChapters] = useState<Set<number>>(new Set());
 
   const toggleChapter = (chapterId: number) => {
@@ -96,6 +99,7 @@ export function TextbookHomePage({ textbook }: TextbookHomePageProps) {
                 textbook={textbook}
                 isOpen={openChapters.has(chapter.id)}
                 onToggle={() => toggleChapter(chapter.id)}
+                setQuestionId={setQuestionId}
               />
             ))}
           </div>
@@ -105,14 +109,19 @@ export function TextbookHomePage({ textbook }: TextbookHomePageProps) {
   );
 }
 
-interface ChapterCardProps {
+function ChapterCard({
+  chapter,
+  textbook,
+  isOpen,
+  onToggle,
+  setQuestionId,
+}: {
   chapter: Chapter;
   textbook: Textbook;
   isOpen: boolean;
   onToggle: () => void;
-}
-
-function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) {
+  setQuestionId: (questionId: number | null) => void;
+}) {
   const hasSections = chapter.sections.length > 0;
   const hasQuestions = chapter.questions.length > 0;
   const totalQuestions = chapter.questions.length
@@ -168,6 +177,7 @@ function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) 
                     section={section}
                     chapter={chapter}
                     textbook={textbook}
+                    setQuestionId={setQuestionId}
                   />
                 ))}
               </div>
@@ -197,6 +207,7 @@ function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) 
                         key={question.id}
                         question={question}
                         textbook={textbook}
+                        setQuestionId={setQuestionId}
                       />
                     ))}
                   </div>
@@ -233,13 +244,17 @@ function ChapterCard({ chapter, textbook, isOpen, onToggle }: ChapterCardProps) 
   );
 }
 
-interface SectionItemProps {
+function SectionItem({
+  section,
+  chapter,
+  textbook,
+  setQuestionId,
+}: {
   section: Section;
   chapter: Chapter;
   textbook: Textbook;
-}
-
-function SectionItem({ section, chapter, textbook }: SectionItemProps) {
+  setQuestionId: (questionId: number | null) => void;
+}) {
   return (
     <div className="ml-4 border-l-2 border-neutral-200 dark:border-neutral-700 pl-3">
       <div>
@@ -253,6 +268,7 @@ function SectionItem({ section, chapter, textbook }: SectionItemProps) {
                 key={question.id}
                 question={question}
                 textbook={textbook}
+                setQuestionId={setQuestionId}
               />
             ))}
           </div>
@@ -273,18 +289,17 @@ function SectionItem({ section, chapter, textbook }: SectionItemProps) {
   );
 }
 
-interface QuestionItemProps {
-  question: { id: number; num: number };
+function QuestionItem({ textbook, question, setQuestionId }: {
   textbook: Textbook;
-}
-
-function QuestionItem({ question, textbook }: QuestionItemProps) {
+  question: QuestionInfo;
+  setQuestionId: (questionId: number | null) => void;
+}) {
   return (
-    <Link
-      href={tbUrl(textbook, { questionId: question.id })}
+    <button
+      onClick={() => setQuestionId(question.id)}
       className="inline-block px-2 py-1 text-sm bg-neutral-100 dark:bg-neutral-800 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
     >
       Q{question.num}
-    </Link>
+    </button>
   );
 }
