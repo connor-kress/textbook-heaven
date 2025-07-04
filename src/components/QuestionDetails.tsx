@@ -6,7 +6,6 @@ import {
   QuestionInfoWithLocation,
 } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
-import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -14,20 +13,22 @@ import NewReplyForm from "./NewReplyForm";
 import { getOrderedQuestionInfo } from "@/lib/utils";
 import { QuestionContentSkeleton, RepliesSkeleton } from "./skeletons";
 
-export function QuestionDetails({ textbook }: {textbook: Textbook}) {
-  const params = useSearchParams();
-  const questionId = params.get("questionId");
+export function QuestionDetails({
+  textbook,
+  questionId,
+  setQuestionId,
+}: {
+  textbook: Textbook;
+  questionId: number | null;
+  setQuestionId: (id: number | null) => void;
+}) {
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  const questionIdNum = questionId ? parseInt(questionId) : null;
-  const isValidId = questionIdNum && !isNaN(questionIdNum);
 
   useEffect(() => {
     async function fetchQuestion() {
       setLoading(true);
-      if (!isValidId) {
+      if (questionId === null) {
         setQuestion(null);
         setLoading(false);
         return;
@@ -46,10 +47,10 @@ export function QuestionDetails({ textbook }: {textbook: Textbook}) {
       setLoading(false);
     }
     fetchQuestion();
-  }, [questionId, isValidId]);
+  }, [questionId]);
 
   const orderedQuestions = getOrderedQuestionInfo(textbook);
-  const questionIdx = orderedQuestions.findIndex(q => q.id === questionIdNum);
+  const questionIdx = orderedQuestions.findIndex(q => q.id === questionId);
   if (questionIdx < 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
@@ -76,18 +77,26 @@ export function QuestionDetails({ textbook }: {textbook: Textbook}) {
 
   return (
     <>
-      <NavigationButtons prevQuestion={prevQuestion} nextQuestion={nextQuestion} router={router} />
+      <NavigationButtons
+        prevQuestion={prevQuestion}
+        nextQuestion={nextQuestion}
+        setQuestionId={setQuestionId}
+      />
       <QuestionHeader questionInfo={currentQuestionInfo} textbook={textbook} />
       {content}
-      <QuestionReplies question={question} loading={loading} textbook={textbook} />
+      <QuestionReplies
+        question={question}
+        loading={loading}
+        textbook={textbook}
+      />
     </>
   );
 }
 
-function NavigationButtons({ prevQuestion, nextQuestion, router }: { 
+function NavigationButtons({ prevQuestion, nextQuestion, setQuestionId }: {
   prevQuestion: QuestionInfoWithLocation | null; 
   nextQuestion: QuestionInfoWithLocation | null; 
-  router: ReturnType<typeof useRouter>;
+  setQuestionId: (id: number | null) => void;
 }) {
   return (
     <div className="flex justify-between mb-6 w-full">
@@ -98,7 +107,7 @@ function NavigationButtons({ prevQuestion, nextQuestion, router }: {
             : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
         `}
         disabled={!prevQuestion}
-        onClick={() => prevQuestion && router.push(`?questionId=${prevQuestion.id}`)}
+        onClick={() => prevQuestion && setQuestionId(prevQuestion.id)}
       >
         Previous Question
       </button>
@@ -109,7 +118,7 @@ function NavigationButtons({ prevQuestion, nextQuestion, router }: {
             : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
         `}
         disabled={!nextQuestion}
-        onClick={() => nextQuestion && router.push(`?questionId=${nextQuestion.id}`)}
+        onClick={() => nextQuestion && setQuestionId(nextQuestion.id)}
       >
         Next Question
       </button>

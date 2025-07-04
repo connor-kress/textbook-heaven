@@ -2,7 +2,6 @@
 
 import { Chapter, Textbook } from "@/types/Textbook";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { BsPlus } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,9 +25,15 @@ import {
 } from "@/components/ui/tooltip";
 import { tbUrl } from "@/lib/utils";
 
-export default function QuestionSelector({ textbook }: { textbook: Textbook }) {
-  const params = useSearchParams();
-  const questionId = params.get("questionId");
+export default function QuestionSelector({
+  textbook,
+  questionId,
+  setQuestionId,
+}: {
+  textbook: Textbook;
+  questionId: number | null;
+  setQuestionId: (id: number | null) => void;
+}) {
 
   return (
     <div className="flex overflow-x-auto no-scrollbar items-center
@@ -74,7 +79,7 @@ function ChapterDropdown({
 }: {
   chapter: Chapter;
   textbook: Textbook;
-  currentQuestionId: string | null;
+  currentQuestionId: number | null;
 }) {
   const hasReviewQuestions = chapter.questions.length > 0;
   const hasSections = chapter.sections.length > 0;
@@ -87,7 +92,7 @@ function ChapterDropdown({
       key={question.id}
       question={question}
       textbook={textbook}
-      isActive={currentQuestionId === question.id.toString()}
+      isActive={currentQuestionId === question.id}
     />
   ));
 
@@ -125,7 +130,7 @@ function ChapterDropdown({
                       key={question.id}
                       question={question}
                       textbook={textbook}
-                      isActive={currentQuestionId === question.id.toString()}
+                      isActive={currentQuestionId === question.id}
                     />
                   ))
               ) : (
@@ -220,12 +225,12 @@ function QuestionMenuItem({
 }
 
 // Checks if a question is in a given chapter
-function isQuestionInChapter(chapter: Chapter, questionId: string): boolean {
-  if (chapter.questions.some(q => q.id.toString() === questionId)) {
+function isQuestionInChapter(chapter: Chapter, questionId: number): boolean {
+  if (chapter.questions.some(q => q.id === questionId)) {
     return true;
   }
   for (const section of chapter.sections) {
-    if (section.questions.some(q => q.id.toString() === questionId)) {
+    if (section.questions.some(q => q.id === questionId)) {
       return true;
     }
   }
