@@ -1,6 +1,7 @@
 "use client";
 
 import { Chapter, Textbook } from "@/types/Textbook";
+import { QuestionInfo } from "@/types/Question";
 import Link from "next/link";
 import { BsPlus } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { tbUrl } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 export default function QuestionSelector({
   textbook,
@@ -34,16 +36,22 @@ export default function QuestionSelector({
   questionId: number | null;
   setQuestionId: (id: number | null) => void;
 }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Wait for hydration to complete
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   return (
-    <div className="flex overflow-x-auto no-scrollbar items-center
-                    p-1 gap-1 bg-neutral-800">
+    <div className="flex overflow-x-auto no-scrollbar items-center p-1 gap-1 bg-neutral-800">
       {textbook.chapters.map((chapter) => (
         <ChapterDropdown
           key={chapter.id}
           chapter={chapter}
-          textbook={textbook}
-          currentQuestionId={questionId}
+          // Default to null during SSR and initial hydration
+          currentQuestionId={isHydrated ? questionId : null}
+          setQuestionId={setQuestionId}
         />
       ))}
       <TooltipProvider>
@@ -74,12 +82,12 @@ export default function QuestionSelector({
 
 function ChapterDropdown({
   chapter,
-  textbook,
   currentQuestionId,
+  setQuestionId,
 }: {
   chapter: Chapter;
-  textbook: Textbook;
   currentQuestionId: number | null;
+  setQuestionId: (questionId: number | null) => void;
 }) {
   const hasReviewQuestions = chapter.questions.length > 0;
   const hasSections = chapter.sections.length > 0;
@@ -91,8 +99,8 @@ function ChapterDropdown({
     <QuestionMenuItem
       key={question.id}
       question={question}
-      textbook={textbook}
       isActive={currentQuestionId === question.id}
+      setQuestionId={setQuestionId}
     />
   ));
 
@@ -116,8 +124,7 @@ function ChapterDropdown({
                   </TooltipContent>
                 </Tooltip>
                 {section.questions.length === 0 && (
-                  <AlertCircle className="h-3 w-3 ml-2
-                                          text-muted-foreground" />
+                  <AlertCircle className="h-3 w-3 ml-2 text-muted-foreground" />
                 )}
               </TooltipProvider>
             </DropdownMenuSubTrigger>
@@ -129,8 +136,8 @@ function ChapterDropdown({
                     <QuestionMenuItem
                       key={question.id}
                       question={question}
-                      textbook={textbook}
                       isActive={currentQuestionId === question.id}
+                      setQuestionId={setQuestionId}
                     />
                   ))
               ) : (
@@ -204,22 +211,25 @@ function ChapterDropdown({
 }
 
 function QuestionMenuItem({
-  question, textbook, isActive
+  question,
+  isActive,
+  setQuestionId,
 }: {
-  question: { id: number; num: number };
-  textbook: Textbook;
+  question: QuestionInfo;
   isActive: boolean;
+  setQuestionId: (questionId: number | null) => void;
 }) {
   return (
     <DropdownMenuItem asChild>
-      <Link
-        href={tbUrl(textbook, { questionId: question.id })}
+      <button
+        onClick={() => setQuestionId(question.id)}
         className={cn(
-          isActive && "bg-accent font-medium"
+          "w-full text-left",
+          isActive && "bg-accent font-medium",
         )}
       >
         {"Question"} {question.num}
-      </Link>
+      </button>
     </DropdownMenuItem>
   );
 }

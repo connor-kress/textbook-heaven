@@ -206,7 +206,6 @@ function ChapterCard({
                       <QuestionItem
                         key={question.id}
                         question={question}
-                        textbook={textbook}
                         setQuestionId={setQuestionId}
                       />
                     ))}
@@ -267,7 +266,6 @@ function SectionItem({
               <QuestionItem
                 key={question.id}
                 question={question}
-                textbook={textbook}
                 setQuestionId={setQuestionId}
               />
             ))}
@@ -289,8 +287,7 @@ function SectionItem({
   );
 }
 
-function QuestionItem({ textbook, question, setQuestionId }: {
-  textbook: Textbook;
+function QuestionItem({ question, setQuestionId }: {
   question: QuestionInfo;
   setQuestionId: (questionId: number | null) => void;
 }) {
