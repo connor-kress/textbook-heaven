@@ -9,17 +9,43 @@ import { NewChapterForm } from "./NewChapterForm";
 import { NewSectionForm } from "./NewSectionForm";
 import { TextbookHomePage } from "./TextbookHomePage";
 import { useQuestionId } from "@/hooks/useQuestionId";
+import { useState, useEffect } from "react";
 
 export default function TextbookView(
   { textbook }: {textbook: Textbook}
 ) {
   const params = useSearchParams();
   const [questionId, setQuestionId] = useQuestionId();
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Wait for hydration to complete
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const newQuestion = params.get("newQuestion");
   const newChapter = params.get("newChapter");
   const newSection = params.get("newSection");
+  
   let body = null;
-  if (newQuestion !== null) {
+  
+  // Show loading state during SSR and initial hydration
+  if (!isHydrated) {
+    body = (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">{textbook.title}</h1>
+            {textbook.author && (
+              <p className="text-lg text-neutral-600 dark:text-neutral-400">
+                by {textbook.author}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  } else if (newQuestion !== null) {
     body = <NewQuestionForm textbook={textbook} />;
   } else if (newChapter !== null) {
     body = <NewChapterForm textbook={textbook} />;
@@ -41,6 +67,7 @@ export default function TextbookView(
       />
     );
   }
+  
   return (
     <div className="flex flex-col">
       <QuestionSelector

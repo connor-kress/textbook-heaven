@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import NewReplyForm from "./NewReplyForm";
-import { getOrderedQuestionInfo } from "@/lib/utils";
+import { cn, getOrderedQuestionInfo } from "@/lib/utils";
 import { QuestionContentSkeleton, RepliesSkeleton } from "./skeletons";
 
 export function QuestionDetails({
@@ -101,22 +101,24 @@ function NavigationButtons({ prevQuestion, nextQuestion, setQuestionId }: {
   return (
     <div className="flex justify-between mb-6 w-full">
       <button
-        className={`px-4 py-2 rounded font-semibold border transition-colors
-          ${prevQuestion
-            ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
-            : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
-        `}
+        className={cn(
+          "px-4 py-2 rounded font-semibold border transition-colors touch-manipulation select-none [&::-webkit-tap-highlight-color]:transparent",
+          prevQuestion
+            ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 active:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900 dark:active:bg-neutral-700"
+            : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"
+        )}
         disabled={!prevQuestion}
         onClick={() => prevQuestion && setQuestionId(prevQuestion.id)}
       >
         Previous Question
       </button>
       <button
-        className={`px-4 py-2 rounded font-semibold border transition-colors
-          ${nextQuestion
-            ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900"
-            : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"}
-        `}
+        className={cn(
+          "px-4 py-2 rounded font-semibold border transition-colors touch-manipulation select-none [&::-webkit-tap-highlight-color]:transparent",
+          nextQuestion
+            ? "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-100 active:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-900 dark:active:bg-neutral-700"
+            : "bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-600 dark:border-neutral-800 cursor-not-allowed"
+        )}
         disabled={!nextQuestion}
         onClick={() => nextQuestion && setQuestionId(nextQuestion.id)}
       >
