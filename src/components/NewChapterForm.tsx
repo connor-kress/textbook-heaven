@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createChapterEndpoint } from "@/actions/questions";
+import { createChapter } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
 import { tbUrl } from "@/lib/utils";
 
@@ -38,7 +38,7 @@ export function NewChapterForm({ textbook }: { textbook: Textbook }) {
     e.preventDefault();
     const chapterNum = parseInt(formData.num);
     const chapterTitle = formData.body;
-    const res = await createChapterEndpoint({
+    const res = await createChapter({
       chapterNum,
       chapterTitle,
       textbook,
