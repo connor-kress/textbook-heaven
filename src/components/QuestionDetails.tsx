@@ -10,8 +10,16 @@ import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import NewReplyForm from "./NewReplyForm";
-import { cn, getOrderedQuestionInfo } from "@/lib/utils";
+import { cn, getOrderedQuestionInfo, copyToClipboard } from "@/lib/utils";
 import { QuestionContentSkeleton, RepliesSkeleton } from "./skeletons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Copy } from "lucide-react";
 
 export function QuestionDetails({
   textbook,
@@ -72,7 +80,36 @@ export function QuestionDetails({
       No question data found.
     </div>
   ) : (
-    <MarkdownRenderer text={question.body}/>
+    <div className="flex justify-between items-start gap-4">
+      <div className="flex-1">
+        <MarkdownRenderer text={question.body}/>
+      </div>
+      <div className="flex-shrink-0">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={async () => {
+                const success = await copyToClipboard(question.body);
+                if (success) {
+                  console.log("Question copied to clipboard");
+                } else {
+                  alert("Failed to copy question to clipboard");
+                }
+              }}
+              className="cursor-pointer"
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Copy
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
   );
 
   return (
@@ -175,8 +212,13 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
   textbook: Textbook;
   setQuestion: (question: Question | null) => void;
 }) {
-  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
   const replyCount = question ? question.replies.length : 0;
+
+  // Reset form when question changes
+  useEffect(() => {
+    setShowReplyForm(false);
+  }, [question?.id]);
 
   function handleReplyDeleted(replyId: number) {
     if (!question) return;
@@ -188,16 +230,20 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
 
   return (
     <>
-      <button
-        onClick={() => setShowCommentForm(prev => !prev)}
-        className="text-blue-500 hover:underline mb-2"
-        disabled={loading}
-      >
-        { showCommentForm ? "Close Form" : "New Reply"}
-      </button>
-      <h2 className="mb-4">
+      <h2 className="mt-8 mb-4 text-lg font-semibold">
         {`${replyCount} ${replyCount === 1 ? "Reply" : "Replies"}`}
       </h2>
+      <div className="mb-4">
+        <Button
+          onClick={() => setShowReplyForm(true)}
+          variant="outline"
+          size="sm"
+          disabled={loading}
+          className="text-blue-600 border-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-300"
+        >
+          Reply
+        </Button>
+      </div>
       {loading ? (
         <RepliesSkeleton />
       ) : question === null ? (
@@ -207,13 +253,13 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
       ) : (
         <div className="flex flex-col items-start gap-10 w-full">
           {
-            showCommentForm &&
+            showReplyForm &&
             <div className="w-full">
             <NewReplyForm
               textbook={textbook}
               question={question}
               parentReplyId={null}
-              onCancel={() => setShowCommentForm(false)}
+              onCancel={() => setShowReplyForm(false)}
             />
             </div>
           }
