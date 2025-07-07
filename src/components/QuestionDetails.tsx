@@ -88,6 +88,7 @@ export function QuestionDetails({
         question={question}
         loading={loading}
         textbook={textbook}
+        setQuestion={setQuestion}
       />
     </>
   );
@@ -168,13 +169,23 @@ function QuestionHeader({
   );
 }
 
-function QuestionReplies({ question, loading, textbook }: {
+function QuestionReplies({ question, loading, textbook, setQuestion }: {
   question: Question | null;
   loading: boolean;
   textbook: Textbook;
+  setQuestion: (question: Question | null) => void;
 }) {
   const [showCommentForm, setShowCommentForm] = useState(false);
   const replyCount = question ? question.replies.length : 0;
+
+  function handleReplyDeleted(replyId: number) {
+    if (!question) return;
+    setQuestion({
+      ...question,
+      replies: question.replies.filter(r => r.id !== replyId)
+    });
+  };
+
   return (
     <>
       <button
@@ -198,11 +209,12 @@ function QuestionReplies({ question, loading, textbook }: {
           {
             showCommentForm &&
             <div className="w-full">
-              <NewReplyForm
-                textbook={textbook}
-                question={question}
-                parentReplyId={null}
-              />
+            <NewReplyForm
+              textbook={textbook}
+              question={question}
+              parentReplyId={null}
+              onCancel={() => setShowCommentForm(false)}
+            />
             </div>
           }
           {question.replies.map((c, i) => (
@@ -211,6 +223,7 @@ function QuestionReplies({ question, loading, textbook }: {
               textbook={textbook}
               reply={c}
               question={question}
+              onDeleted={handleReplyDeleted}
             />
           ))}
         </div>
