@@ -88,9 +88,13 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
     router.push(tbUrl(textbook, { questionId: res.id }));
   }
 
+  const handleCancel = () => {
+    router.push(tbUrl(textbook));
+  };
+
   return (
-    <div className="flex flex-col">
-      <h1 className="text-2xl font-bold mb-2">Compose New Question:</h1>
+    <div className="border-2 border-neutral-500 rounded-xl p-4 mb-5">
+      <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">New Question</h3>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div className="flex items-center space-x-2">
           <ChapterSelect
@@ -143,15 +147,25 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
           onChange={handleInputChange}
         />
 
-        <Button type="submit">Submit</Button>
-      </form>
+        {formData.body && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Preview:</p>
+            <MarkdownRenderer text={formData.body} />
+          </div>
+        )}
 
-      {formData.body && (
-        <>
-          <h1 className="text-2xl font-bold mb-2 mt-4">Preview:</h1>
-          <MarkdownRenderer text={formData.body} />
-        </>
-      )}
+        <div className="flex gap-2">
+          <Button type="submit">Submit</Button>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleCancel}
+            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
