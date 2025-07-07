@@ -61,9 +61,14 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
     }
     router.push(tbUrl(textbook));
   }
+
+  const handleCancel = () => {
+    router.push(tbUrl(textbook));
+  };
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-2">Create New Section:</h1>
+    <div className="border-2 border-neutral-500 rounded-xl p-4 mb-5">
+      <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">New Section</h3>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div className="flex items-center space-x-2">
           <ChapterSelect
@@ -95,7 +100,17 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
           value={formData.body}
           onChange={handleInputChange}
         />
-        <Button type="submit" disabled={!formData.chapterId}>Submit</Button>
+        <div className="flex gap-2">
+          <Button type="submit" disabled={!formData.chapterId}>Submit</Button>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleCancel}
+            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   );
