@@ -29,6 +29,19 @@ export function tbUrl(
 }
 
 /**
+ * Copies text to the clipboard.
+ */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (error) {
+    console.error("Failed to copy text to clipboard:", error);
+    return false;
+  }
+}
+
+/**
  * Formats a date into a human-readable relative time string.
  */
 export function formatDate(date: Date): string {
@@ -43,10 +56,10 @@ export function formatDate(date: Date): string {
   if (diffInHours < 24) return `${diffInHours}h ago`;
   if (diffInDays < 7) return `${diffInDays}d ago`;
   
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 

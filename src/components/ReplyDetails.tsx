@@ -5,15 +5,15 @@ import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { authClient } from "@/lib/auth-client";
 import { deleteReply } from "@/actions/reply";
-import { formatDate } from "@/lib/utils";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import { formatDate, copyToClipboard } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash2, Edit } from "lucide-react";
+import { MoreHorizontal, Trash2, Edit, Copy } from "lucide-react";
 
 type ReplyDetailsProps = {
     textbook: Textbook,
@@ -52,7 +52,16 @@ export default function ReplyDetails(
 
   function handleChildReplyDeleted(replyId: number) {
     setReplies(prevReplies => prevReplies.filter(r => r.id !== replyId));
-  };
+  }
+
+  async function handleCopy() {
+    const success = await copyToClipboard(reply.body);
+    if (success) {
+      console.log("Reply copied to clipboard");
+    } else {
+      alert("Failed to copy reply to clipboard");
+    }
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -78,32 +87,41 @@ export default function ReplyDetails(
             </div>
           </div>
           
-          {isAuthor && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem 
-                  onClick={() => {}} 
-                  className="cursor-pointer"
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="cursor-pointer text-red-600 focus:text-red-600"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={handleCopy}
+                className="cursor-pointer"
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                Copy
+              </DropdownMenuItem>
+              {isAuthor && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => console.warn("TODO: Edit reply")}
+                    className="cursor-pointer"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <div className="mb-4">
