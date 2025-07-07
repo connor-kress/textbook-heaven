@@ -1,4 +1,4 @@
-import { aliasedTable, eq } from "drizzle-orm";
+import { aliasedTable, eq, and } from "drizzle-orm";
 import { db } from "./index";
 import { questions, replies, user } from "./schema";
 import { Question, QuestionSchema, Reply } from "@/types/Question";
@@ -11,11 +11,59 @@ type CreateQuestionInput = {
   sectionId: number | null;
 };
 
+type UpdateQuestionInput = {
+  id: number;
+  authorId: string;
+  body: string;
+};
+
+type DeleteQuestionInput = {
+  id: number;
+  authorId: string;
+};
+
 export async function createQuestion(input: CreateQuestionInput) {
   const [question] = await db
     .insert(questions)
     .values(input)
     .returning();
+  return question;
+}
+
+export async function updateQuestion(input: UpdateQuestionInput) {
+  const [question] = await db
+    .update(questions)
+    .set({ body: input.body })
+    .where(
+      and(
+        eq(questions.id, input.id),
+        eq(questions.authorId, input.authorId)
+      )
+    )
+    .returning();
+  
+  if (!question) {
+    throw new Error("Question not found or you don't have permission to edit it");
+  }
+  
+  return question;
+}
+
+export async function deleteQuestion(input: DeleteQuestionInput) {
+  const [question] = await db
+    .delete(questions)
+    .where(
+      and(
+        eq(questions.id, input.id),
+        eq(questions.authorId, input.authorId)
+      )
+    )
+    .returning();
+  
+  if (!question) {
+    throw new Error("Question not found or you don't have permission to delete it");
+  }
+  
   return question;
 }
 
