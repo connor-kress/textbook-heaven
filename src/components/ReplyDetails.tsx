@@ -19,18 +19,20 @@ type ReplyDetailsProps = {
     textbook: Textbook,
     reply: Reply,
     question: Question,
+    onDeleted: (replyId: number) => void,
 }
 
 export default function ReplyDetails(
-  { textbook, reply, question }: ReplyDetailsProps
+  { textbook, reply, question, onDeleted }: ReplyDetailsProps
 ) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [replies, setReplies] = useState(reply.replies);
   const { data: session } = authClient.useSession();
   
   const isAuthor = session?.user?.id === reply.author.id;
 
-  const handleDelete = async () => {
+  async function handleDelete() {
     if (!confirm("Are you sure you want to delete this reply?")) return;
     
     setIsDeleting(true);
@@ -38,12 +40,18 @@ export default function ReplyDetails(
       const result = await deleteReply(textbook, reply.id);
       if (result?.error) {
         alert(`Error deleting reply: ${result.error}`);
+      } else {
+        onDeleted(reply.id);
       }
     } catch (error) {
       alert("Failed to delete reply");
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  function handleChildReplyDeleted(replyId: number) {
+    setReplies(prevReplies => prevReplies.filter(r => r.id !== replyId));
   };
 
   return (
@@ -123,12 +131,13 @@ export default function ReplyDetails(
           />
         }
         {
-          reply.replies.map((subReply, i) => (
+          replies.map((subReply, i) => (
             <ReplyDetails
               key={i}
               textbook={textbook}
               reply={subReply}
               question={question}
+              onDeleted={handleChildReplyDeleted}
             />
           ))
         }
