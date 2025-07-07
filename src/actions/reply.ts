@@ -1,12 +1,13 @@
 "use server";
 
-import { createReply, updateReply, deleteReply } from "@/db/replies";
+import { createReply, updateReply, deleteReply as deleteReplyDb } from "@/db/replies";
 import { auth } from "@/lib/auth";
 import { tbUrl } from "@/lib/utils";
 import { Textbook } from "@/types/Textbook";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
+// Create a Reply
 export async function postReply(
   textbook: Textbook,
   body: string,
@@ -34,6 +35,7 @@ export async function postReply(
   return null;
 }
 
+// Edit a Reply
 export async function editReply(
   textbook: Textbook,
   replyId: number,
@@ -59,7 +61,8 @@ export async function editReply(
   return null;
 }
 
-export async function removeReply(
+// Delete a Reply
+export async function deleteReply(
   textbook: Textbook,
   replyId: number,
 ): Promise<null | { error: string }> {
@@ -71,7 +74,7 @@ export async function removeReply(
   }
 
   try {
-    await deleteReply({
+    await deleteReplyDb({
       id: replyId,
       authorId: session.user.id,
     });

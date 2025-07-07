@@ -1,25 +1,16 @@
 "use server";
 
-import { createChapter, findChapterByNumAndTextbook } from "@/db/chapters";
-import { createQuestion } from "@/db/questions";
+import { createChapter as createChapterDb, findChapterByNumAndTextbook } from "@/db/chapters";
+import { createQuestion, updateQuestion, deleteQuestion as deleteQuestionDb } from "@/db/questions";
 import { createSection, findSectionByNumAndChapter } from "@/db/sections";
 import { auth } from "@/lib/auth";
+import { tbUrl } from "@/lib/utils";
 import { Textbook } from "@/types/Textbook";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-type questionInput = {
-  questionNum: number;
-  questionBody: string;
-  textbook: Textbook;
-  chapterNum: number;
-  chapterTitle: string | null;
-  sectionNum: number | null;
-  sectionTitle: string | null;
-};
-
 // Create a Chapter
-export async function createChapterEndpoint({
+export async function createChapter({
   chapterNum,
   chapterTitle,
   textbook,
@@ -41,7 +32,7 @@ export async function createChapterEndpoint({
   if (chapter) {
     return { id: chapter.id };
   }
-  chapter = await createChapter({
+  chapter = await createChapterDb({
     title: chapterTitle,
     num: chapterNum,
     textbookId: textbook.id,
@@ -49,7 +40,7 @@ export async function createChapterEndpoint({
   if (!chapter) {
     return { error: "Failed to create chapter" };
   }
-  revalidatePath(`/textbooks/${textbook.baseFileName}`);
+  revalidatePath(tbUrl(textbook));
   return { id: chapter.id };
 }
 
@@ -86,7 +77,7 @@ export async function createSectionEndpoint({
   if (!section) {
     return { error: "Failed to create section" };
   }
-  revalidatePath(`/textbooks/${textbook.baseFileName}`);
+  revalidatePath(tbUrl(textbook));
   return { id: section.id };
 }
 
@@ -118,12 +109,71 @@ export async function postQuestion({
       num: questionNum,
       body: questionBody,
       chapterId,
-      sectionId: sectionId ?? null,
+      sectionId,
     });
   } catch (err: any) {
     return { error: err?.message ?? "Unknown error" };
   }
 
-  revalidatePath(`/textbooks/${textbook.baseFileName}`);
+  revalidatePath(tbUrl(textbook));
   return { id: question.id };
+}
+
+// Edit a Question
+export async function editQuestion({
+  questionId,
+  questionBody,
+  textbook,
+}: {
+  questionId: number;
+  questionBody: string;
+  textbook: Textbook;
+}): Promise<null | { error: string }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    await updateQuestion({
+      id: questionId,
+      authorId: session.user.id,
+      body: questionBody,
+    });
+  } catch (err: any) {
+    return { error: err?.message ?? "Unknown error" };
+  }
+
+  revalidatePath(tbUrl(textbook));
+  return null;
+}
+
+// Delete a Question
+export async function deleteQuestion({
+  questionId,
+  textbook,
+}: {
+  questionId: number;
+  textbook: Textbook;
+}): Promise<null | { error: string }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    await deleteQuestionDb({
+      id: questionId,
+      authorId: session.user.id,
+    });
+  } catch (err: any) {
+    return { error: err?.message ?? "Unknown error" };
+  }
+
+  revalidatePath(tbUrl(textbook));
+  return null;
 }
