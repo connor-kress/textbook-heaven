@@ -1,12 +1,13 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { SubmitButton, TextArea } from "./FormFields";
 import { Question } from "@/types/Question";
 import { postReply } from "@/actions/reply";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 type FormData = {
   body: string,
@@ -26,7 +27,7 @@ export default function NewReplyForm(
     body: "",
   });
 
-  function handleChange(e: ChangeEvent<HTMLFormElement>) {
+  function handleInputChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -49,15 +50,17 @@ export default function NewReplyForm(
   return (
     <div className="border-2 border-neutral-500 rounded-xl p-3 mb-5">
       <h1 className="text-2xl font-bold mb-2">New Reply:</h1>
-      <form
-        onSubmit={handleSubmit}
-        onChange={handleChange}
-        className="flex flex-col gap-2"
-      >
-        <TextArea name="body" placeholder="Type here" required={true}
-                  rows={5} minLength={10} />
-        {/* reply preview here */}
-        <SubmitButton value="Submit" />
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+        <Textarea
+          name="body"
+          placeholder="Type here"
+          required
+          rows={5}
+          minLength={10}
+          value={formData.body}
+          onChange={handleInputChange}
+        />
+        <Button type="submit">Submit</Button>
       </form>
       {formData.body &&
         <>
