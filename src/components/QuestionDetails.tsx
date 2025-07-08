@@ -220,14 +220,6 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
     setShowReplyForm(false);
   }, [question?.id]);
 
-  function handleReplyDeleted(replyId: number) {
-    if (!question) return;
-    setQuestion({
-      ...question,
-      replies: question.replies.filter(r => r.id !== replyId)
-    });
-  };
-
   return (
     <>
       <h2 className="mt-8 mb-4 text-lg font-semibold">
@@ -260,6 +252,10 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
               question={question}
               parentReplyId={null}
               onCancel={() => setShowReplyForm(false)}
+              onReplyAdded={(newReply) => {
+                setQuestion({ ...question, replies: [...question.replies, newReply] });
+                setShowReplyForm(false);
+              }}
             />
             </div>
           }
@@ -269,7 +265,7 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
               textbook={textbook}
               reply={c}
               question={question}
-              onDeleted={handleReplyDeleted}
+              setParentReplyList={(newList) => setQuestion({ ...question, replies: typeof newList === 'function' ? newList(question.replies) : newList })}
             />
           ))}
         </div>

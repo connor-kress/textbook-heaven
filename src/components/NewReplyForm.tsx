@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Question } from "@/types/Question";
+import { Question, Reply } from "@/types/Question";
 import { postReply } from "@/actions/reply";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -18,10 +18,11 @@ type NewReplyFormProps = {
   parentReplyId: number | null,
   question: Question,
   onCancel: () => void,
+  onReplyAdded: (reply: Reply) => void,
 }
 
 export default function NewReplyForm(
-  { textbook, parentReplyId, question, onCancel }: NewReplyFormProps
+  { textbook, parentReplyId, question, onCancel, onReplyAdded }: NewReplyFormProps
 ) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -36,16 +37,15 @@ export default function NewReplyForm(
     e.preventDefault();
     console.log(formData);
     const res = await postReply(textbook, formData.body, parentReplyId, question.id);
-    if (res) {
-      if (res?.error === "Unauthorized") {
+    if ("error" in res) {
+      if (res.error === "Unauthorized") {
         router.push("/login");
         return;
       }
       alert(res.error);
       return;
     }
-    // Post-submit callback?
-    window.location.reload();
+    onReplyAdded(res);
   }
 
   return (

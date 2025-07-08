@@ -1,6 +1,7 @@
 import { db } from "./index";
-import { replies } from "./schema";
+import { replies, user } from "./schema";
 import { eq, and } from "drizzle-orm";
+import { Reply } from "@/types/Question";
 
 export type CreateReplyInput = {
   authorId: string;
@@ -20,12 +21,31 @@ export type DeleteReplyInput = {
   authorId: string;
 };
 
-export async function createReply(input: CreateReplyInput) {
+export async function createReply(input: CreateReplyInput): Promise<Reply> {
   const [reply] = await db
     .insert(replies)
     .values(input)
     .returning();
-  return reply;
+
+  const completeReply = await db.query.replies.findFirst({
+    where: eq(replies.id, reply.id),
+    with: { user: true },
+  });
+  if (!completeReply) {
+    throw new Error("Failed to create reply");
+  }
+
+  return {
+    ...completeReply,
+    author: {
+      ...completeReply.user!,
+      createdAt: new Date(completeReply.user!.createdAt),
+    },
+    postDate: new Date(completeReply.postDate),
+    replies: [],
+    likes: 0,
+    dislikes: 0,
+  };
 }
 
 export async function updateReply(input: UpdateReplyInput) {

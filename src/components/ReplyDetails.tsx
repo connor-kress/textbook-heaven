@@ -19,11 +19,11 @@ type ReplyDetailsProps = {
     textbook: Textbook,
     reply: Reply,
     question: Question,
-    onDeleted: (replyId: number) => void,
+    setParentReplyList: React.Dispatch<React.SetStateAction<Reply[]>>,
 }
 
 export default function ReplyDetails(
-  { textbook, reply, question, onDeleted }: ReplyDetailsProps
+  { textbook, reply, question, setParentReplyList }: ReplyDetailsProps
 ) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -41,7 +41,8 @@ export default function ReplyDetails(
       if (result?.error) {
         alert(`Error deleting reply: ${result.error}`);
       } else {
-        onDeleted(reply.id);
+        // Remove this reply from the parent list
+        setParentReplyList(prev => prev.filter(r => r.id !== reply.id));
       }
     } catch (error) {
       alert("Failed to delete reply");
@@ -49,10 +50,6 @@ export default function ReplyDetails(
       setIsDeleting(false);
     }
   };
-
-  function handleChildReplyDeleted(replyId: number) {
-    setReplies(prevReplies => prevReplies.filter(r => r.id !== replyId));
-  }
 
   async function handleCopy() {
     const success = await copyToClipboard(reply.body);
@@ -146,6 +143,10 @@ export default function ReplyDetails(
             question={question}
             parentReplyId={reply.id}
             onCancel={() => setShowReplyForm(false)}
+            onReplyAdded={(newReply) => {
+              setReplies(prev => [...prev, newReply]);
+              setShowReplyForm(false);
+            }}
           />
         }
         {
@@ -155,7 +156,7 @@ export default function ReplyDetails(
               textbook={textbook}
               reply={subReply}
               question={question}
-              onDeleted={handleChildReplyDeleted}
+              setParentReplyList={setReplies}
             />
           ))
         }
