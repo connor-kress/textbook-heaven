@@ -1,9 +1,14 @@
 "use server";
 
-import { createReply, updateReply, deleteReply as deleteReplyDb } from "@/db/replies";
+import {
+  createReply,
+  updateReply,
+  deleteReply as deleteReplyDb,
+} from "@/db/replies";
 import { auth } from "@/lib/auth";
 import { tbUrl } from "@/lib/utils";
 import { Textbook } from "@/types/Textbook";
+import { Reply } from "@/types/Question";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -13,7 +18,7 @@ export async function postReply(
   body: string,
   parentReplyId: number | null,
   questionId: number,
-): Promise<null | { error: string }> {
+): Promise<Reply | { error: string }> {
   const session = await auth.api.getSession({
       headers: await headers(),
   })
@@ -21,8 +26,9 @@ export async function postReply(
     return { error: "Unauthorized" };
   }
 
+  let reply;
   try {
-    await createReply({
+    reply = await createReply({
       authorId: session.user.id,
       body,
       parentReplyId,
@@ -32,7 +38,7 @@ export async function postReply(
     return { error: err?.message ?? "Unknown error" };
   }
   revalidatePath(tbUrl(textbook));
-  return null;
+  return reply;
 }
 
 // Edit a Reply
