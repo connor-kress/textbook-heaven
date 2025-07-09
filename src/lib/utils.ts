@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Textbook } from "@/types/Textbook";
-import { QuestionInfoWithLocation } from "@/types/Question";
+import { QuestionInfoWithLocation, Reply } from "@/types/Question";
 
 /**
  * Merges multiple class values into a single string.
@@ -97,4 +97,16 @@ export function getOrderedQuestionInfo(textbook: Textbook): QuestionInfoWithLoca
     }
   }
   return ordered;
+}
+
+/**
+ * Finds a reply in a tree of replies.
+ */
+export function findReplyInTree(replyId: number, replyTree: Reply[]): Reply | null {
+  for (const reply of replyTree) {
+    if (reply.id === replyId) return reply;
+    const found = findReplyInTree(replyId, reply.replies);
+    if (found) return found;
+  }
+  return null;
 }

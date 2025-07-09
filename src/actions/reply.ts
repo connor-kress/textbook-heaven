@@ -12,7 +12,7 @@ import { Reply } from "@/types/Question";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-// Create a Reply
+// Create a reply
 export async function postReply(
   textbook: Textbook,
   body: string,
@@ -25,7 +25,6 @@ export async function postReply(
   if (!session) {
     return { error: "Unauthorized" };
   }
-
   let reply;
   try {
     reply = await createReply({
@@ -41,22 +40,24 @@ export async function postReply(
   return reply;
 }
 
-// Edit a Reply
+// Edit a reply
 export async function editReply(
   textbook: Textbook,
   replyId: number,
+  questionId: number,
   body: string,
-): Promise<null | { error: string }> {
+): Promise<Reply | { error: string }> {
   const session = await auth.api.getSession({
       headers: await headers(),
   })
   if (!session) {
     return { error: "Unauthorized" };
   }
-
+  let reply;
   try {
-    await updateReply({
-      id: replyId,
+    reply = await updateReply({
+      replyId,
+      questionId,
       authorId: session.user.id,
       body,
     });
@@ -64,29 +65,29 @@ export async function editReply(
     return { error: err?.message ?? "Unknown error" };
   }
   revalidatePath(tbUrl(textbook));
-  return null;
+  return reply;
 }
 
-// Delete a Reply
+// Delete a reply and return its ID
 export async function deleteReply(
   textbook: Textbook,
   replyId: number,
-): Promise<null | { error: string }> {
+): Promise<{ id: number } | { error: string }> {
   const session = await auth.api.getSession({
       headers: await headers(),
   })
   if (!session) {
     return { error: "Unauthorized" };
   }
-
+  let deletedId;
   try {
-    await deleteReplyDb({
-      id: replyId,
+    deletedId = await deleteReplyDb({
+      replyId,
       authorId: session.user.id,
     });
   } catch (err: any) {
     return { error: err?.message ?? "Unknown error" };
   }
   revalidatePath(tbUrl(textbook));
-  return null;
+  return { id: deletedId };
 }

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createSectionEndpoint } from "@/actions/questions";
+import { createSection } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
@@ -49,7 +49,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
     e.preventDefault();
     const sectionNum = parseInt(formData.num);
     const sectionTitle = formData.body;
-    const res = await createSectionEndpoint({
+    const res = await createSection({
       chapterId: parseInt(formData.chapterId),
       sectionNum,
       sectionTitle,
