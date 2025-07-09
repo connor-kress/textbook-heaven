@@ -17,8 +17,8 @@ export function cn(...inputs: ClassValue[]): string {
 export function tbUrl(
   textbook: Textbook, params?: Record<string, string | number>
 ): string {
-  const encodedTitle = encodeURIComponent(textbook.title);
-  const url = `/textbooks/${encodedTitle}`;
+  const encodedTextbookName = encodeURIComponent(textbook.baseFileName);
+  const url = `/textbooks/${encodedTextbookName}`;
   if (!params || Object.keys(params).length === 0) {
     return url;
   }
