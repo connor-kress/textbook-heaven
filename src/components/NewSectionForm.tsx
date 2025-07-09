@@ -91,6 +91,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
           required
           value={formData.num}
           onChange={handleInputChange}
+          autoComplete="off"
         />
         <Input
           type="text"
@@ -99,6 +100,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
           required
           value={formData.body}
           onChange={handleInputChange}
+          autoComplete="off"
         />
         <div className="flex gap-2">
           <Button type="submit" disabled={!formData.chapterId}>Submit</Button>
