@@ -14,7 +14,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { textbookName } = await params;
-  const textbookNameDecoded = decodeURI(textbookName);
+  const textbookNameDecoded = decodeURIComponent(textbookName);
   return {
     title: `${textbookNameDecoded} - Textbook Heaven`,
     description: `Questions and PDF view from ${textbookNameDecoded}.`,
@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TextbookPage({ params }: Props) {
   const { textbookName } = await params;
-  const textbook = await fetchTextbook(decodeURI(textbookName));
+  const decodedTextbookName = decodeURIComponent(textbookName);
+  const textbook = await fetchTextbook(decodedTextbookName);
   if (!textbook) notFound();
   return (
     <div className="fixed inset-0 top-16 flex flex-row">
