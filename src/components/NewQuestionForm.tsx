@@ -135,6 +135,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
           required
           value={formData.num}
           onChange={handleInputChange}
+          autoComplete="off"
         />
 
         <Textarea
@@ -145,6 +146,7 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
           minLength={10}
           value={formData.body}
           onChange={handleInputChange}
+          autoComplete="off"
         />
 
         {formData.body && (

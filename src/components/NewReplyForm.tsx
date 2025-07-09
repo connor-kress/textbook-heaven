@@ -77,6 +77,7 @@ export default function NewReplyForm(
           minLength={10}
           value={formData.body}
           onChange={handleInputChange}
+          autoComplete="off"
         />
         {formData.body &&
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
