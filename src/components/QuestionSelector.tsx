@@ -44,7 +44,7 @@ export default function QuestionSelector({
   }, []);
 
   return (
-    <div className="flex overflow-x-auto no-scrollbar items-center p-1 gap-1 bg-neutral-800">
+    <div className="flex overflow-x-auto no-scrollbar items-center p-1 gap-1 bg-neutral-100 dark:bg-neutral-800">
       {textbook.chapters.map((chapter) => (
         <ChapterDropdown
           key={chapter.id}
@@ -65,7 +65,8 @@ export default function QuestionSelector({
                 variant="ghost"
                 size="icon"
                 className="rounded-full h-10 w-10 min-w-10
-                           text-neutral-500 hover:text-neutral-200"
+                           text-neutral-600 hover:text-neutral-800
+                           dark:text-neutral-500 dark:hover:text-neutral-200"
               >
                 <BsPlus className="h-6 w-6" />
               </Button>
@@ -181,8 +182,8 @@ function ChapterDropdown({
                 className={cn(
                   "rounded-full",
                   hasActiveQuestion
-                    ? "bg-cyan-800 hover:bg-cyan-700 text-white border-cyan-500"
-                    : "bg-neutral-900 hover:bg-neutral-700 text-neutral-200",
+                    ? "bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400 dark:bg-cyan-800 dark:hover:bg-cyan-700 dark:text-white dark:border-cyan-500"
+                    : "bg-neutral-200 hover:bg-neutral-300 text-neutral-800 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-700 dark:text-neutral-200",
                   "flex items-center gap-2"
                 )}
               >

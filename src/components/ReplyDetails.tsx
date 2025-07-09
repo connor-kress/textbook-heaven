@@ -72,7 +72,7 @@ export default function ReplyDetails(
                 className="w-10 h-10 rounded-full"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium">
+              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-neutral-700">
                 {reply.author.name.charAt(0).toUpperCase()}
               </div>
             )}

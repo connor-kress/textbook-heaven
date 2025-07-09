@@ -29,8 +29,9 @@ export default function Topbar() {
       className="
         fixed h-16 w-full z-50 pr-4
         flex items-center justify-between
-        shadow-xl
-        text-neutral-200 bg-neutral-800
+        shadow-md
+        text-neutral-800 bg-neutral-100
+        dark:text-neutral-200 dark:bg-neutral-900
       "
     >
       {/* left side */}
@@ -59,7 +60,8 @@ function Logo() {
         h-full max-w-36 px-4
         text-xl font-bold
         cursor-pointer
-        hover:bg-neutral-700
+        hover:bg-neutral-200
+        dark:hover:bg-neutral-700
       "
     >
       Textbook Heaven
@@ -76,7 +78,8 @@ function NavLink({ href, text }: { href: string, text: string }) {
         h-full px-4
         text-lg
         cursor-pointer
-        hover:bg-neutral-700
+        hover:bg-neutral-200
+        dark:hover:bg-neutral-700
       "
     >
       {text}

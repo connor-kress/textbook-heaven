@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Topbar from "@/components/Topbar";
 import "@/styles/globals.css";
 import "katex/dist/katex.min.css";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "Textbook Heaven",
@@ -19,16 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`
-          flex flex-col
-          ${inter.className}
-          min-h-screen
-          flex flex-col
-          bg-white dark:bg-neutral-900
-          text-neutral-700 dark:text-neutral-200
-        `}
-        // The bg-background and text-foreground will be applied via globals.css
-        // or directly if you prefer, but CSS variables are the Shadcn way.
+        className={cn(
+          "flex flex-col min-h-screen bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200",
+          inter.className,
+        )}
       >
         <ThemeProvider
           attribute="class" // set the class on the <html> tag
