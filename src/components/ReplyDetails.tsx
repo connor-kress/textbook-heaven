@@ -132,7 +132,7 @@ export default function ReplyDetails(
           }}
           variant="outline"
           size="sm"
-          className="text-blue-600 border-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-300"
+          className="bg-transparent text-blue-600 border-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-300"
         >
           Reply
         </Button>

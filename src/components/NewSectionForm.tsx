@@ -108,7 +108,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
             type="button" 
             variant="outline" 
             onClick={handleCancel}
-            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            className="border-destructive text-destructive bg-transparent hover:bg-destructive hover:text-destructive-foreground"
           >
             Cancel
           </Button>
