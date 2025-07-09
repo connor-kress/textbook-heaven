@@ -49,7 +49,7 @@ export default function NewReplyForm(
   }
 
   return (
-    <div className="border-2 border-neutral-500 rounded-xl p-4 mb-5">
+    <div className="border-2 border-neutral-500 rounded-xl p-4 mb-5 w-full">
       <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">New Reply</h3>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <Textarea

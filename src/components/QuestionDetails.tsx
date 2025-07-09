@@ -4,6 +4,7 @@ import {
   Question,
   QuestionSchema,
   QuestionInfoWithLocation,
+  Reply,
 } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
 import { useState, useEffect } from "react";
@@ -214,6 +215,7 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const replyCount = question ? question.replies.length : 0;
+  const [_, setReplies] = useState<Reply[]>(question?.replies ?? []);
 
   // Reset form when question changes
   useEffect(() => {
@@ -244,9 +246,7 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
         </div>
       ) : (
         <div className="flex flex-col items-start gap-10 w-full">
-          {
-            showReplyForm &&
-            <div className="w-full">
+          {showReplyForm && (
             <NewReplyForm
               textbook={textbook}
               question={question}
@@ -257,15 +257,14 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
                 setShowReplyForm(false);
               }}
             />
-            </div>
-          }
+          )}
           {question.replies.map((c, i) => (
             <ReplyDetails
               key={i}
               textbook={textbook}
               reply={c}
               question={question}
-              setParentReplyList={(newList) => setQuestion({ ...question, replies: typeof newList === 'function' ? newList(question.replies) : newList })}
+              setParentReplyList={setReplies}
             />
           ))}
         </div>

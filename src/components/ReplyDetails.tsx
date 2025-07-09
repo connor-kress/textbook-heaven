@@ -34,16 +34,15 @@ export default function ReplyDetails(
 
   async function handleDelete() {
     if (!confirm("Are you sure you want to delete this reply?")) return;
-    
     setIsDeleting(true);
     try {
       const result = await deleteReply(textbook, reply.id);
-      if (result?.error) {
+      if ("error" in result) {
         alert(`Error deleting reply: ${result.error}`);
-      } else {
-        // Remove this reply from the parent list
-        setParentReplyList(prev => prev.filter(r => r.id !== reply.id));
+        return;
       }
+      // Remove this reply from the parent list
+      setParentReplyList(prev => prev.filter(r => r.id !== reply.id));
     } catch (error) {
       alert("Failed to delete reply");
     } finally {

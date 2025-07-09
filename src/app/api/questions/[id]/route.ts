@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getQuestionById } from "@/db/questions";
+import { fetchQuestion } from "@/db/questions";
 
 type Props = {
   params: Promise<{
@@ -13,9 +13,9 @@ export async function GET(_req: Request, { params }: Props) {
   if (Number.isNaN(id)) {
     return NextResponse.json({ error: "invalid id" }, { status: 400 });
   }
-  const q = await getQuestionById(id);
-  if (!q) {
+  const question = await fetchQuestion(id);
+  if (!question) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
-  return NextResponse.json(q);
+  return NextResponse.json(question);
 }
