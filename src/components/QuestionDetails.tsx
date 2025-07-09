@@ -214,6 +214,7 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
   setQuestion: (question: Question | null) => void;
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [focusTrigger, setFocusTrigger] = useState(0);
   const replyCount = question ? question.replies.length : 0;
   const [_, setReplies] = useState<Reply[]>(question?.replies ?? []);
 
@@ -229,7 +230,10 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
       </h2>
       <div className="mb-4">
         <Button
-          onClick={() => setShowReplyForm(true)}
+          onClick={() => {
+            setShowReplyForm(true);
+            setFocusTrigger(prev => prev + 1);
+          }}
           variant="outline"
           size="sm"
           disabled={loading}
@@ -256,6 +260,7 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
                 setQuestion({ ...question, replies: [...question.replies, newReply] });
                 setShowReplyForm(false);
               }}
+              focusTrigger={focusTrigger}
             />
           )}
           {question.replies.map((c, i) => (
