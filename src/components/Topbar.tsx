@@ -31,7 +31,7 @@ export default function Topbar() {
         flex items-center justify-between
         shadow-md
         text-neutral-800 bg-neutral-100
-        dark:text-neutral-200 dark:bg-neutral-900
+        dark:text-neutral-200 dark:bg-neutral-800
       "
     >
       {/* left side */}

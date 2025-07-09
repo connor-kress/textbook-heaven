@@ -58,14 +58,14 @@ const config: Config = {
             code: { // Inline code (single backticks)
               color: theme("colors.neutral.900"),
               backgroundColor: theme("colors.neutral.100"),
-              fontWeight: "700",
+              fontWeight: "600",
               padding: "0.1em 0",
               borderRadius: "0.25rem",
             },
             "pre > code": { // Code blocks (triple backticks)
               color: theme("colors.neutral.700"),
               backgroundColor: theme("colors.gray.200"),
-              fontWeight: "700",
+              fontWeight: "600",
               padding: "0",
               borderRadius: "0",
             },
@@ -114,14 +114,14 @@ const config: Config = {
             code: { // Inline code (single backticks)
               color: theme("colors.neutral.100"),
               backgroundColor: theme("colors.neutral.950"),
-              fontWeight: "700",
+              fontWeight: "600",
               padding: "0.1em 0",
               borderRadius: "0.25rem",
             },
             "pre > code": { // Code blocks (triple backticks)
               color: theme("colors.neutral.200"),
               backgroundColor: theme("colors.neutral.800"),
-              fontWeight: "700",
+              fontWeight: "600",
               padding: "0",
               borderRadius: "0",
             },
