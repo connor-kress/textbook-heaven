@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useRef, useEffect } from "react";
 import { Question, Reply } from "@/types/Question";
 import { postReply } from "@/actions/reply";
 import { Textbook } from "@/types/Textbook";
@@ -19,15 +19,31 @@ type NewReplyFormProps = {
   question: Question,
   onCancel: () => void,
   onReplyAdded: (reply: Reply) => void,
+  focusTrigger?: number, // Add this prop to trigger focus
 }
 
 export default function NewReplyForm(
-  { textbook, parentReplyId, question, onCancel, onReplyAdded }: NewReplyFormProps
+  { textbook, parentReplyId, question, onCancel, onReplyAdded, focusTrigger }: NewReplyFormProps
 ) {
   const router = useRouter();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [formData, setFormData] = useState<FormData>({
     body: "",
   });
+
+  // Focus the textarea when the component mounts
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
+
+  // Focus the textarea when focusTrigger changes
+  useEffect(() => {
+    if (textareaRef.current && focusTrigger !== undefined) {
+      textareaRef.current.focus();
+    }
+  }, [focusTrigger]);
 
   function handleInputChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,6 +69,7 @@ export default function NewReplyForm(
       <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">New Reply</h3>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <Textarea
+          ref={textareaRef}
           name="body"
           placeholder="Type here"
           required

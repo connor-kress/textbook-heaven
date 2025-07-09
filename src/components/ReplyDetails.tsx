@@ -26,6 +26,7 @@ export default function ReplyDetails(
   { textbook, reply, question, setParentReplyList }: ReplyDetailsProps
 ) {
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [focusTrigger, setFocusTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [replies, setReplies] = useState(reply.replies);
   const { data: session } = authClient.useSession();
@@ -125,7 +126,10 @@ export default function ReplyDetails(
         </div>
         
         <Button
-          onClick={() => setShowReplyForm(true)}
+          onClick={() => {
+            setShowReplyForm(true);
+            setFocusTrigger(prev => prev + 1);
+          }}
           variant="outline"
           size="sm"
           className="text-blue-600 border-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-300"
@@ -146,6 +150,7 @@ export default function ReplyDetails(
               setReplies(prev => [...prev, newReply]);
               setShowReplyForm(false);
             }}
+            focusTrigger={focusTrigger}
           />
         }
         {
