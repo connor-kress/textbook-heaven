@@ -216,12 +216,19 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [focusTrigger, setFocusTrigger] = useState(0);
   const replyCount = question ? question.replies.length : 0;
-  const [_, setReplies] = useState<Reply[]>(question?.replies ?? []);
 
   // Reset form when question changes
   useEffect(() => {
     setShowReplyForm(false);
   }, [question?.id]);
+
+  function handleSetReplies(updater: Reply[] | ((prev: Reply[]) => Reply[])) {
+    if (!question) return;
+    setQuestion({
+      ...question,
+      replies: typeof updater === "function" ? updater(question.replies) : updater,
+    });
+  }
 
   return (
     <>
@@ -269,7 +276,7 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
               textbook={textbook}
               reply={c}
               question={question}
-              setParentReplyList={setReplies}
+              setParentReplyList={handleSetReplies}
             />
           ))}
         </div>

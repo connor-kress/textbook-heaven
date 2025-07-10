@@ -1,5 +1,5 @@
 import { Question, Reply } from "@/types/Question";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import NewReplyForm from "./NewReplyForm";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -28,10 +28,27 @@ export default function ReplyDetails(
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [focusTrigger, setFocusTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [replies, setReplies] = useState(reply.replies);
   const { data: session } = authClient.useSession();
   
   const isAuthor = session?.user?.id === reply.author.id;
+
+  function handleReplyAdded(newReply: Reply) {
+    setParentReplyList(prev => prev.map(r => {
+      if (r.id !== reply.id) return r;
+      return { ...r, replies: [...r.replies, newReply] };
+    }));
+    setShowReplyForm(false);
+  }
+
+  function handleSetReplies(updater: Reply[] | ((prev: Reply[]) => Reply[])) {
+    setParentReplyList(prev => prev.map(r => {
+      if (r.id !== reply.id) return r;
+      return {
+        ...r,
+        replies: typeof updater === "function" ? updater(r.replies) : updater,
+      };
+    }));
+  }
 
   async function handleDelete() {
     if (!confirm("Are you sure you want to delete this reply?")) return;
@@ -146,21 +163,18 @@ export default function ReplyDetails(
             question={question}
             parentReplyId={reply.id}
             onCancel={() => setShowReplyForm(false)}
-            onReplyAdded={(newReply) => {
-              setReplies(prev => [...prev, newReply]);
-              setShowReplyForm(false);
-            }}
+            onReplyAdded={handleReplyAdded}
             focusTrigger={focusTrigger}
           />
         }
         {
-          replies.map((subReply, i) => (
+          reply.replies.map((subReply, i) => (
             <ReplyDetails
               key={i}
               textbook={textbook}
               reply={subReply}
               question={question}
-              setParentReplyList={setReplies}
+              setParentReplyList={handleSetReplies}
             />
           ))
         }
