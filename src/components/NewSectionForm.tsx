@@ -11,7 +11,13 @@ import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
 import { tbUrl } from "@/lib/utils";
 
-export function NewSectionForm({ textbook }: { textbook: Textbook }) {
+export function NewSectionForm({ 
+  textbook, 
+  setQuestionId 
+}: { 
+  textbook: Textbook;
+  setQuestionId: (id: number | null) => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const newChapterId = searchParams.get("newChapterId") ?? "";
@@ -63,7 +69,7 @@ export function NewSectionForm({ textbook }: { textbook: Textbook }) {
   }
 
   const handleCancel = () => {
-    router.push(tbUrl(textbook));
+    setQuestionId(null);
   };
 
   return (

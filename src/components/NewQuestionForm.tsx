@@ -21,7 +21,13 @@ type FormData = {
   sectionId: string;
 };
 
-export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
+export function NewQuestionForm({ 
+  textbook, 
+  setQuestionId 
+}: { 
+  textbook: Textbook;
+  setQuestionId: (id: number | null) => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const newChapterId = searchParams.get("newChapterId") ?? "";
@@ -85,11 +91,13 @@ export function NewQuestionForm({ textbook }: { textbook: Textbook }) {
       alert(res.error);
       return;
     }
-    router.push(tbUrl(textbook, { questionId: res.id }));
+    setQuestionId(res.id);
+    // TODO: update global state to avoid refresh
+    window.location.reload();
   }
 
   const handleCancel = () => {
-    router.push(tbUrl(textbook));
+    setQuestionId(null);
   };
 
   return (
