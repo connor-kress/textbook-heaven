@@ -46,11 +46,11 @@ export default function TextbookView(
       </div>
     );
   } else if (newQuestion !== null) {
-    body = <NewQuestionForm textbook={textbook} />;
+    body = <NewQuestionForm textbook={textbook} setQuestionId={setQuestionId} />;
   } else if (newChapter !== null) {
-    body = <NewChapterForm textbook={textbook} />;
+    body = <NewChapterForm textbook={textbook} setQuestionId={setQuestionId} />;
   } else if (newSection !== null) {
-    body = <NewSectionForm textbook={textbook} />;
+    body = <NewSectionForm textbook={textbook} setQuestionId={setQuestionId}/>;
   } else if (questionId === null) {
     body = (
       <TextbookHomePage

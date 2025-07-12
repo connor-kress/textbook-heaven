@@ -8,7 +8,13 @@ import { createChapter } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
 import { tbUrl } from "@/lib/utils";
 
-export function NewChapterForm({ textbook }: { textbook: Textbook }) {
+export function NewChapterForm({ 
+  textbook, 
+  setQuestionId 
+}: { 
+  textbook: Textbook;
+  setQuestionId: (id: number | null) => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const newChapterNum = searchParams.get("newChapterNum") ?? "";
@@ -51,7 +57,7 @@ export function NewChapterForm({ textbook }: { textbook: Textbook }) {
   }
 
   const handleCancel = () => {
-    router.push(tbUrl(textbook));
+    setQuestionId(null);
   };
 
   return (
