@@ -45,6 +45,27 @@ export default function QuestionSelector({
 
   return (
     <div className="flex overflow-x-auto no-scrollbar items-center p-1 gap-1 bg-neutral-100 dark:bg-neutral-800">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setQuestionId(null)}
+              className="rounded-full h-10 w-10 min-w-10
+                         bg-neutral-200 hover:bg-neutral-300 text-neutral-800 border-neutral-300
+                         dark:bg-neutral-900 dark:hover:bg-neutral-700 dark:text-neutral-200 dark:border-neutral-600"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {"Back to Textbook"}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       {textbook.chapters.map((chapter) => (
         <ChapterDropdown
           key={chapter.id}
@@ -183,7 +204,7 @@ function ChapterDropdown({
                   "rounded-full",
                   hasActiveQuestion
                     ? "bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400 dark:bg-cyan-800 dark:hover:bg-cyan-700 dark:text-white dark:border-cyan-500"
-                    : "bg-neutral-200 hover:bg-neutral-300 text-neutral-800 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-700 dark:text-neutral-200",
+                    : "bg-neutral-200 hover:bg-neutral-300 text-neutral-800 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-700 dark:text-neutral-200 dark:border-neutral-600",
                   "flex items-center gap-2"
                 )}
               >
