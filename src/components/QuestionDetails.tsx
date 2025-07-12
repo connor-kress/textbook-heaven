@@ -20,7 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Copy } from "lucide-react";
+import { MoreHorizontal, Copy, Trash2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { deleteQuestion } from "@/actions/questions";
 
 export function QuestionDetails({
   textbook,
@@ -33,6 +35,8 @@ export function QuestionDetails({
 }) {
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { data: session } = authClient.useSession();
 
   useEffect(() => {
     async function fetchQuestion() {
@@ -74,6 +78,38 @@ export function QuestionDetails({
   const prevQuestion = questionIdx > 0 ? orderedQuestions[questionIdx - 1] : null;
   const nextQuestion = questionIdx < orderedQuestions.length - 1 ? orderedQuestions[questionIdx + 1] : null;
 
+  const isAuthor = question && session?.user?.id === question.author.id;
+
+  async function handleDelete() {
+    if (!question || !confirm("Are you sure you want to delete this question?")) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteQuestion({
+        questionId: question.id,
+        textbook,
+      });
+      if ("error" in result) {
+        alert(`Error deleting question: ${result.error}`);
+        return;
+      }
+    } catch (error) {
+      alert("Failed to delete question");
+      return;
+    } finally {
+      setIsDeleting(false);
+    }
+    // Navigate to next question, or previous, or home page appropriately
+    if (nextQuestion) {
+      setQuestionId(nextQuestion.id);
+    } else if (prevQuestion) {
+      setQuestionId(prevQuestion.id);
+    } else {
+      setQuestionId(null);
+    }
+    // TODO: delete question from global textbook state to avoid refresh
+    window.location.reload();
+  }
+
   const content = loading ? (
     <QuestionContentSkeleton />
   ) : question === null ? (
@@ -107,6 +143,16 @@ export function QuestionDetails({
               <Copy className="mr-2 h-4 w-4" />
               Copy
             </DropdownMenuItem>
+            {isAuthor && (
+              <DropdownMenuItem
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="cursor-pointer text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
