@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { createChapter } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
 import { tbUrl } from "@/lib/utils";
+import { CancelButton } from "./CancelButton";
+import { Plus } from "lucide-react";
 
 export function NewChapterForm({ 
   textbook, 
@@ -83,15 +85,10 @@ export function NewChapterForm({
           autoComplete="off"
         />
         <div className="flex gap-2">
-          <Button type="submit">Submit</Button>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleCancel}
-            className="border-destructive text-destructive bg-transparent hover:bg-destructive hover:text-destructive-foreground"
-          >
-            Cancel
+          <Button type="submit">
+            <Plus className="h-4 w-4" /> Create
           </Button>
+          <CancelButton onClick={handleCancel} />
         </div>
       </form>
     </div>

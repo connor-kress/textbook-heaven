@@ -1,6 +1,6 @@
 import { db } from "./index";
 import { replies } from "./schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { Reply, ReplySchema } from "@/types/Question";
 import { findReplyInTree } from "@/lib/utils";
 
@@ -51,6 +51,7 @@ export async function fetchReply(replyId: number, questionId: number): Promise<R
   const allReplies = await db.query.replies.findMany({
     where: eq(replies.questionId, questionId),
     with: { user: true },
+    orderBy: [asc(replies.postDate)],
   });
   const replyTree = buildReplyTree(allReplies);
   const reply = findReplyInTree(replyId, replyTree);

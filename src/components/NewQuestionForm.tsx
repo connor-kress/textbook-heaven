@@ -8,11 +8,14 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
 import { SectionSelect } from "@/components/SectionSelect";
 import { tbUrl } from "@/lib/utils";
+import { MarkdownPreview } from "./MarkdownRenderer";
+import { CancelButton } from "./CancelButton";
+import { cn } from "@/lib/utils";
 
 type FormData = {
   num: string;
@@ -114,7 +117,7 @@ export function NewQuestionForm({
           />
           <Link href={tbUrl(textbook, { newChapter: "" })}>
             <Button variant="outline" size="icon">
-              <PlusIcon className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
             </Button>
           </Link>
         </div>
@@ -130,7 +133,7 @@ export function NewQuestionForm({
             />
             <Link href={tbUrl(textbook, { newSection: "", newChapterId: formData.chapterId })}>
               <Button variant="outline" size="icon">
-                <PlusIcon className="h-4 w-4" />
+                <Plus className="h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -156,24 +159,20 @@ export function NewQuestionForm({
           onChange={handleInputChange}
           autoComplete="off"
         />
-
-        {formData.body && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Preview:</p>
-            <MarkdownRenderer text={formData.body} />
-          </div>
-        )}
+        <MarkdownPreview text={formData.body} />
 
         <div className="flex gap-2">
-          <Button type="submit">Submit</Button>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleCancel}
-            className="border-destructive text-destructive bg-transparent hover:bg-destructive hover:text-destructive-foreground"
+          <Button
+            type="submit"
+            disabled={!formData.chapterId}
+            className={cn(
+              !formData.chapterId
+                ? "opacity-60 bg-neutral-200 text-neutral-400 border-neutral-200" : "",
+            )}
           >
-            Cancel
+            <Plus className="h-4 w-4" /> Create
           </Button>
+          <CancelButton onClick={handleCancel} />
         </div>
       </form>
     </div>
