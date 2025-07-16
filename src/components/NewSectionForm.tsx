@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createSection } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
-import { PlusIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
-import { tbUrl } from "@/lib/utils";
+import { cn, tbUrl } from "@/lib/utils";
+import { CancelButton } from "./CancelButton";
 
 export function NewSectionForm({ 
   textbook, 
@@ -86,7 +87,7 @@ export function NewSectionForm({
           />
           <Link href={tbUrl(textbook, { newChapter: "" })}>
             <Button variant="outline" size="icon">
-              <PlusIcon className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
             </Button>
           </Link>
         </div>
@@ -109,15 +110,17 @@ export function NewSectionForm({
           autoComplete="off"
         />
         <div className="flex gap-2">
-          <Button type="submit" disabled={!formData.chapterId}>Submit</Button>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleCancel}
-            className="border-destructive text-destructive bg-transparent hover:bg-destructive hover:text-destructive-foreground"
+          <Button
+            type="submit"
+            disabled={!formData.chapterId}
+            className={cn(
+              !formData.chapterId
+                ? "opacity-60 bg-neutral-200 text-neutral-400 border-neutral-200" : "",
+            )}
           >
-            Cancel
+            <Plus className="h-4 w-4" /> Create
           </Button>
+          <CancelButton onClick={handleCancel} />
         </div>
       </form>
     </div>

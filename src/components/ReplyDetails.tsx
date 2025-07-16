@@ -1,10 +1,10 @@
 import { Question, Reply } from "@/types/Question";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import NewReplyForm from "./NewReplyForm";
 import { Textbook } from "@/types/Textbook";
-import { MarkdownRenderer } from "./MarkdownRenderer";
+import { MarkdownRenderer, MarkdownPreview } from "./MarkdownRenderer";
 import { authClient } from "@/lib/auth-client";
-import { deleteReply } from "@/actions/reply";
+import { deleteReply, editReply } from "@/actions/reply";
 import { formatDate, copyToClipboard } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash2, Edit, Copy } from "lucide-react";
+import { MoreHorizontal, Trash2, Edit, Copy, Save } from "lucide-react";
+import { CancelButton } from "./CancelButton";
 
 type ReplyDetailsProps = {
     textbook: Textbook,
@@ -28,6 +29,9 @@ export default function ReplyDetails(
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [focusTrigger, setFocusTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editBody, setEditBody] = useState(reply.body);
+  const [isSaving, setIsSaving] = useState(false);
   const { data: session } = authClient.useSession();
   
   const isAuthor = session?.user?.id === reply.author.id;
@@ -77,6 +81,29 @@ export default function ReplyDetails(
     }
   }
 
+  async function handleEditSave() {
+    setIsSaving(true);
+    try {
+      const result = await editReply(textbook, reply.id, question.id, editBody);
+      if ("error" in result) {
+        alert(`Error editing reply: ${result.error}`);
+        return;
+      }
+      // Replace this reply in the parent list
+      setParentReplyList(prev => prev.map(r => r.id === reply.id ? result : r));
+      setIsEditing(false);
+    } catch (error) {
+      alert("Failed to edit reply");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  function handleEditCancel() {
+    setEditBody(reply.body);
+    setIsEditing(false);
+  }
+
   return (
     <div className="flex flex-col w-full">
       <div className="border-2 border-neutral-500 rounded-xl p-4 mb-5">
@@ -118,7 +145,7 @@ export default function ReplyDetails(
               {isAuthor && (
                 <>
                   <DropdownMenuItem
-                    onClick={() => console.warn("TODO: Edit reply")}
+                    onClick={() => setIsEditing(true)}
                     className="cursor-pointer"
                   >
                     <Edit className="mr-2 h-4 w-4" />
@@ -137,22 +164,42 @@ export default function ReplyDetails(
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        
-        <div className="mb-4">
-          <MarkdownRenderer text={reply.body}/>
-        </div>
-        
-        <Button
-          onClick={() => {
-            setShowReplyForm(true);
-            setFocusTrigger(prev => prev + 1);
-          }}
-          variant="outline"
-          size="sm"
-          className="bg-transparent text-blue-600 border-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-300"
-        >
-          Reply
-        </Button>
+        {
+          isEditing ? (
+            <div>
+              <textarea
+                className="w-full border rounded p-2 mb-2 min-h-[80px]"
+                value={editBody}
+                onChange={e => setEditBody(e.target.value)}
+                disabled={isSaving}
+              />
+              <MarkdownPreview text={editBody} />
+              <div className="flex gap-2 mt-4">
+                <Button onClick={handleEditSave} disabled={isSaving}>
+                  <Save className="h-4 w-4" /> Save
+                </Button>
+                <CancelButton onClick={handleEditCancel} disabled={isSaving} />
+              </div>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <MarkdownRenderer text={reply.body}/>
+            </div>
+          )
+        }
+        {!isEditing && (
+          <Button
+            onClick={() => {
+              setShowReplyForm(true);
+              setFocusTrigger(prev => prev + 1);
+            }}
+            variant="outline"
+            size="sm"
+            className="bg-transparent text-blue-600 border-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-300"
+          >
+            Reply
+          </Button>
+        )}
       </div>
       
       <div className="ml-10">

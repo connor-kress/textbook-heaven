@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { db } from "./index";
 import { questions, replies } from "./schema";
 import { Question, QuestionSchema } from "@/types/Question";
@@ -50,6 +50,7 @@ export async function fetchQuestion(
   const allReplies = await db.query.replies.findMany({
     where: eq(replies.questionId, questionId),
     with: { user: true },
+    orderBy: [asc(replies.postDate)],
   });
 
   const question = convertDbQuestion(dbQuestion);

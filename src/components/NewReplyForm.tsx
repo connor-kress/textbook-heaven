@@ -4,10 +4,12 @@ import { ChangeEvent, FormEvent, useState, useRef, useEffect } from "react";
 import { Question, Reply } from "@/types/Question";
 import { postReply } from "@/actions/reply";
 import { Textbook } from "@/types/Textbook";
-import { MarkdownRenderer } from "./MarkdownRenderer";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { MarkdownPreview } from "./MarkdownRenderer";
+import { CancelButton } from "./CancelButton";
+import { Send } from "lucide-react";
 
 type FormData = {
   body: string,
@@ -79,22 +81,12 @@ export default function NewReplyForm(
           onChange={handleInputChange}
           autoComplete="off"
         />
-        {formData.body &&
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Preview:</p>
-            <MarkdownRenderer text={formData.body} />
-          </div>
-        }
+        <MarkdownPreview text={formData.body} />
         <div className="flex gap-2">
-          <Button type="submit">Submit</Button>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onCancel}
-            className="border-destructive text-destructive bg-transparent hover:bg-destructive hover:text-destructive-foreground"
-          >
-            Cancel
+          <Button type="submit">
+            <Send className="h-4 w-4" /> Post
           </Button>
+          <CancelButton onClick={onCancel} />
         </div>
       </form>
     </div>

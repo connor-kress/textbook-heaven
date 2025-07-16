@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { InputField, SubmitButton } from "@/components/FormFields";
 import { FcGoogle } from "react-icons/fc"
 
 export default function LoginForm() {
