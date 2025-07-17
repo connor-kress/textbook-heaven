@@ -1,5 +1,5 @@
 import { Question, Reply } from "@/types/Question";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import NewReplyForm from "./NewReplyForm";
 import { Textbook } from "@/types/Textbook";
 import { MarkdownRenderer, MarkdownPreview } from "./MarkdownRenderer";
@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Trash2, Edit, Copy, Save } from "lucide-react";
 import { CancelButton } from "./CancelButton";
+import { Textarea } from "@/components/ui/textarea";
 
 type ReplyDetailsProps = {
     textbook: Textbook,
@@ -30,8 +31,9 @@ export default function ReplyDetails(
   const [focusTrigger, setFocusTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editBody, setEditBody] = useState(reply.body);
+  const [editBody, setEditBody] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { data: session } = authClient.useSession();
   
   const isAuthor = session?.user?.id === reply.author.id;
@@ -83,8 +85,13 @@ export default function ReplyDetails(
 
   async function handleEditSave() {
     setIsSaving(true);
+    if (editBody.trim() === "") {
+      alert("Reply cannot be empty");
+      setIsSaving(false);
+      return;
+    }
     try {
-      const result = await editReply(textbook, reply.id, question.id, editBody);
+      const result = await editReply(textbook, reply.id, question.id, editBody.trim());
       if ("error" in result) {
         alert(`Error editing reply: ${result.error}`);
         return;
@@ -103,6 +110,20 @@ export default function ReplyDetails(
     setEditBody(reply.body);
     setIsEditing(false);
   }
+
+  // Auto-resize textarea when editing mode starts
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      const textarea = textareaRef.current;
+      textarea.style.height = "auto";
+      const contentHeight = textarea.scrollHeight;
+      const size = Math.max(Math.min(contentHeight, 500), 80);
+      textarea.style.height = `${size}px`;
+      // move cursor to end of text
+      const len = textarea.value.length;
+      textarea.setSelectionRange(len, len)
+    }
+  }, [isEditing]);
 
   return (
     <div className="flex flex-col w-full">
@@ -145,7 +166,14 @@ export default function ReplyDetails(
               {isAuthor && (
                 <>
                   <DropdownMenuItem
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setEditBody(reply.body);
+                      setIsEditing(true);
+                      // prevent the dropdown from stealing focus
+                      [20, 50, 100, 200, 300, 400].forEach(delay => {
+                        setTimeout(() => textareaRef.current?.focus(), delay);
+                      });
+                    }}
                     className="cursor-pointer"
                   >
                     <Edit className="mr-2 h-4 w-4" />
@@ -167,8 +195,9 @@ export default function ReplyDetails(
         {
           isEditing ? (
             <div>
-              <textarea
-                className="w-full border rounded p-2 mb-2 min-h-[80px]"
+              <Textarea
+                ref={textareaRef}
+                className="w-full border rounded p-2 mb-2 overflow-y-auto resize-y"
                 value={editBody}
                 onChange={e => setEditBody(e.target.value)}
                 disabled={isSaving}
