@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Trash2, Edit, Copy, Save } from "lucide-react";
 import { CancelButton } from "./CancelButton";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 type ReplyDetailsProps = {
     textbook: Textbook,
@@ -143,9 +144,27 @@ export default function ReplyDetails(
             )}
             <div>
               <h3 className="font-semibold text-base">{reply.author.name}</h3>
-              <p className="text-sm text-gray-500">
-                {formatDate(reply.postDate)}
-              </p>
+              <TooltipProvider>
+                <p className="text-sm text-gray-500">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="cursor-pointer underline decoration-dotted underline-offset-2">
+                        {reply.editedAt
+                          ? `Edited ${formatDate(reply.editedAt).toLowerCase()}`
+                          : formatDate(reply.postDate)}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      <div className="flex flex-col">
+                        <span>Posted: {reply.postDate.toLocaleString()}</span>
+                        {reply.editedAt && (
+                          <span>Last edited: {reply.editedAt.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </p>
+              </TooltipProvider>
             </div>
           </div>
           

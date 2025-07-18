@@ -1,4 +1,5 @@
 import { eq, and, asc } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { db } from "./index";
 import { questions, replies } from "./schema";
 import { Question, QuestionSchema } from "@/types/Question";
@@ -31,6 +32,7 @@ function convertDbQuestion(question: any): Question {
       createdAt: new Date(question.user.createdAt),
     },
     postDate: new Date(question.postDate),
+    editedAt: question.editedAt ? new Date(question.editedAt) : null,
     replies: [],
   });
 }
@@ -73,7 +75,10 @@ export async function createQuestion(input: CreateQuestionInput): Promise<Questi
 export async function updateQuestion(input: UpdateQuestionInput): Promise<Question> {
   const [question] = await db
     .update(questions)
-    .set({ body: input.body })
+    .set({ 
+      body: input.body,
+      editedAt: sql`NOW()`,
+    })
     .where(
       and(
         eq(questions.id, input.id),

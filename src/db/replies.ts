@@ -1,6 +1,6 @@
 import { db } from "./index";
 import { replies } from "./schema";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, sql } from "drizzle-orm";
 import { Reply, ReplySchema } from "@/types/Question";
 import { findReplyInTree } from "@/lib/utils";
 
@@ -32,6 +32,7 @@ export function convertDbReply(reply: any): Reply {
       createdAt: new Date(reply.user.createdAt),
     },
     postDate: new Date(reply.postDate),
+    editedAt: reply.editedAt ? new Date(reply.editedAt) : null,
     replies: [],
     likes: 0,
     dislikes: 0,
@@ -74,7 +75,10 @@ export async function createReply(input: CreateReplyInput): Promise<Reply> {
 export async function updateReply(input: UpdateReplyInput): Promise<Reply> {
   await db
     .update(replies)
-    .set({ body: input.body })
+    .set({ 
+      body: input.body,
+      editedAt: sql`NOW()`,
+    })
     .where(
       and(
         eq(replies.id, input.replyId),
