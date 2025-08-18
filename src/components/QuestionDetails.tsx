@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Question,
-  QuestionSchema,
-  QuestionInfoWithLocation,
-  Reply,
-} from "@/types/Question";
+import { Question, QuestionInfoWithLocation, Reply } from "@/types/Question";
 import { Textbook } from "@/types/Textbook";
 import { useState, useEffect } from "react";
 import ReplyDetails from "./ReplyDetails";
@@ -23,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Copy, Trash2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { deleteQuestion } from "@/actions/questions";
+import { useQuestionsStore, useQuestion } from "@/lib/questions-store";
 
 export function QuestionDetails({
   textbook,
@@ -33,34 +29,10 @@ export function QuestionDetails({
   questionId: number | null;
   setQuestionId: (id: number | null) => void;
 }) {
-  const [question, setQuestion] = useState<Question | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { question, loading } = useQuestion(questionId);
   const [isDeleting, setIsDeleting] = useState(false);
   const { data: session } = authClient.useSession();
 
-  useEffect(() => {
-    async function fetchQuestion() {
-      setLoading(true);
-      if (questionId === null) {
-        setQuestion(null);
-        setLoading(false);
-        return;
-      }
-      try {
-        const res = await fetch(`/api/questions/${questionId}`, {
-          cache: "no-store",
-        });
-        if (!res.ok) throw new Error((await res.json()).error);
-        const questionData = QuestionSchema.parse(await res.json());
-        setQuestion(questionData);
-      } catch (err) {
-        console.error(err);
-        setQuestion(null);
-      }
-      setLoading(false);
-    }
-    fetchQuestion();
-  }, [questionId]);
 
   const orderedQuestions = getOrderedQuestionInfo(textbook);
   const questionIdx = orderedQuestions.findIndex(q => q.id === questionId);
@@ -98,6 +70,8 @@ export function QuestionDetails({
     } finally {
       setIsDeleting(false);
     }
+    // Remove from cache
+    useQuestionsStore.getState().removeQuestion(question.id);
     // Navigate to next question, or previous, or home page appropriately
     if (nextQuestion) {
       setQuestionId(nextQuestion.id);
@@ -106,8 +80,7 @@ export function QuestionDetails({
     } else {
       setQuestionId(null);
     }
-    // TODO: delete question from global textbook state to avoid refresh
-    window.location.reload();
+    // TODO: remove from global textbook store instead of reloading
   }
 
   const content = loading ? (
@@ -172,7 +145,6 @@ export function QuestionDetails({
         question={question}
         loading={loading}
         textbook={textbook}
-        setQuestion={setQuestion}
       />
     </>
   );
@@ -253,11 +225,10 @@ function QuestionHeader({
   );
 }
 
-function QuestionReplies({ question, loading, textbook, setQuestion }: {
+function QuestionReplies({ question, loading, textbook }: {
   question: Question | null;
   loading: boolean;
   textbook: Textbook;
-  setQuestion: (question: Question | null) => void;
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [focusTrigger, setFocusTrigger] = useState(0);
@@ -270,10 +241,11 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
 
   function handleSetReplies(updater: Reply[] | ((prev: Reply[]) => Reply[])) {
     if (!question) return;
-    setQuestion({
+    const updatedQuestion: Question = {
       ...question,
       replies: typeof updater === "function" ? updater(question.replies) : updater,
-    });
+    };
+    useQuestionsStore.getState().setQuestion(updatedQuestion);
   }
 
   return (
@@ -310,7 +282,8 @@ function QuestionReplies({ question, loading, textbook, setQuestion }: {
               parentReplyId={null}
               onCancel={() => setShowReplyForm(false)}
               onReplyAdded={(newReply) => {
-                setQuestion({ ...question, replies: [...question.replies, newReply] });
+                const updated = { ...question, replies: [...question.replies, newReply] };
+                useQuestionsStore.getState().setQuestion(updated);
                 setShowReplyForm(false);
               }}
               focusTrigger={focusTrigger}
