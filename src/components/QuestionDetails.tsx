@@ -52,6 +52,13 @@ export function QuestionDetails({
 
   const isAuthor = question && session?.user?.id === question.author.id;
 
+  // Prefetch adjacent questions to make navigation instant
+  useEffect(() => {
+    const { fetchQuestion } = useQuestionsStore.getState();
+    if (nextQuestion) void fetchQuestion(nextQuestion.id).catch(() => {});
+    if (prevQuestion) void fetchQuestion(prevQuestion.id).catch(() => {});
+  }, [nextQuestion?.id, prevQuestion?.id]);
+
   async function handleDelete() {
     if (!question || !confirm("Are you sure you want to delete this question?")) return;
     setIsDeleting(true);
