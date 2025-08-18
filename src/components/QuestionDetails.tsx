@@ -36,6 +36,18 @@ export function QuestionDetails({
 
   const orderedQuestions = getOrderedQuestionInfo(textbook);
   const questionIdx = orderedQuestions.findIndex(q => q.id === questionId);
+  const prevQuestion = questionIdx > 0 ? orderedQuestions[questionIdx - 1] : null;
+  const nextQuestion = questionIdx < orderedQuestions.length - 1 ? orderedQuestions[questionIdx + 1] : null;
+  const prevQuestionId = prevQuestion?.id ?? null;
+  const nextQuestionId = nextQuestion?.id ?? null;
+
+  // Prefetch adjacent questions to make navigation instant
+  useEffect(() => {
+    const { fetchQuestion } = useQuestionsStore.getState();
+    if (nextQuestionId != null) void fetchQuestion(nextQuestionId).catch(() => {});
+    if (prevQuestionId != null) void fetchQuestion(prevQuestionId).catch(() => {});
+  }, [nextQuestionId, prevQuestionId]);
+
   if (questionIdx < 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
@@ -47,17 +59,8 @@ export function QuestionDetails({
     );
   }
   const currentQuestionInfo = orderedQuestions[questionIdx];
-  const prevQuestion = questionIdx > 0 ? orderedQuestions[questionIdx - 1] : null;
-  const nextQuestion = questionIdx < orderedQuestions.length - 1 ? orderedQuestions[questionIdx + 1] : null;
 
   const isAuthor = question && session?.user?.id === question.author.id;
-
-  // Prefetch adjacent questions to make navigation instant
-  useEffect(() => {
-    const { fetchQuestion } = useQuestionsStore.getState();
-    if (nextQuestion) void fetchQuestion(nextQuestion.id).catch(() => {});
-    if (prevQuestion) void fetchQuestion(prevQuestion.id).catch(() => {});
-  }, [nextQuestion?.id, prevQuestion?.id]);
 
   async function handleDelete() {
     if (!question || !confirm("Are you sure you want to delete this question?")) return;
