@@ -1,7 +1,7 @@
 import TextbookView from "@/components/TextbookView";
 import { fetchTextbook } from "@/db/textbooks";
 import { Metadata } from "next";
-import Link from "next/link";
+import TextbookHeader from "@/components/TextbookHeader";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -31,16 +31,7 @@ export default async function TextbookPage({ params }: Props) {
       {/* Left panel: visible only on lg */}
       <div className="w-1/2 hidden lg:flex flex-col">
         <div className="flex flex-col items-center">
-          <div className="p-0.5">
-            <span className="text-2xl font-bold">{textbook.title}</span>
-            <span className="text-lg"> by {textbook.author}</span>
-            <span className="text-sm"> (
-              <Link href={textbook.filePath} target="_blank"
-                    className="text-blue-700">
-                view file
-              </Link>)
-            </span>
-          </div>
+          <TextbookHeader textbook={textbook} />
         </div>
         <PDFView path={textbook.filePath}/>
       </div>

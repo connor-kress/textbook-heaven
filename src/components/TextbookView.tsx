@@ -10,6 +10,7 @@ import { NewSectionForm } from "./NewSectionForm";
 import { TextbookHomePage } from "./TextbookHomePage";
 import { useQuestionId } from "@/hooks/useQuestionId";
 import { useState, useEffect } from "react";
+import { useSeedTextbook } from "@/lib/textbook-store";
 
 export default function TextbookView(
   { textbook }: {textbook: Textbook}
@@ -17,6 +18,8 @@ export default function TextbookView(
   const params = useSearchParams();
   const [questionId, setQuestionId] = useQuestionId();
   const [isHydrated, setIsHydrated] = useState(false);
+  // Seed the textbooks store with SSR textbook and read from it
+  const textbookFromStore = useSeedTextbook(textbook);
   
   // Wait for hydration to complete
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function TextbookView(
   
   let body = null;
   
-  // Show loading state during SSR and initial hydration
+  // Show SSR data during initial hydration to avoid mismatches
   if (!isHydrated) {
     body = (
       <div className="flex flex-col gap-6">
@@ -46,22 +49,22 @@ export default function TextbookView(
       </div>
     );
   } else if (newQuestion !== null) {
-    body = <NewQuestionForm textbook={textbook} setQuestionId={setQuestionId} />;
+    body = <NewQuestionForm textbook={textbookFromStore} setQuestionId={setQuestionId} />;
   } else if (newChapter !== null) {
-    body = <NewChapterForm textbook={textbook} setQuestionId={setQuestionId} />;
+    body = <NewChapterForm textbook={textbookFromStore} setQuestionId={setQuestionId} />;
   } else if (newSection !== null) {
-    body = <NewSectionForm textbook={textbook} setQuestionId={setQuestionId}/>;
+    body = <NewSectionForm textbook={textbookFromStore} setQuestionId={setQuestionId}/>;
   } else if (questionId === null) {
     body = (
       <TextbookHomePage
-        textbook={textbook}
+        textbook={textbookFromStore}
         setQuestionId={setQuestionId}
       />
     );
   } else {
     body = (
       <QuestionDetails
-        textbook={textbook}
+        textbook={textbookFromStore}
         questionId={questionId}
         setQuestionId={setQuestionId}
       />
@@ -71,7 +74,7 @@ export default function TextbookView(
   return (
     <div className="flex flex-col">
       <QuestionSelector
-        textbook={textbook}
+        textbook={textbookFromStore}
         questionId={questionId}
         setQuestionId={setQuestionId}
       />
