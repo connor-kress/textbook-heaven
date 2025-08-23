@@ -15,7 +15,10 @@ import { SectionSelect } from "@/components/SectionSelect";
 import { tbUrl } from "@/lib/utils";
 import { MarkdownPreview } from "./MarkdownRenderer";
 import { CancelButton } from "./CancelButton";
-import { cn } from "@/lib/utils";
+import { cn, addQuestionInfoToTextbook } from "@/lib/utils";
+import { useTextbooksStore } from "@/lib/textbook-store";
+import { QuestionInfo } from "@/types/Question";
+import { useQuestionsStore } from "@/lib/questions-store";
 
 type FormData = {
   num: string;
@@ -24,10 +27,10 @@ type FormData = {
   sectionId: string;
 };
 
-export function NewQuestionForm({ 
-  textbook, 
-  setQuestionId 
-}: { 
+export function NewQuestionForm({
+  textbook,
+  setQuestionId
+}: {
   textbook: Textbook;
   setQuestionId: (id: number | null) => void;
 }) {
@@ -94,9 +97,17 @@ export function NewQuestionForm({
       alert(res.error);
       return;
     }
+    // Update the global state with new question
+    const { getTextbook, setTextbook } = useTextbooksStore.getState();
+    const currentTb = getTextbook(textbook.id) ?? textbook;
+    const updated = addQuestionInfoToTextbook(currentTb, res.chapterId, res.sectionId, {
+      id: res.id,
+      num: res.num,
+    });
+    setTextbook(updated);
+    useQuestionsStore.getState().setQuestion(res);
+    // Navigate to question
     setQuestionId(res.id);
-    // TODO: update global state to avoid refresh
-    window.location.reload();
   }
 
   const handleCancel = () => {

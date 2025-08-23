@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Textbook } from "@/types/Textbook";
-import { QuestionInfoWithLocation, Reply } from "@/types/Question";
+import { QuestionInfo, QuestionInfoWithLocation, Reply } from "@/types/Question";
 
 /**
  * Merges multiple class values into a single string.
@@ -98,6 +98,49 @@ export function getOrderedQuestionInfo(textbook: Textbook): QuestionInfoWithLoca
     }
   }
   return ordered;
+}
+
+/**
+ * Updates a list of question infos, keeping questions sorted by num.
+ */
+function updateQuestionInfoList(list: QuestionInfo[], info: QuestionInfo): QuestionInfo[] {
+  const newList = list.filter(q => q.id !== info.id);
+  newList.push(info);
+  return newList.sort((a, b) => a.num - b.num);
+}
+
+/**
+ * Returns a new Textbook with the provided QuestionInfo inserted into the
+ * appropriate chapter/section, keeping questions sorted by num. Does not mutate input.
+ */
+export function addQuestionInfoToTextbook(
+  textbook: Textbook,
+  chapterId: number,
+  sectionId: number | null,
+  info: QuestionInfo
+): Textbook {
+  const updatedChapters = textbook.chapters.map(ch => {
+    if (ch.id !== chapterId) return ch;
+    // Add to review questions
+    if (sectionId == null) {
+      return {
+        ...ch,
+        questions: updateQuestionInfoList(ch.questions, info),
+      };
+    }
+    // Add to section questions
+    return {
+      ...ch,
+      sections: ch.sections.map(sec => {
+        if (sec.id !== sectionId) return sec;
+        return {
+          ...sec,
+          questions: updateQuestionInfoList(sec.questions, info),
+        };
+      }),
+    };
+  });
+  return { ...textbook, chapters: updatedChapters };
 }
 
 /**
