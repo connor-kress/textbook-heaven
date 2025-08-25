@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,9 @@ import { Textbook } from "@/types/Textbook";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
-import { cn, tbUrl } from "@/lib/utils";
+import { cn, addSectionToTextbook, tbUrl } from "@/lib/utils";
 import { CancelButton } from "./CancelButton";
+import { useTextbooksStore } from "@/lib/textbook-store";
 
 export function NewSectionForm({ 
   textbook, 
@@ -19,7 +20,6 @@ export function NewSectionForm({
   textbook: Textbook;
   setQuestionId: (id: number | null) => void;
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const newChapterId = searchParams.get("newChapterId") ?? "";
   const newSectionNum = searchParams.get("newSectionNum") ?? "";
@@ -56,8 +56,9 @@ export function NewSectionForm({
     e.preventDefault();
     const sectionNum = parseInt(formData.num);
     const sectionTitle = formData.body;
+    const chapterId = parseInt(formData.chapterId);
     const res = await createSection({
-      chapterId: parseInt(formData.chapterId),
+      chapterId,
       sectionNum,
       sectionTitle,
       textbook,
@@ -66,7 +67,12 @@ export function NewSectionForm({
       alert(res.error);
       return;
     }
-    router.push(tbUrl(textbook));
+    // Update textbook store and navigate back to textbook homepage
+    const { getTextbook, setTextbook } = useTextbooksStore.getState();
+    const currentTb = getTextbook(textbook.id) ?? textbook;
+    const updatedTb = addSectionToTextbook(currentTb, chapterId, res);
+    setTextbook(updatedTb);
+    setQuestionId(null);
   }
 
   const handleCancel = () => {

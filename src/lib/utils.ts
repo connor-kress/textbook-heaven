@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Textbook } from "@/types/Textbook";
+import type { Chapter, Section, Textbook } from "@/types/Textbook";
 import { QuestionInfo, QuestionInfoWithLocation, Reply } from "@/types/Question";
 
 /**
@@ -139,6 +139,40 @@ export function addQuestionInfoToTextbook(
         };
       }),
     };
+  });
+  return { ...textbook, chapters: updatedChapters };
+}
+
+/**
+ * Returns a new Textbook with a chapter added or updated (by id),
+ * keeping chapters sorted by num. New chapters start with empty sections/questions.
+ */
+export function addChapterToTextbook(
+  textbook: Textbook,
+  chapter: Chapter,
+): Textbook {
+  const newChapters = textbook.chapters.filter(c => c.id !== chapter.id);
+  newChapters.push(chapter);
+  return {
+    ...textbook,
+    chapters: newChapters.sort((a, b) => a.num - b.num),
+  };
+}
+
+/**
+ * Returns a new Textbook with a section added or updated (by id) within a chapter,
+ * keeping sections sorted by num. New sections start with empty questions.
+ */
+export function addSectionToTextbook(
+  textbook: Textbook,
+  chapterId: number,
+  section: Section,
+): Textbook {
+  const updatedChapters = textbook.chapters.map(ch => {
+    if (ch.id !== chapterId) return ch;
+    const newSections = ch.sections.filter(s => s.id !== section.id);
+    newSections.push(section);
+    return { ...ch, sections: newSections.sort((a, b) => a.num - b.num) };
   });
   return { ...textbook, chapters: updatedChapters };
 }

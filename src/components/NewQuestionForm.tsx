@@ -4,7 +4,6 @@ import { postQuestion } from "@/actions/questions";
 import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Textbook } from "@/types/Textbook";
-import { MarkdownRenderer } from "./MarkdownRenderer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +16,6 @@ import { MarkdownPreview } from "./MarkdownRenderer";
 import { CancelButton } from "./CancelButton";
 import { cn, addQuestionInfoToTextbook } from "@/lib/utils";
 import { useTextbooksStore } from "@/lib/textbook-store";
-import { QuestionInfo } from "@/types/Question";
 import { useQuestionsStore } from "@/lib/questions-store";
 
 type FormData = {
@@ -100,11 +98,13 @@ export function NewQuestionForm({
     // Update the global state with new question
     const { getTextbook, setTextbook } = useTextbooksStore.getState();
     const currentTb = getTextbook(textbook.id) ?? textbook;
-    const updated = addQuestionInfoToTextbook(currentTb, res.chapterId, res.sectionId, {
-      id: res.id,
-      num: res.num,
-    });
-    setTextbook(updated);
+    const updatedTb = addQuestionInfoToTextbook(
+      currentTb,
+      res.chapterId,
+      res.sectionId,
+      { id: res.id, num: res.num },
+    );
+    setTextbook(updatedTb);
     useQuestionsStore.getState().setQuestion(res);
     // Navigate to question
     setQuestionId(res.id);

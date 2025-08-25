@@ -1,14 +1,15 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createChapter } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
-import { tbUrl } from "@/lib/utils";
+import { addChapterToTextbook } from "@/lib/utils";
 import { CancelButton } from "./CancelButton";
 import { Plus } from "lucide-react";
+import { useTextbooksStore } from "@/lib/textbook-store";
 
 export function NewChapterForm({ 
   textbook, 
@@ -17,7 +18,6 @@ export function NewChapterForm({
   textbook: Textbook;
   setQuestionId: (id: number | null) => void;
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const newChapterNum = searchParams.get("newChapterNum") ?? "";
   const [formData, setFormData] = useState({
@@ -55,7 +55,12 @@ export function NewChapterForm({
       alert(res.error);
       return;
     }
-    router.push(tbUrl(textbook));
+    // Update textbook store and navigate back to textbook homepage
+    const { getTextbook, setTextbook } = useTextbooksStore.getState();
+    const currentTb = getTextbook(textbook.id) ?? textbook;
+    const updatedTb = addChapterToTextbook(currentTb, res);
+    setTextbook(updatedTb);
+    setQuestionId(null);
   }
 
   const handleCancel = () => {
