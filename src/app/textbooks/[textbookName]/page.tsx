@@ -1,8 +1,8 @@
 import TextbookView from "@/components/TextbookView";
 import { fetchTextbook } from "@/db/textbooks";
 import { Metadata } from "next";
-import TextbookHeader from "@/components/TextbookHeader";
 import { notFound } from "next/navigation";
+import TextbookLeftPanel from "@/components/TextbookLeftPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -28,31 +28,12 @@ export default async function TextbookPage({ params }: Props) {
   if (!textbook) notFound();
   return (
     <div className="fixed inset-0 top-16 flex flex-row">
-      {/* Left panel: visible only on lg */}
-      <div className="w-1/2 hidden lg:flex flex-col">
-        <div className="flex flex-col items-center">
-          <TextbookHeader textbook={textbook} />
-        </div>
-        <PDFView path={textbook.filePath}/>
-      </div>
+      {/* Left panel: encapsulated component (shows PDF or home page) */}
+      <TextbookLeftPanel textbook={textbook} />
       {/* Right Panel: scrollable area */}
       <div className="flex flex-col w-full lg:w-1/2 h-full overflow-y-auto">
-        <TextbookView textbook={textbook}/>
+        <TextbookView textbook={textbook} suppressHome={!textbook.filePath} />
       </div>
-    </div>
-  );
-}
-
-function PDFView({ path }: { path: string }) {
-  return (
-    <div className="aspect-[3/4]">
-      <iframe 
-        src={path}
-        width="100%" 
-        height="100%" 
-      >
-        This browser does not support PDFs.
-      </iframe>
     </div>
   );
 }

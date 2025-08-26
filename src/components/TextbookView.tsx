@@ -11,13 +11,15 @@ import { TextbookHomePage } from "./TextbookHomePage";
 import { useQuestionId } from "@/hooks/useQuestionId";
 import { useState, useEffect } from "react";
 import { useSeedTextbook } from "@/lib/textbook-store";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function TextbookView(
-  { textbook }: {textbook: Textbook}
+  { textbook, suppressHome = false }: {textbook: Textbook, suppressHome?: boolean}
 ) {
   const params = useSearchParams();
   const [questionId, setQuestionId] = useQuestionId();
   const [isHydrated, setIsHydrated] = useState(false);
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   // Seed the textbooks store with SSR textbook and read from it
   const textbookFromStore = useSeedTextbook(textbook);
   
@@ -26,15 +28,21 @@ export default function TextbookView(
     setIsHydrated(true);
   }, []);
 
+
   const newQuestion = params.get("newQuestion");
   const newChapter = params.get("newChapter");
   const newSection = params.get("newSection");
   
   let body = null;
+  const fallback = (
+    <div className="text-center text-neutral-600 dark:text-neutral-400 italic py-8">
+      Select a question to view details.
+    </div>
+  );
   
   // Show SSR data during initial hydration to avoid mismatches
   if (!isHydrated) {
-    body = (
+    body = suppressHome ? fallback : (
       <div className="flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -55,12 +63,17 @@ export default function TextbookView(
   } else if (newSection !== null) {
     body = <NewSectionForm textbook={textbookFromStore} setQuestionId={setQuestionId}/>;
   } else if (questionId === null) {
-    body = (
-      <TextbookHomePage
-        textbook={textbookFromStore}
-        setQuestionId={setQuestionId}
-      />
-    );
+    const suppressForViewport = suppressHome && isLargeScreen === true;
+    if (!suppressForViewport) {
+      body = (
+        <TextbookHomePage
+          textbook={textbookFromStore}
+          setQuestionId={setQuestionId}
+        />
+      );
+    } else {
+      body = fallback;
+    }
   } else {
     body = (
       <QuestionDetails

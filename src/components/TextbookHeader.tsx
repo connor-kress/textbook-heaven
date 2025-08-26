@@ -13,13 +13,13 @@ export default function TextbookHeader({ textbook }: { textbook: Textbook }) {
     <div className="flex items-center gap-2 p-0.5">
       <span className="text-2xl font-bold">{tb.title}</span>
       {tb.author && <span className="text-lg"> by {tb.author}</span>}
-      <span className="text-sm">
-        (
-        <Link href={tb.filePath} target="_blank" className="text-blue-700">
-          view file
-        </Link>
-        )
-      </span>
+      {tb.filePath && (
+        <span className="text-sm">
+          <Link href={tb.filePath} target="_blank" className="text-blue-700">
+            view file
+          </Link>
+        </span>
+      )}
       <Button
         size="sm"
         variant="outline"

@@ -1,0 +1,1 @@
+ALTER TABLE "textbooks" ALTER COLUMN "fileName" DROP NOT NULL;

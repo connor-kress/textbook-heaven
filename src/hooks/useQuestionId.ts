@@ -2,21 +2,21 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+// Parameters to clear when navigating or canceling forms (stable across renders)
+const FORM_PARAMS = [
+  "newQuestion",
+  "newChapter",
+  "newSection",
+  "newChapterId",
+  "newSectionId",
+  "newQuestionNum",
+  "newChapterNum",
+  "newSectionNum",
+] as const;
+
 // Reads the questionId from the URL and keeps it in sync
 // with the state without triggering a Next navigation.
 export function useQuestionId(): [number | null, (id: number | null) => void] {
-  // Parameters to clear when navigating or canceling forms
-  const FORM_PARAMS = [
-    "newQuestion",
-    "newChapter", 
-    "newSection",
-    "newChapterId",
-    "newSectionId", 
-    "newQuestionNum",
-    "newChapterNum",
-    "newSectionNum"
-  ];
-
   // read initial value once
   const read = () => {
     const p = new URLSearchParams(window.location.search).get("questionId");
@@ -47,6 +47,8 @@ export function useQuestionId(): [number | null, (id: number | null) => void] {
     const newUrl = window.location.pathname + (search ? `?${search}` : "");
     window.history.pushState({}, "", newUrl);
     setQid(next);
+    // Notify all listeners to keep multiple hook instances in sync
+    window.dispatchEvent(new PopStateEvent("popstate"));
   }, []);
 
   return [qid, change];

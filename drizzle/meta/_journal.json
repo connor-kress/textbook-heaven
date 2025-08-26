@@ -36,6 +36,13 @@
       "when": 1752872161451,
       "tag": "0004_add_question_and_reply_edited_at_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756241175176,
+      "tag": "0005_optional_textbook_pdf",
+      "breakpoints": true
     }
   ]
 }

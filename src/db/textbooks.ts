@@ -16,27 +16,36 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
     orderBy: [asc(textbooks.id)],
     with: textbookIncludes,
   });
-  const textbookArray = rawTextbooks.map(textbook => ({
-    ...textbook,
-    baseFileName : textbook.fileName.replace(/.pdf$/, ""),
-    filePath: `/pdf/${textbook.fileName}`,
-  }));
+  const textbookArray = rawTextbooks.map(textbook => {
+    const fileName = textbook.fileName ?? null;
+    return {
+      ...textbook,
+      baseFileName: fileName ? fileName.replace(/\.pdf$/, "") : null,
+      filePath: fileName ? `/pdf/${fileName}` : null,
+    };
+  });
   // console.log(textbookArray);
   return TextbookSchema.array().parse(textbookArray);
 }
 
 export async function fetchTextbook(
-  baseFileName: string
+  identifier: string
 ): Promise<Textbook | null> {
+  // Support both legacy baseFileName routes and id-based routes
+  const isNumericId = /^\d+$/.test(identifier);
+  const whereClause = isNumericId
+    ? eq(textbooks.id, Number(identifier))
+    : eq(textbooks.fileName, `${identifier}.pdf`);
   const rawTextbook = await db.query.textbooks.findFirst({
-    where: eq(textbooks.fileName, `${baseFileName}.pdf`),
+    where: whereClause,
     with: textbookIncludes,
   });
   if (!rawTextbook) return null;
+  const fileName = rawTextbook.fileName ?? null;
   const textbook = {
     ...rawTextbook,
-    baseFileName : rawTextbook.fileName.replace(/.pdf$/, ""),
-    filePath: `/pdf/${rawTextbook.fileName}`,
+    baseFileName: fileName ? fileName.replace(/\.pdf$/, "") : null,
+    filePath: fileName ? `/pdf/${fileName}` : null,
   };
   // console.dir(textbook, { depth: null });
   return TextbookSchema.parse(textbook);
