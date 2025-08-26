@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useEffect } from "react";
-import { Question, QuestionSchema } from "@/types/Question";
+import { Question, QuestionSchema, Reply } from "@/types/Question";
 
 type QuestionsState = {
   questionsById: Map<number, Question>;
@@ -10,6 +10,8 @@ type QuestionsState = {
   setQuestion: (question: Question) => void;
   removeQuestion: (id: number) => void;
   fetchQuestion: (id: number) => Promise<Question>;
+  setReply: (questionId: number, reply: Reply) => void;
+  removeReply: (questionId: number, replyId: number) => void;
 };
 
 export const useQuestionsStore = create<QuestionsState>((set, get) => ({
@@ -74,6 +76,35 @@ export const useQuestionsStore = create<QuestionsState>((set, get) => ({
         return { loadingIds: next };
       });
     }
+  },
+
+  setReply: (questionId: number, reply: Reply) => {
+    const current = get().questionsById.get(questionId);
+    if (!current) return;
+    const updated: Question = {
+      ...current,
+      replies: [...current.replies, reply],
+    };
+    get().setQuestion(updated);
+  },
+
+  removeReply: (questionId: number, replyId: number) => {
+    const current = get().questionsById.get(questionId);
+    if (!current) return;
+
+    function removeFromTree(list: Reply[], targetId: number): Reply[] {
+      const filtered = list.filter(r => r.id !== targetId);
+      return filtered.map(r => ({
+        ...r,
+        replies: removeFromTree(r.replies, targetId),
+      }));
+    }
+
+    const updated: Question = {
+      ...current,
+      replies: removeFromTree(current.replies, replyId),
+    };
+    get().setQuestion(updated);
   },
 }));
 

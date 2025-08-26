@@ -19,6 +19,7 @@ import { MoreHorizontal, Copy, Trash2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { deleteQuestion } from "@/actions/questions";
 import { useQuestionsStore, useQuestion } from "@/lib/questions-store";
+import { useTextbooksStore } from "@/lib/textbook-store";
 
 export function QuestionDetails({
   textbook,
@@ -82,6 +83,12 @@ export function QuestionDetails({
     }
     // Remove from cache
     useQuestionsStore.getState().removeQuestion(question.id);
+    // Remove from textbook structure so selectors and navigation update
+    useTextbooksStore.getState().removeQuestionFromTextbook(textbook.id, {
+      questionId: question.id,
+      chapterId: question.chapterId,
+      sectionId: question.sectionId,
+    });
     // Navigate to next question, or previous, or home page appropriately
     if (nextQuestion) {
       setQuestionId(nextQuestion.id);

@@ -6,6 +6,7 @@ import { MarkdownRenderer, MarkdownPreview } from "./MarkdownRenderer";
 import { authClient } from "@/lib/auth-client";
 import { deleteReply, editReply } from "@/actions/reply";
 import { formatDate, copyToClipboard } from "@/lib/utils";
+import { useQuestionsStore } from "@/lib/questions-store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,10 +41,7 @@ export default function ReplyDetails(
   const isAuthor = session?.user?.id === reply.author.id;
 
   function handleReplyAdded(newReply: Reply) {
-    setParentReplyList(prev => prev.map(r => {
-      if (r.id !== reply.id) return r;
-      return { ...r, replies: [...r.replies, newReply] };
-    }));
+    useQuestionsStore.getState().setReply(question.id, newReply);
     setShowReplyForm(false);
   }
 
@@ -66,8 +64,8 @@ export default function ReplyDetails(
         alert(`Error deleting reply: ${result.error}`);
         return;
       }
-      // Remove this reply from the parent list
-      setParentReplyList(prev => prev.filter(r => r.id !== reply.id));
+      // Remove this reply from the question in the global store (also updates UI)
+      useQuestionsStore.getState().removeReply(question.id, reply.id);
     } catch (error) {
       alert("Failed to delete reply");
     } finally {

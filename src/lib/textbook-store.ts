@@ -8,6 +8,10 @@ type TextbooksState = {
   setTextbook: (textbook: Textbook) => void;
   removeTextbook: (id: number) => void;
   clear: () => void;
+  removeQuestionFromTextbook: (
+    textbookId: number,
+    args: { questionId: number; chapterId: number; sectionId: number | null }
+  ) => void;
 };
 
 export const useTextbooksStore = create<TextbooksState>((set, get) => ({
@@ -34,6 +38,37 @@ export const useTextbooksStore = create<TextbooksState>((set, get) => ({
   },
 
   clear: () => set({ textbooksById: new Map() }),
+
+  removeQuestionFromTextbook: (
+    textbookId: number,
+    { questionId, chapterId, sectionId }
+  ) => {
+    set(state => {
+      const existing = state.textbooksById.get(textbookId);
+      if (!existing) return {} as any;
+
+      const updatedChapters = existing.chapters.map(chapter => {
+        if (chapter.id !== chapterId) return chapter;
+        if (sectionId === null) {
+          return {
+            ...chapter,
+            questions: chapter.questions.filter(q => q.id !== questionId),
+          };
+        }
+        const updatedSections = chapter.sections.map(section =>
+          section.id === sectionId
+            ? { ...section, questions: section.questions.filter(q => q.id !== questionId) }
+            : section
+        );
+        return { ...chapter, sections: updatedSections };
+      });
+
+      const updatedTextbook: Textbook = { ...existing, chapters: updatedChapters };
+      const next = new Map(state.textbooksById);
+      next.set(textbookId, updatedTextbook);
+      return { textbooksById: next };
+    });
+  },
 }));
 
 export function useTextbookById(id: number | null): Textbook | null {
