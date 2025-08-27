@@ -14,7 +14,7 @@ import { SectionSelect } from "@/components/SectionSelect";
 import { tbUrl } from "@/lib/utils";
 import { MarkdownPreview } from "./MarkdownRenderer";
 import { CancelButton } from "./CancelButton";
-import { cn, addQuestionInfoToTextbook } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useTextbooksStore } from "@/lib/textbook-store";
 import { useQuestionsStore } from "@/lib/questions-store";
 
@@ -96,15 +96,11 @@ export function NewQuestionForm({
       return;
     }
     // Update the global state with new question
-    const { getTextbook, setTextbook } = useTextbooksStore.getState();
-    const currentTb = getTextbook(textbook.id) ?? textbook;
-    const updatedTb = addQuestionInfoToTextbook(
-      currentTb,
-      res.chapterId,
-      res.sectionId,
-      { id: res.id, num: res.num },
-    );
-    setTextbook(updatedTb);
+    useTextbooksStore.getState().addOrUpdateQuestionInfo(textbook.id, {
+      chapterId: res.chapterId,
+      sectionId: res.sectionId,
+      info: { id: res.id, num: res.num },
+    });
     useQuestionsStore.getState().setQuestion(res);
     // Navigate to question
     setQuestionId(res.id);

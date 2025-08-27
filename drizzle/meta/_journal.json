@@ -43,6 +43,13 @@
       "when": 1756241175176,
       "tag": "0005_optional_textbook_pdf",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1756257101192,
+      "tag": "0006_textbook_slugs",
+      "breakpoints": true
     }
   ]
 }

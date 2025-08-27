@@ -9,7 +9,7 @@ import { Textbook } from "@/types/Textbook";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ChapterSelect } from "@/components/ChapterSelect";
-import { cn, addSectionToTextbook, tbUrl } from "@/lib/utils";
+import { cn, tbUrl } from "@/lib/utils";
 import { CancelButton } from "./CancelButton";
 import { useTextbooksStore } from "@/lib/textbook-store";
 
@@ -68,10 +68,7 @@ export function NewSectionForm({
       return;
     }
     // Update textbook store and navigate back to textbook homepage
-    const { getTextbook, setTextbook } = useTextbooksStore.getState();
-    const currentTb = getTextbook(textbook.id) ?? textbook;
-    const updatedTb = addSectionToTextbook(currentTb, chapterId, res);
-    setTextbook(updatedTb);
+    useTextbooksStore.getState().addOrUpdateSection(textbook.id, chapterId, res);
     setQuestionId(null);
   }
 

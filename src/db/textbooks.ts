@@ -29,15 +29,10 @@ export async function fetchTextbooks(): Promise<Textbook[]> {
 }
 
 export async function fetchTextbook(
-  identifier: string
+  slug: string
 ): Promise<Textbook | null> {
-  // Support both legacy baseFileName routes and id-based routes
-  const isNumericId = /^\d+$/.test(identifier);
-  const whereClause = isNumericId
-    ? eq(textbooks.id, Number(identifier))
-    : eq(textbooks.fileName, `${identifier}.pdf`);
   const rawTextbook = await db.query.textbooks.findFirst({
-    where: whereClause,
+    where: eq(textbooks.slug, slug),
     with: textbookIncludes,
   });
   if (!rawTextbook) return null;

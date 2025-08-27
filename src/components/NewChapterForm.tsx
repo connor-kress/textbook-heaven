@@ -6,10 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createChapter } from "@/actions/questions";
 import { Textbook } from "@/types/Textbook";
-import { addChapterToTextbook } from "@/lib/utils";
+import { useTextbooksStore } from "@/lib/textbook-store";
 import { CancelButton } from "./CancelButton";
 import { Plus } from "lucide-react";
-import { useTextbooksStore } from "@/lib/textbook-store";
 
 export function NewChapterForm({ 
   textbook, 
@@ -56,10 +55,7 @@ export function NewChapterForm({
       return;
     }
     // Update textbook store and navigate back to textbook homepage
-    const { getTextbook, setTextbook } = useTextbooksStore.getState();
-    const currentTb = getTextbook(textbook.id) ?? textbook;
-    const updatedTb = addChapterToTextbook(currentTb, res);
-    setTextbook(updatedTb);
+    useTextbooksStore.getState().addOrUpdateChapter(textbook.id, res);
     setQuestionId(null);
   }
 

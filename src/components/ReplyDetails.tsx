@@ -23,11 +23,10 @@ type ReplyDetailsProps = {
     textbook: Textbook,
     reply: Reply,
     question: Question,
-    setParentReplyList: React.Dispatch<React.SetStateAction<Reply[]>>,
 }
 
 export default function ReplyDetails(
-  { textbook, reply, question, setParentReplyList }: ReplyDetailsProps
+  { textbook, reply, question }: ReplyDetailsProps
 ) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [focusTrigger, setFocusTrigger] = useState(0);
@@ -41,18 +40,8 @@ export default function ReplyDetails(
   const isAuthor = session?.user?.id === reply.author.id;
 
   function handleReplyAdded(newReply: Reply) {
-    useQuestionsStore.getState().setReply(question.id, newReply);
+    useQuestionsStore.getState().addReply(question.id, reply.id, newReply);
     setShowReplyForm(false);
-  }
-
-  function handleSetReplies(updater: Reply[] | ((prev: Reply[]) => Reply[])) {
-    setParentReplyList(prev => prev.map(r => {
-      if (r.id !== reply.id) return r;
-      return {
-        ...r,
-        replies: typeof updater === "function" ? updater(r.replies) : updater,
-      };
-    }));
   }
 
   async function handleDelete() {
@@ -95,8 +84,7 @@ export default function ReplyDetails(
         alert(`Error editing reply: ${result.error}`);
         return;
       }
-      // Replace this reply in the parent list
-      setParentReplyList(prev => prev.map(r => r.id === reply.id ? result : r));
+      useQuestionsStore.getState().updateReply(question.id, result);
       setIsEditing(false);
     } catch (error) {
       alert("Failed to edit reply");
@@ -267,7 +255,6 @@ export default function ReplyDetails(
               textbook={textbook}
               reply={subReply}
               question={question}
-              setParentReplyList={handleSetReplies}
             />
           ))
         }

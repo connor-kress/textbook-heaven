@@ -21,6 +21,7 @@ export const TextbookSchema = z.object({
   author: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  slug: z.string(),
   fileName: z.string().nullable(),
   baseFileName: z.string().nullable(),
   filePath: z.string().nullable(),

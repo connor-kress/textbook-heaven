@@ -10,7 +10,8 @@ type QuestionsState = {
   setQuestion: (question: Question) => void;
   removeQuestion: (id: number) => void;
   fetchQuestion: (id: number) => Promise<Question>;
-  setReply: (questionId: number, reply: Reply) => void;
+  addReply: (questionId: number, parentReplyId: number | null, reply: Reply) => void;
+  updateReply: (questionId: number, reply: Reply) => void;
   removeReply: (questionId: number, replyId: number) => void;
 };
 
@@ -78,14 +79,46 @@ export const useQuestionsStore = create<QuestionsState>((set, get) => ({
     }
   },
 
-  setReply: (questionId: number, reply: Reply) => {
+  addReply: (questionId: number, parentReplyId: number | null, reply: Reply) => {
     const current = get().questionsById.get(questionId);
     if (!current) return;
-    const updated: Question = {
+
+    if (parentReplyId == null) {
+      get().setQuestion({
+        ...current,
+        replies: [...current.replies, reply],
+      });
+      return;
+    }
+
+    function addReply(list: Reply[], parentReplyId: number | null, reply: Reply): Reply[] {
+      return list.map(r => {
+        if (r.id === parentReplyId) return { ...r, replies: [...r.replies, reply] };
+        return { ...r, replies: addReply(r.replies, parentReplyId, reply) };
+      });
+    }
+
+    get().setQuestion({
       ...current,
-      replies: [...current.replies, reply],
-    };
-    get().setQuestion(updated);
+      replies: addReply(current.replies, parentReplyId, reply),
+    });
+  },
+
+  updateReply: (questionId: number, reply: Reply) => {
+    const current = get().questionsById.get(questionId);
+    if (!current) return;
+
+    function updateReply(list: Reply[]): Reply[] {
+      return list.map(r => {
+        if (r.id === reply.id) return reply;
+        return { ...r, replies: updateReply(r.replies) };
+      });
+    }
+
+    get().setQuestion({
+      ...current,
+      replies: updateReply(current.replies),
+    });
   },
 
   removeReply: (questionId: number, replyId: number) => {
@@ -100,11 +133,10 @@ export const useQuestionsStore = create<QuestionsState>((set, get) => ({
       }));
     }
 
-    const updated: Question = {
+    get().setQuestion({
       ...current,
       replies: removeFromTree(current.replies, replyId),
-    };
-    get().setQuestion(updated);
+    });
   },
 }));
 

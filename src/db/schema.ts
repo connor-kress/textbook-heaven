@@ -80,9 +80,11 @@ export const textbooks = pgTable("textbooks", {
   title: text().notNull(),
   author: text().notNull(),
   description: text(),
+  slug: text().notNull(),
   fileName: text(),
   coverImagePath: text(),
 }, (table) => [
+  unique().on(table.slug),
   unique().on(table.fileName),
 ]);
 

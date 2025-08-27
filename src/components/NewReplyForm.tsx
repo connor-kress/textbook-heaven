@@ -21,7 +21,7 @@ type NewReplyFormProps = {
   question: Question,
   onCancel: () => void,
   onReplyAdded: (reply: Reply) => void,
-  focusTrigger?: number, // Add this prop to trigger focus
+  focusTrigger?: number, // updated to trigger focus
 }
 
 export default function NewReplyForm(

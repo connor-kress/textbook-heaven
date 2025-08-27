@@ -44,7 +44,6 @@ export async function createChapter({
     return { error: "Failed to create chapter" };
   }
   revalidatePath(tbUrl(textbook));
-  console.log(chapter);
   return chapter;
 }
 

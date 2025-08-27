@@ -256,15 +256,6 @@ function QuestionReplies({ question, loading, textbook }: {
     setShowReplyForm(false);
   }, [question?.id]);
 
-  function handleSetReplies(updater: Reply[] | ((prev: Reply[]) => Reply[])) {
-    if (!question) return;
-    const updatedQuestion: Question = {
-      ...question,
-      replies: typeof updater === "function" ? updater(question.replies) : updater,
-    };
-    useQuestionsStore.getState().setQuestion(updatedQuestion);
-  }
-
   return (
     <>
       <h2 className="mt-8 mb-4 text-lg font-semibold">
@@ -312,7 +303,6 @@ function QuestionReplies({ question, loading, textbook }: {
               textbook={textbook}
               reply={c}
               question={question}
-              setParentReplyList={handleSetReplies}
             />
           ))}
         </div>
