@@ -153,10 +153,12 @@ export function useQuestion(questionId: number | null): {
 
   useEffect(() => {
     if (questionId == null) return;
-    if (!question && !loading) {
+    // Only fetch if we don't have it, we're not currently loading it, and we haven't
+    // already recorded an error for it
+    if (!question && !loading && !error) {
       void fetchQuestion(questionId).catch(() => {});
     }
-  }, [questionId, question, loading, fetchQuestion]);
+  }, [questionId, question, loading, error, fetchQuestion]);
 
   return {
     question,
