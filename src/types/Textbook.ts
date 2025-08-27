@@ -23,10 +23,8 @@ export const TextbookSchema = z.object({
   description: z.string().nullable(),
   slug: z.string(),
   fileName: z.string().nullable(),
-  baseFileName: z.string().nullable(),
-  filePath: z.string().nullable(),
-  chapters: ChapterSchema.array(),
   coverImagePath: z.string().nullable(),
+  chapters: ChapterSchema.array(),
 });
 
 export type Section = z.infer<typeof SectionSchema>;

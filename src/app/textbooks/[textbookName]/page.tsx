@@ -32,7 +32,7 @@ export default async function TextbookPage({ params }: Props) {
       <TextbookLeftPanel textbook={textbook} />
       {/* Right Panel: scrollable area */}
       <div className="flex flex-col w-full lg:w-1/2 h-full overflow-y-auto">
-        <TextbookView textbook={textbook} suppressHome={!textbook.filePath} />
+        <TextbookView textbook={textbook} suppressHome={!textbook.fileName} />
       </div>
     </div>
   );

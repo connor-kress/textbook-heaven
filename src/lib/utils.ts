@@ -111,3 +111,11 @@ export function findReplyInTree(replyId: number, replyTree: Reply[]): Reply | nu
   }
   return null;
 }
+
+/**
+ * Returns the file path for a given file name.
+ */
+export function getFilePath(textbook: Textbook): string | null {
+  if (!textbook.fileName) return null;
+  return `/pdf/${textbook.fileName}`;
+}
