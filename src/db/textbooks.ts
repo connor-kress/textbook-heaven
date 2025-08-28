@@ -29,3 +29,37 @@ export async function fetchTextbook(
   if (!textbook) return null;
   return TextbookSchema.parse(textbook);
 }
+
+export type CreateTextbookInput = {
+  title: string;
+  author: string;
+  description: string | null;
+  slug: string;
+};
+
+export async function createTextbook(
+  input: CreateTextbookInput
+): Promise<Textbook> {
+  const [row] = await db
+    .insert(textbooks)
+    .values({
+      title: input.title,
+      author: input.author,
+      description: input.description,
+      slug: input.slug,
+      fileName: null,
+      coverImagePath: null,
+    })
+    .returning();
+
+  return {
+    id: row.id,
+    title: row.title,
+    author: row.author,
+    description: row.description,
+    slug: row.slug,
+    fileName: row.fileName,
+    coverImagePath: row.coverImagePath,
+    chapters: [],
+  };
+}

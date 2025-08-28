@@ -119,3 +119,24 @@ export function getPdfPath(textbook: Textbook): string | null {
   if (!textbook.fileName) return null;
   return `/pdf/${textbook.fileName}`;
 }
+
+/**
+ * Returns the cover image path for a given textbook.
+ */
+export function getCoverImagePath(textbook: Textbook): string | null {
+  if (!textbook.coverImagePath) return null;
+  return `/covers/${textbook.coverImagePath}`;
+}
+
+/**
+ * Converts a string into a URL-friendly slug.
+ */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[\s_]+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
