@@ -26,7 +26,7 @@ export async function createTextbookAction(input: {
   // Ensure slug uniqueness by appending -n if needed
   let baseSlugNoAuthor = slugify(title);
   let baseSlugWithAuthor = slugify(`${title}-${author}`);
-  let slug = baseSlugNoAuthor.length > 15 || baseSlugWithAuthor.length < 30
+  let slug = baseSlugNoAuthor.length > 20 || baseSlugWithAuthor.length > 30
     ? baseSlugNoAuthor
     : baseSlugWithAuthor;
   let suffix = 1;

@@ -8,23 +8,23 @@ export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{
-    textbookName: string,
+    textbookSlug: string,
   }>,
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { textbookName } = await params;
-  const textbookNameDecoded = decodeURIComponent(textbookName);
+  const { textbookSlug } = await params;
+  const decodedTextbookSlug = decodeURIComponent(textbookSlug);
   return {
-    title: `${textbookNameDecoded} - Textbook Heaven`,
-    description: `Questions and PDF view from ${textbookNameDecoded}.`,
+    title: `${decodedTextbookSlug} - Textbook Heaven`,
+    description: `Questions and PDF view from ${decodedTextbookSlug}.`,
   };
 }
 
 export default async function TextbookPage({ params }: Props) {
-  const { textbookName } = await params;
-  const decodedTextbookName = decodeURIComponent(textbookName);
-  const textbook = await fetchTextbook(decodedTextbookName);
+  const { textbookSlug } = await params;
+  const decodedTextbookSlug = decodeURIComponent(textbookSlug);
+  const textbook = await fetchTextbook(decodedTextbookSlug);
   if (!textbook) notFound();
   return (
     <div className="fixed inset-0 top-16 flex flex-row">
