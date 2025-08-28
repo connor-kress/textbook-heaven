@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { tbUrl } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { createTextbookAction } from "@/actions/textbook";
+import { CancelButton } from "@/components/CancelButton";
 
 type FormState = {
   title: string;
@@ -49,6 +50,10 @@ export default function NewTextbookForm() {
     router.push(tbUrl(res));
   }
 
+  const handleCancel = () => {
+    router.push("/textbooks");
+  };
+
   return (
     <div className="max-w-xl w-full border-2 border-neutral-500 rounded-xl p-4">
       <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">New Textbook</h3>
@@ -76,10 +81,11 @@ export default function NewTextbookForm() {
           onChange={handleChange}
           rows={4}
         />
-        <div>
+        <div className="flex gap-2">
           <Button type="submit" disabled={submitting}>
             <Plus className="h-4 w-4" /> {submitting ? "Creating..." : "Create"}
           </Button>
+          <CancelButton onClick={handleCancel} />
         </div>
       </form>
     </div>
